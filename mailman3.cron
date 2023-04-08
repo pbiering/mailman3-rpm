@@ -1,0 +1,2 @@
+@daily @MMUSER@ systemctl status mailman3 >/dev/null 2>&1 && @BINDIR@/mailman digests --periodic
+@daily @MMUSER@ systemctl status mailman3 >/dev/null 2>&1 && @BINDIR@/mailman notify
