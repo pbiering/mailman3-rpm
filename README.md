@@ -30,6 +30,8 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 - systemd service & timer files for
   - mailman
   - mailman-web
+- reverse proxy config file for Apache
+- logrotate config
 
 ### Supported OS
 
