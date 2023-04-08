@@ -1,0 +1,11 @@
+--- src/whoosh/codec/whoosh3.py.orig	2023-04-05 18:02:07.885833616 +0200
++++ src/whoosh/codec/whoosh3.py	2023-04-05 18:02:39.405564638 +0200
+@@ -1113,7 +1113,7 @@
+         vs = self._data[2]
+         if fixedsize is None or fixedsize < 0:
+             self._values = vs
+-        elif fixedsize is 0:
++        elif fixedsize == 0:
+             self._values = (None,) * self._blocklength
+         else:
+             assert isinstance(vs, bytes_type)
