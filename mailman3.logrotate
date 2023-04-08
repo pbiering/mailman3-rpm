@@ -1,0 +1,10 @@
+@LOGDIR@/*.log {
+    missingok
+    sharedscripts
+    su @MMUSER@ @MMGROUP@
+    postrotate
+	systemctl status mailman3 >/dev/null 2>&1 && systemctl reload mailman3
+	systemctl status mailman3-web >/dev/null 2>&1 && systemctl reload mailman3-web
+        @BINDIR@/mailman reopen >/dev/null 2>&1 || true
+    endscript
+}
