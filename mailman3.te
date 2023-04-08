@@ -1,0 +1,69 @@
+policy_module(mailman3, 1.18)
+
+gen_require(
+	# from existing default policy
+	type init_t;
+	type etc_mail_t;
+	type mailman_mail_t;
+	type mailman_mail_exec_t;
+	type mailman_data_t;
+	type mailman_lock_t;
+	type tmpfs_t;
+	type postfix_etc_t;
+	type postfix_qmgr_t;
+	type postfix_smtp_t;
+	type httpd_t;
+	type http_port_t;
+	type squid_port_t;
+	type sysctl_net_t;
+	type sysfs_t;
+)
+
+# ports
+type mailman_restapi_port_t;
+type mailman_lmtp_port_t;
+type mailman_web_port_t;
+
+corenet_port(mailman_restapi_port_t)
+corenet_port(mailman_lmtp_port_t)
+corenet_port(mailman_web_port_t)
+
+allow mailman_mail_t mailman_restapi_port_t:tcp_socket all_tcp_socket_perms;
+allow mailman_mail_t mailman_lmtp_port_t:tcp_socket all_tcp_socket_perms;
+allow mailman_mail_t mailman_web_port_t:tcp_socket all_tcp_socket_perms;
+
+# startup
+list_dirs_pattern(mailman_mail_t, mailman_mail_t, sysctl_net_t);
+read_files_pattern(mailman_mail_t , mailman_mail_t, sysctl_net_t);
+read_files_pattern(mailman_mail_t , mailman_mail_t, sysfs_t);
+
+# systemd+itself
+read_lnk_files_pattern(init_t, mailman_mail_exec_t, mailman_mail_exec_t);
+read_lnk_files_pattern(init_t, mailman_mail_t, mailman_mail_t);
+read_lnk_files_pattern(mailman_mail_t, mailman_mail_exec_t, mailman_mail_exec_t);
+list_dirs_pattern(mailman_mail_t, mailman_mail_exec_t, mailman_mail_exec_t);
+
+# general tmp file handling
+manage_dirs_pattern(mailman_mail_t, tmpfs_t, tmpfs_t);
+manage_files_pattern(mailman_mail_t, tmpfs_t, tmpfs_t);
+mmap_exec_files_pattern(mailman_mail_t, tmpfs_t, tmpfs_t);
+
+# manage files for postfix
+manage_dirs_pattern(mailman_mail_t, etc_mail_t, etc_mail_t);
+manage_files_pattern(mailman_mail_t, etc_mail_t, etc_mail_t);
+delete_files_pattern(mailman_mail_t, etc_mail_t, etc_mail_t);
+
+# postfix's postmap usage
+list_dirs_pattern(mailman_mail_t, postfix_etc_t, postfix_etc_t);
+read_files_pattern(mailman_mail_t, postfix_etc_t, postfix_etc_t);
+list_dirs_pattern(postfix_qmgr_t, mailman_data_t, mailman_data_t);
+list_dirs_pattern(postfix_smtp_t, mailman_data_t, mailman_data_t);
+
+# httpd as reverse proxy
+allow httpd_t mailman_web_port_t:tcp_socket name_connect;
+
+# CAPTCHA verification with direct Internet access
+allow mailman_mail_t http_port_t:tcp_socket name_connect;
+
+# CAPTCHA verification via default proxy port
+allow mailman_mail_t squid_port_t:tcp_socket name_connect;
