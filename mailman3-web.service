@@ -1,0 +1,18 @@
+[Unit]
+Description=GNU Mailing List Manager 3 Web UI
+After=syslog.target network.target mailman3.service
+
+[Service]
+PIDFile=@RUNDIR@/gunicorn.pid
+User=@MMUSER@
+Group=@MMUSER@
+ExecStart=@BINDIR@/gunicorn -c @ETCDIR@/gunicorn.conf.py mailman_web.wsgi:application
+KillSignal=SIGINT
+
+# wait until listening port is up
+ExecStartPost=/usr/bin/echo "Mailman3 Web UI daemon started, waiting for port listen: WEB(tcp/@WEBPORT@)"
+ExecStartPost=/usr/bin/timeout 60 sh -c 'while ! /usr/sbin/ss -H -t -l -n sport = :@WEBPORT@ | grep -q "^LISTEN.*:@WEBPORT@"; do sleep 1; done'
+ExecStartPost=/usr/bin/echo "Mailman3 Web UI daemon started, port listen: WEB(tcp/@WEBPORT@)"
+
+[Install]
+WantedBy=multi-user.target
