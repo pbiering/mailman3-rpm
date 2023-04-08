@@ -1,0 +1,81 @@
+--- rpmbuild/BUILDROOT/mailman3-virtualenv-3.3.8-1.el9.x86_64/usr/lib/mailman3/venv/lib/python3.9/site-packages/allauth/account/forms.py.orig	2023-04-02 11:26:39.601273837 +0200
++++ rpmbuild/BUILDROOT/mailman3-virtualenv-3.3.8-1.el9.x86_64/usr/lib/mailman3/venv/lib/python3.9/site-packages/allauth/account/forms.py	2023-04-02 11:27:42.892382377 +0200
+@@ -31,6 +31,12 @@
+     user_username,
+ )
+ 
++# CAPTCHA support
++from django.conf import settings
++from captcha.fields import ReCaptchaField
++from hcaptcha.fields import hCaptchaField
++from friendly_captcha.fields import FrcCaptchaField
++
+ 
+ class EmailAwarePasswordResetTokenGenerator(PasswordResetTokenGenerator):
+     def _make_hash_value(self, user, timestamp):
+@@ -87,8 +103,17 @@
+ class LoginForm(forms.Form):
+ 
+     password = PasswordField(label=_("Password"), autocomplete="current-password")
+     remember = forms.BooleanField(label=_("Remember Me"), required=False)
+ 
++    # CAPTCHA support
++    captcha_service = getattr(settings, 'CAPTCHA_SERVICE', None)
++    if captcha_service == 'recaptcha':
++        captcha = ReCaptchaField()
++    elif captcha_service == 'hcaptcha':
++        hcaptcha = hCaptchaField()
++    elif captcha_service == 'friendlycaptcha':
++        captcha = FrcCaptchaField()
++
+     user = None
+     error_messages = {
+         "account_inactive": _("This account is currently inactive."),
+@@ -282,6 +309,15 @@
+         )
+     )
+ 
++    # CAPTCHA support
++    captcha_service = getattr(settings, 'CAPTCHA_SERVICE', None)
++    if captcha_service == 'recaptcha':
++        captcha = ReCaptchaField()
++    elif captcha_service == 'hcaptcha':
++        hcaptcha = hCaptchaField()
++    elif captcha_service == 'friendlycaptcha':
++        captcha = FrcCaptchaField()
++
+     def __init__(self, *args, **kwargs):
+         email_required = kwargs.pop("email_required", app_settings.EMAIL_REQUIRED)
+         self.username_required = kwargs.pop(
+@@ -522,6 +559,15 @@
+     password1 = SetPasswordField(label=_("New Password"))
+     password2 = PasswordField(label=_("New Password (again)"))
+ 
++    # CAPTCHA support
++    captcha_service = getattr(settings, 'CAPTCHA_SERVICE', None)
++    if captcha_service == 'recaptcha':
++        captcha = ReCaptchaField()
++    elif captcha_service == 'hcaptcha':
++        hcaptcha = hCaptchaField()
++    elif captcha_service == 'friendlycaptcha':
++        captcha = FrcCaptchaField()
++
+     def __init__(self, *args, **kwargs):
+         super(ChangePasswordForm, self).__init__(*args, **kwargs)
+         self.fields["password1"].user = self.user
+@@ -562,6 +609,15 @@
+         ),
+     )
+ 
++    # CAPTCHA support
++    captcha_service = getattr(settings, 'CAPTCHA_SERVICE', None)
++    if captcha_service == 'recaptcha':
++        captcha = ReCaptchaField()
++    elif captcha_service == 'hcaptcha':
++        hcaptcha = hCaptchaField()
++    elif captcha_service == 'friendlycaptcha':
++        captcha = FrcCaptchaField()
++
+     def clean_email(self):
+         email = self.cleaned_data["email"]
+         email = get_adapter().clean_email(email)
