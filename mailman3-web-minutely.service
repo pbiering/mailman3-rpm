@@ -1,0 +1,11 @@
+[Unit]
+Description=GNU Mailing List Manager 3 Web UI / runjobs minutely
+
+# run only if main service is running
+BindsTo=mailman3-web.service
+
+[Service]
+Type=oneshot
+ExecStart=@BINDIR@/mailman-web runjobs minutely
+User=@MMUSER@
+Group=@MMGROUP@

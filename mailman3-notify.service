@@ -1,0 +1,8 @@
+[Unit]
+Description=GNU Mailing List Manager 3 / notify
+
+[Service]
+Type=oneshot
+ExecStart=@BINDIR@/mailman notify
+User=@MMUSER@
+Group=@MMGROUP@

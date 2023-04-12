@@ -1,0 +1,16 @@
+[Unit]
+Description=GNU Mailing List Manager 3 Web UI / run quarter hourly: mailman3-web-quarter_hourly.service
+
+# run only if main service is running
+PartOf=mailman3-web.service
+After=mailman3-web.service
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=15min
+RandomizedDelaySec=30
+FixedRandomDelay=true
+Persistent=true
+
+[Install]
+WantedBy=timers.target mailman3-web.service

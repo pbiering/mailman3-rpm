@@ -1,0 +1,15 @@
+[Unit]
+Description=GNU Mailing List Manager 3 / run daily: mailman3-digests.service
+
+# run only if main service is running
+PartOf=mailman3.service
+After=mailman3.service
+
+[Timer]
+OnCalendar=*-*-* 04:00:00
+RandomizedDelaySec=3600
+FixedRandomDelay=true
+Persistent=true
+
+[Install]
+WantedBy=timers.target mailman3.service

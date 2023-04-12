@@ -1,0 +1,15 @@
+[Unit]
+Description=GNU Mailing List Manager 3 Web UI / run monthly: mailman3-web-monthly.service
+
+# run only if main service is running
+PartOf=mailman3-web.service
+After=mailman3-web.service
+
+[Timer]
+OnCalendar=monthly
+RandomizedDelaySec=7200
+FixedRandomDelay=true
+Persistent=true
+
+[Install]
+WantedBy=timers.target mailman3-web.service

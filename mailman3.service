@@ -17,11 +17,11 @@ ExecReload=@BINDIR@/mailman restart
 ExecStop=@BINDIR@/mailman stop
 
 # wait until listening ports are up
-ExecStartPost=/usr/bin/echo "Mailman3 daemon started, waiting for port listen: LMTP(tcp/@LMTPPORT@) and RESTAPI(tcp/@RESTAPIPORT@)"
+ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 daemon started, waiting for port listen: LMTP(tcp/@LMTPPORT@) and RESTAPI(tcp/@RESTAPIPORT@)"
 ExecStartPost=/usr/bin/timeout 60 sh  -c 'while ! /usr/sbin/ss -H -t -l -n sport = :@LMTPPORT@ | grep -q "^LISTEN.*:@LMTPPORT@"; do sleep 1; done'
-ExecStartPost=/usr/bin/echo "Mailman3 daemon started, port listen: LMTP(tcp/@LMTPPORT@)"
+ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 daemon started, port listen: LMTP(tcp/@LMTPPORT@)"
 ExecStartPost=/usr/bin/timeout 60 sh -c 'while ! /usr/sbin/ss -H -t -l -n sport = :@RESTAPIPORT@ | grep -q "^LISTEN.*:@RESTAPIPORT@"; do sleep 1; done'
-ExecStartPost=/usr/bin/echo "Mailman3 daemon started, port listen: RESTAPI(tcp/@RESTAPIPORT@)"
+ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 daemon started, port listen: RESTAPI(tcp/@RESTAPIPORT@)"
 
 [Install]
 WantedBy=multi-user.target

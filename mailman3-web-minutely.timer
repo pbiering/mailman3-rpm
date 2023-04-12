@@ -1,0 +1,16 @@
+[Unit]
+Description=GNU Mailing List Manager 3 Web UI / run minutely: mailman3-web-minutely.service
+
+# run only if main service is running
+PartOf=mailman3-web.service
+After=mailman3-web.service
+
+[Timer]
+OnCalendar=minutely
+RandomizedDelaySec=5
+FixedRandomDelay=true
+AccuracySec=1
+Persistent=true
+
+[Install]
+WantedBy=timers.target mailman3-web.service
