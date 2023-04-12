@@ -42,9 +42,67 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 | F37 | virtualenv |
 | F38 | virtualenv |
 
-## Known issues with native builds
+## Usage
 
-### All
+### Build RPM
+
+Recommended on a dedicated build host
+
+#### based on upstream/main
+
+```
+# clone repo
+git clone https://github.com/pbiering/mailman3-rpm.git
+# change into directory
+cd mailman3-rpm
+# create Source RPM by downloading external dependencies
+rpmbuild -bs mailman3-virtualenv.spec --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir ."
+# rebuild from created Source RPM
+rpmbuild --rebuild ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
+```
+
+#### based on a published release
+
+```
+# fetch release package
+wget https://github.com/pbiering/mailman3-rpm/archive/refs/tags/<VERSION>-<RELEASE>.tar.gz
+# extract package
+tar xzf mailman3-rpm-<VERSION>-<RELEASE>.tar.gz
+# change into directory
+cd mailman3-rpm-<VERSION>-<RELEASE>
+```
+
+#### common
+
+```
+# create Source RPM by downloading external dependencies
+rpmbuild -bs mailman3-virtualenv.spec --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir ."
+# rebuild from created Source RPM
+rpmbuild --rebuild ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
+```
+
+### Install RPM
+
+Transfer RPM to final destination system
+
+```
+dnf localinstall mailman3-<VERSION>-<RELEASE>.<DISTa>.<ARCH>.rpm
+```
+
+### Configuration
+
+- check output of RPM after installation
+- check main config file: `/etc/mailman.cfg`
+- check additional config files in `/etc/mailman3/`
+- check configuration of `postfix`
+
+General: read provided documenation on https://docs.mailman3.org/
+
+## Known issues
+
+### Known issues with native builds
+
+#### All
 
 - unable to inject CAPTCHA support into existing packages
 
@@ -53,13 +111,13 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 | postorius | forms/list_forms.py |
 | allauth   | account/forms.py    |
 
-### Enterprise Linux
+#### Enterprise Linux
 
 - missing a lot of of dependency packages in EPEL
 - conflicts with base repo for
   - building required cmarkgfm >= 0.7.0 with existing python3-cffi == 1.14.5-5.el9@appstream
 
-### Fedora
+#### Fedora
 
 - missing some dependency packages in EPEL
 - conflicts with base repo for
@@ -72,10 +130,11 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 ## Notes
 
 - based on https://kojipkgs.fedoraproject.org//packages/mailman3/3.3.4/6.fc36/src/mailman3-3.3.4-6.fc36.src.rpm (last native one available)
-- the SPEC file includes a toggle for activation of a native build by bundling missing packages but as described above it's impossible for EL and Fedora as of today because of final conflicts.
+- the SPEC file includes a toggle for activation of a native build by bundling missing packages but as described above it's impossible for EL and Fedora as of today because of final conflicts
 
 ## References
 
 - https://koji.fedoraproject.org/koji/packageinfo?packageID=27808
 - https://bugzilla.redhat.com/show_bug.cgi?id=2001801
 - https://bugzilla.redhat.com/show_bug.cgi?id=2113503
+- https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
