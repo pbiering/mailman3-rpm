@@ -32,6 +32,9 @@ allow mailman_mail_t mailman_restapi_port_t:tcp_socket all_tcp_socket_perms;
 allow mailman_mail_t mailman_lmtp_port_t:tcp_socket all_tcp_socket_perms;
 allow mailman_mail_t mailman_web_port_t:tcp_socket all_tcp_socket_perms;
 
+# itself
+mmap_files_pattern(mailman_mail_t, mailman_data_t, mailman_data_t);
+
 # startup
 list_dirs_pattern(mailman_mail_t, mailman_mail_t, sysctl_net_t);
 read_files_pattern(mailman_mail_t , mailman_mail_t, sysctl_net_t);
