@@ -12,7 +12,7 @@
 ###
 ###  BUNDLED-AS-REQUIRED PACKAGING - BROKEN
 ###   download required packages and store to ~/rpmbuild/SOURCES
-###   $ rpmbuild -bp --undefine=_disable_source_fetch -D "mailman3_virtualenv 0"  mailman3-virtualenv.spec
+###   $ rpmbuild -bp --undefine=_disable_source_fetch -D "mailman3_native 1"  mailman3-virtualenv.spec
 ###
 ###   Status: EL9: DEADLOCK
 ###   - cmarkgfm >= 0.7.0 has deadlock with python3-cffi == 1.14.5-5.el9@appstream
@@ -25,25 +25,37 @@
 ### $ rpmbuild -bb mailman3-virtualenv.spec
 ###
 ### Build toggles
-###  mailman3_separated  (default: 1): separate package not conflicting with mailman major version 2
-###  mailman3_cron       (default: 0): package cron-jobs instead of systemd-timers
-###  mailman3_virtualenv (default: 1): virtualenv package
+###  mailman3_like_mailman2 (default: 0): create package conflicting with mailman major version 2
+###  mailman3_cron          (default: 0): package cron-jobs instead of systemd-timers
+###  mailman3_native        (default: 0): create native package (no virtualenv)
 
 ## MAIN VERSIONS
 %global version_mailman 			3.3.8
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 4
+%global release_token 5
 
 # toggle to create a with mailman version 2 non-conflicting package
-%global mailman3_separated %{?mailman3_separated:1}
+%if 0%{?mailman3_like_mailman2}
+%global mailman3_separated 0
+%else
+%global mailman3_separated 1
+%endif
 
 # toggle to cron files instead of systemd/service+timer
-%global mailman3_cron %{?mailman3_cron:0}
+%if 0%{?mailman3_cron}
+%global mailman3_cron 1
+%else
+%global mailman3_cron 0
+%endif
 
 # enforce virtualenv as F37/F38/EL9 is not able to support "bundled"
-%global mailman3_virtualenv %{?mailman3_virtualenv:1}
+%if 0%{?mailman3_native}
+%global mailman3_virtualenv 0
+%else
+%global mailman3_virtualenv 1
+%endif
 
 %global pypi_name mailman
 
@@ -711,6 +723,16 @@ https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
 %else
 * THIS package contains Mailman 3 and all required but by OS not supported modules
 %endif
+%if 0%{mailman3_separated}
+* THIS package can coexist with Mailman 2
+%else
+* THIS package conflicts with Mailman 2
+%endif
+%if 0%{?mailman3_cron}
+* THIS package contains CRON based scheduled tasks
+%else
+* THIS package contains SYSTEMD.TIMER based scheduled tasks
+%endif
 user/group   : %{mmuser}/%{mmgroup}
 directory    : %{basedir}/%{virtualenvsubdir}
 
@@ -740,6 +762,26 @@ Web Interface: %{webport}
 rm -rf %{pypi_name}-%{version_mailman}
 %{__mkdir} %{pypi_name}-%{version_mailman}
 cd %{pypi_name}-%{version_mailman}
+
+set +x
+echo "*** BUILD INFORMATION ***"
+%if 0%{?mailman3_virtualenv}
+echo "** Packaging: VIRTUALENV"
+%else
+echo "** Packaging: BUNDLED-AS-REQUIRED"
+%endif
+%if 0%{mailman3_separated}
+echo "** RPM: separate Mailman 3 from Mailman 2"
+%else
+echo "** RPM: Mailman 3 conflicts with Mailman 2"
+%endif
+%if 0%{?mailman3_cron}
+echo "** Scheduled tasks: packaged using CRON"
+%else
+echo "** Scheduled tasks: packaged using SYSTEMD.TIMER"
+%endif
+sleep 5
+set -x
 
 %if 0%{?mailman3_virtualenv}
 ### VIRTUALENV PACKAGING 
@@ -1648,6 +1690,9 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
+* Wed Apr 12 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-5
+- Fix build toggle logic
+
 * Wed Apr 12 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-4
 - Use systemd-timer units instead of cron jobs by default
 - Extend SELinux policy
