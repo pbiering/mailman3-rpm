@@ -1,7 +1,7 @@
-* * * * *          @MMUSER@ systemctl status mailman3-web >/dev/null 2>&1 && @BINDIR@/mailman-web runjobs minutely
-0,15,30,45 * * * * @MMUSER@ systemctl status mailman3-web >/dev/null 2>&1 && @BINDIR@/mailman-web runjobs quarter_hourly
-@hourly            @MMUSER@ systemctl status mailman3-web >/dev/null 2>&1 && @BINDIR@/mailman-web runjobs hourly
-@daily             @MMUSER@ systemctl status mailman3-web >/dev/null 2>&1 && @BINDIR@/mailman-web runjobs daily
-@weekly            @MMUSER@ systemctl status mailman3-web >/dev/null 2>&1 && @BINDIR@/mailman-web runjobs weekly
-@monthly           @MMUSER@ systemctl status mailman3-web >/dev/null 2>&1 && @BINDIR@/mailman-web runjobs monthly
-@yearly            @MMUSER@ systemctl status mailman3-web >/dev/null 2>&1 && @BINDIR@/mailman-web runjobs yearly
+* * * * *          @MMUSER@ systemctl -q is-active mailman3-web && @BINDIR@/mailman-web runjobs minutely
+0,15,30,45 * * * * @MMUSER@ systemctl -q is-active mailman3-web && @BINDIR@/mailman-web runjobs quarter_hourly
+@hourly            @MMUSER@ systemctl -q is-active mailman3-web && @BINDIR@/mailman-web runjobs hourly
+@daily             @MMUSER@ systemctl -q is-active mailman3-web && @BINDIR@/mailman-web runjobs daily
+@weekly            @MMUSER@ systemctl -q is-active mailman3-web && @BINDIR@/mailman-web runjobs weekly
+@monthly           @MMUSER@ systemctl -q is-active mailman3-web && @BINDIR@/mailman-web runjobs monthly
+@yearly            @MMUSER@ systemctl -q is-active mailman3-web && @BINDIR@/mailman-web runjobs yearly
