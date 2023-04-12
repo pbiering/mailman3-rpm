@@ -48,20 +48,18 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 
 Recommended on a dedicated build host
 
-#### based on upstream/main
+#### preparation
+
+##### based on upstream/main
 
 ```
 # clone repo
 git clone https://github.com/pbiering/mailman3-rpm.git
 # change into directory
 cd mailman3-rpm
-# create Source RPM by downloading external dependencies
-rpmbuild -bs mailman3-virtualenv.spec --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir ."
-# rebuild from created Source RPM
-rpmbuild --rebuild ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
 ```
 
-#### based on a published release
+##### based on a published release
 
 ```
 # fetch release package
@@ -72,7 +70,7 @@ tar xzf mailman3-rpm-<VERSION>-<RELEASE>.tar.gz
 cd mailman3-rpm-<VERSION>-<RELEASE>
 ```
 
-#### common
+#### build
 
 ```
 # create Source RPM by downloading external dependencies
