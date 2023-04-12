@@ -94,7 +94,7 @@ dnf localinstall mailman3-<VERSION>-<RELEASE>.<DISTa>.<ARCH>.rpm
 - check additional config files in `/etc/mailman3/`
 - check configuration of `postfix`
 
-General: read provided documenation on https://docs.mailman3.org/
+General: read provided documentation on https://docs.mailman3.org/
 
 ## Known issues
 
