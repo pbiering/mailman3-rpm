@@ -34,7 +34,7 @@
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 5
+%global release_token 6
 
 # toggle to create a with mailman version 2 non-conflicting package
 %if 0%{?mailman3_like_mailman2}
@@ -93,6 +93,10 @@ BuildRequires:  python3-pip
 Requires:       python3
 
 %endif
+
+# common requirements
+Requires: 	publicsuffix-list
+
 
 %if 0%{?mailman3_virtualenv}
 ### VIRTUALENV PACKAGING 
@@ -1101,6 +1105,9 @@ pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-ch
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip wheel
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip isort
 
+# required to be preinstalled for publicsuffix2
+pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip requests
+
 # install from local files "base"
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip %{pypi_name}
 
@@ -1257,6 +1264,18 @@ cat %{PATCH902} | patch %{buildroot}%{sitepackagesdir}/allauth/account/forms.py
 grep --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitepackagesdir} | while read file; do
 	sed -i -e 's,env python$,env python3,g' $file
 done
+
+# replace dedicated installed file with softlink to publicsuffix-list (see also python-publicsuffix2.spec)
+find %{buildroot}%{sitepackagesdir} -type f -name public_suffix_list.dat | while read f; do
+	echo "replace dedicated installed files with softlink: $f"
+	rm $f
+	ln -s %{_datarootdir}/publicsuffix/public_suffix_list.dat $f
+done
+
+for f in mailman/rules/data/public_suffix_list.dat publicsuffix2/public_suffix_list.dat
+rm %{buildroot}%{sitepackagesdir}/mailman/rules/data/public_suffix_list.dat
+rm %{buildroot}%{sitepackagesdir}/publicsuffix2/public_suffix_list.dat
+
 
 # service files
 install -D -m 0640 %{SOURCE1} %{buildroot}%{_sysconfdir}/mailman.cfg
@@ -1690,6 +1709,10 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
+* Thu Apr 13 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-6
+- Replace packaged public_suffix_list.dat by softlink to file provided by RPM publicsuffix-list
+- Install module requests explicity earlier to avoid unexpected Internet access during build of publicsuffix2
+
 * Wed Apr 12 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-5
 - Fix build toggle logic
 
