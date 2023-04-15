@@ -9,7 +9,7 @@ After=mailman3-web.service
 OnBootSec=5min
 OnUnitActiveSec=15min
 RandomizedDelaySec=30
-FixedRandomDelay=true
+#FixedRandomDelay=true
 Persistent=true
 
 [Install]

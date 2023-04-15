@@ -8,7 +8,7 @@ After=mailman3-web.service
 [Timer]
 OnCalendar=hourly
 RandomizedDelaySec=300
-FixedRandomDelay=true
+#FixedRandomDelay=true
 Persistent=true
 
 [Install]

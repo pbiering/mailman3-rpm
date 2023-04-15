@@ -8,7 +8,7 @@ After=mailman3-web.service
 [Timer]
 OnCalendar=minutely
 RandomizedDelaySec=5
-FixedRandomDelay=true
+#FixedRandomDelay=true
 AccuracySec=1
 Persistent=true
 
