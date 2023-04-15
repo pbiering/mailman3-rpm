@@ -16,5 +16,5 @@ distclean: clean
 
 srpm:
 	echo "BUILD: create SRPM like COPR is doing"
-	make -f ./.copr/Makefile srpm outdir="." spec="mailman3-virtualenv.spec"
+	make -f ./.copr/Makefile srpm outdir="." spec="mailman3.spec"
 
