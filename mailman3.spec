@@ -5,14 +5,9 @@
 ###  - description (below)
 ###
 ### Step 1: create source package by
-###  VIRTUALENV PACKAGING 
-###   according to https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
-###   download main packages and dependencies and store to ~/rpmbuild/SOURCES
-###   $ rpmbuild -bp --undefine=_disable_source_fetch mailman3-virtualenv.spec
-###
 ###  BUNDLED-AS-REQUIRED PACKAGING (overload existing older versions if required by storing in USER_SITE)
 ###   download required packages and store to ~/rpmbuild/SOURCES
-###   $ rpmbuild -bp --undefine=_disable_source_fetch -D "mailman3_native 1"  mailman3-virtualenv.spec
+###   $ rpmbuild -bp --undefine=_disable_source_fetch mailman3.spec
 ###
 ###   Known required overloading
 ###    EL9:
@@ -22,20 +17,25 @@
 ###    - python3-flufl-bounce == 3.0-17.fc37@fedora   / req >= 4.0
 ###    - python3-flufl-i18n  ==  2.0.2-10.fc37@fedora / req >= 3.2
 ###
+###  VIRTUALENV PACKAGING
+###   according to https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
+###   download main packages and dependencies and store to ~/rpmbuild/SOURCES
+###   $ rpmbuild -bp --undefine=_disable_source_fetch -D "mailman3_virtualenv 1" mailman3.spec
+###
 ### Step 2: rebuild
-### $ rpmbuild -bb mailman3-virtualenv.spec
+### $ rpmbuild -bb mailman3.spec
 ###
 ### Build toggles
 ###  mailman3_like_mailman2 (default: 0): create package conflicting with mailman major version 2
 ###  mailman3_cron          (default: 0): package cron-jobs instead of systemd-timers
-###  mailman3_native        (default: 0): create native package (no virtualenv)
+###  mailman3_virtualenv    (default: 0): virtualenv instead of native package
 
 ## MAIN VERSIONS
 %global version_mailman 			3.3.8
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 6
+%global release_token 7
 
 # toggle to create a with mailman version 2 non-conflicting package
 %if 0%{?mailman3_like_mailman2}
@@ -49,13 +49,6 @@
 %global mailman3_cron 1
 %else
 %global mailman3_cron 0
-%endif
-
-# enforce virtualenv as F37/F38/EL9 is not able to support "bundled"
-%if 0%{?mailman3_native}
-%global mailman3_virtualenv 0
-%else
-%global mailman3_virtualenv 1
 %endif
 
 %global pypi_name mailman
@@ -98,84 +91,113 @@ BuildRequires:  python%{python3_version_num}-pip
 %if (%{defined rhel} && 0%{?rhel} == 8)
 # not available for EL8 -> bundle
 %else
+%endif
+
+%else
+### BUNDLED-AS-REQUIRED PACKAGING
+%if (%{defined rhel} && 0%{?rhel} == 8)
+# EL8
+BuildRequires:	python%{python3_version_num}-setuptools_scm
+BuildRequires:	python%{python3_version_num}-wheel
+BuildRequires:	python%{python3_version_num}-rpm-macros
+
+%else
+# Fedora/EL9
+BuildRequires:	python%{python3_version_num}-tomli
+Requires:	python%{python3_version_num}-tomli
+%endif
+
+%endif
+
+## common by EL+EPEL supported requirements
+
+%if (%{defined rhel} && 0%{?rhel} == 8)
+# not available for EL8 -> bundle
+%else
 BuildRequires:	python%{python3_version_num}-alembic
 BuildRequires:	python%{python3_version_num}-attrs
 BuildRequires:	python%{python3_version_num}-authres
 BuildRequires:	python%{python3_version_num}-atpublic
+BuildRequires:	python%{python3_version_num}-dns
 BuildRequires:	python%{python3_version_num}-flufl-lock
 BuildRequires:	python%{python3_version_num}-greenlet
+BuildRequires:	python%{python3_version_num}-isort
 BuildRequires:	python%{python3_version_num}-mailmanclient
 BuildRequires:	python%{python3_version_num}-passlib
 BuildRequires:	python%{python3_version_num}-psutil
 BuildRequires:	python%{python3_version_num}-pytz
 BuildRequires:	python%{python3_version_num}-rcssmin
 BuildRequires:	python%{python3_version_num}-robot-detection
+BuildRequires:	python%{python3_version_num}-sqlalchemy
 BuildRequires:	python%{python3_version_num}-sqlparse
+BuildRequires:	python%{python3_version_num}-typing-extensions
 BuildRequires:	python%{python3_version_num}-webencodings
 BuildRequires:	python%{python3_version_num}-zope-component
 BuildRequires:	python%{python3_version_num}-zope-event
 BuildRequires:	python%{python3_version_num}-zope-interface
+BuildRequires:	python%{python3_version_num}-zope-hookable
 
 Requires:	python%{python3_version_num}-alembic
 Requires:	python%{python3_version_num}-attrs
 Requires:	python%{python3_version_num}-authres
 Requires:	python%{python3_version_num}-atpublic
+Requires:	python%{python3_version_num}-dns
 Requires:	python%{python3_version_num}-flufl-lock
 Requires:	python%{python3_version_num}-greenlet
+Requires:	python%{python3_version_num}-isort
 Requires:	python%{python3_version_num}-mailmanclient
 Requires: 	python%{python3_version_num}-passlib
 Requires: 	python%{python3_version_num}-psutil
 Requires: 	python%{python3_version_num}-pytz
 Requires: 	python%{python3_version_num}-rcssmin
 Requires: 	python%{python3_version_num}-robot-detection
+Requires:	python%{python3_version_num}-sqlalchemy
 Requires:	python%{python3_version_num}-sqlparse
+Requires:	python%{python3_version_num}-typing-extensions
 Requires:	python%{python3_version_num}-webencodings
 Requires:	python%{python3_version_num}-zope-component
 Requires:	python%{python3_version_num}-zope-event
 Requires:	python%{python3_version_num}-zope-interface
+Requires:	python%{python3_version_num}-zope-hookable
 %endif
 
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
-BuildRequires:	python%{python3_version_num}-isort
-BuildRequires:	python%{python3_version_num}-tomli
-
-Requires:	python%{python3_version_num}-isort
-Requires:	python%{python3_version_num}-tomli
-%endif
-
-# common by EL+EPEL supported requirements
 BuildRequires:	python%{python3_version_num}-click
 BuildRequires:	python%{python3_version_num}-cryptography
-BuildRequires:	python%{python3_version_num}-dns
 BuildRequires:	python%{python3_version_num}-idna
 BuildRequires:	python%{python3_version_num}-markupsafe
 BuildRequires:	python%{python3_version_num}-requests
+BuildRequires:	python%{python3_version_num}-toml
 
 Requires: 	python%{python3_version_num}-click
 Requires: 	python%{python3_version_num}-cryptography
-Requires:	python%{python3_version_num}-dns
 Requires:	python%{python3_version_num}-idna
 Requires: 	python%{python3_version_num}-markupsafe
 Requires: 	python%{python3_version_num}-requests
+Requires: 	python%{python3_version_num}-toml
+
 Requires: 	publicsuffix-list
+
+%if (%{defined rhel} && 0%{?rhel} == 8)
+%else
+BuildRequires:	python%{python3_version_num}-dns
+Requires:	python%{python3_version_num}-dns
+%endif
 
 
 %if 0%{?mailman3_virtualenv}
 ### VIRTUALENV PACKAGING 
 %global virtualenvsubdir venv
-%global bindir           %{basedir}/%{virtualenvsubdir}/bin
-%global sitelibdir       %{basedir}/%{virtualenvsubdir}/lib64/python%{python3_version}/site-packages
-
-# for "greenlet"
-#EL8??BuildRequires:		gcc-c++
+%global bindir		%{basedir}/%{virtualenvsubdir}/bin
+%global sitelibdir	%{basedir}/%{virtualenvsubdir}/lib64/python%{python3_version}/site-packages
 
 %else
 ### BUNDLED-AS-REQUIRED PACKAGING 
-%global bindir		 %{_libexecdir}/%{pname}
-%global sitelibdir	 %{python3_sitelib}
-%global sitearchdir	 %{python3_sitearch}
-%global usersitedir     %{basedir}/.local/lib/python%{python3_version}/site-packages/
+%global bindir		   %{_libexecdir}/%{pname}
+%global sitelibdir	   %{python3_sitelib}
+%global sitearchdir	   %{python3_sitearch}
+%define sitedirsub         /.local/lib/python%{python3_version}/site-packages
+%global usersitedir	   %{basedir}%{sitedirsub}
+%global sharedstatesitedir %{vardir}%{sitedirsub}
 %endif
 
 %global lmtpport        8024
@@ -199,9 +221,13 @@ Requires: 	publicsuffix-list
 %global mmgroupid    ""
 %endif
 
-## BUNDLED VERSIONS ONLY FOR VIRTUALENV
-%define	bundled_version_alembic			1.10.3
-%define	bundled_version_atpublic		3.1.1
+## BUNDLED VERSIONS
+#define	bundled_version_alembic			1.10.3 # typing_extensions/TypeGuard problem
+%define	bundled_version_alembic			1.9.4
+
+#define	bundled_version_atpublic		3.1.1 # >= 3.x has no setup.py
+%define	bundled_version_atpublic		2.3
+
 %define	bundled_version_attrs			22.2.0
 %define	bundled_version_authres			1.2.0
 %define	bundled_version_blessed			1.20.0
@@ -210,11 +236,15 @@ Requires: 	publicsuffix-list
 %define	bundled_version_click			8.1.3
 %define	bundled_version_Cython			0.29.34
 %define	bundled_version_cryptography		40.0.1
+%define	bundled_version_dataclasses		0.8
 %define	bundled_version_dateutil		2.8.2
 %define	bundled_version_defusedxml		0.7.1
 %define	bundled_version_dnspython		2.3.0
 %define	bundled_version_flit_core		3.8.0
-%define	bundled_version_flufl_lock		7.1.1
+
+#define	bundled_version_flufl_lock		7.1.1 # >= 7.x has no setup.py
+%define	bundled_version_flufl_lock		6.0
+
 %define	bundled_version_greenlet		2.0.2
 %define	bundled_version_idna			3.4
 %define	bundled_version_isort			5.12.0
@@ -241,10 +271,20 @@ Requires: 	publicsuffix-list
 %define	bundled_version_setuptools_scm		7.1.0
 %define	bundled_version_setuptools_rust		1.5.2 
 %define	bundled_version_six			1.16.0
-%define	bundled_version_SQLalchemy		2.0.9
+
+#define	bundled_version_SQLAlchemy		2.0.9 # EL8 problem typing_extensions/Concatenate
+%define	bundled_version_SQLAlchemy		1.4.47
+
 %define	bundled_version_sqlparse		0.4.3
-%define	bundled_version_tomli			2.0.1
-%define	bundled_version_typing_extensions	4.5.0
+
+#define	bundled_version_tomli			2.0.1 # >= 2.x has no setup.py
+#define	bundled_version_tomli			1.2.3 # >= 1.2.x has no setup.py
+%define	bundled_version_tomli			1.1.0
+
+#define	bundled_version_typing_extensions	4.5.0 # >= 4.x has no setup.py / 3.10.0.2 causes dataclass_transform dependency problems
+#define	bundled_version_typing_extensions	3.10.0.2  # causes dataclass_transform dependency problems
+%define	bundled_version_typing_extensions	3.7.4.3
+
 %define	bundled_version_urllib3			1.26.15
 %define	bundled_version_wcwidth			0.2.6
 %define	bundled_version_webencodings		0.5.1
@@ -280,7 +320,7 @@ Requires: 	publicsuffix-list
 %define	bundled_version_publicsuffix2		2.20191221
 %define	bundled_version_pygments		2.14.0
 %define	bundled_version_rjsmin			1.2.1
-%define	bundled_version_whoosh			2.7.4
+%define	bundled_version_Whoosh			2.7.4
 
 %define	bundled_version_zope_configuration	4.4.1
 %define	bundled_version_zope_schema		7.0.1
@@ -289,10 +329,10 @@ Requires: 	publicsuffix-list
 %define	bundled_version_readme_renderer		37.3
 %define	bundled_version_cmarkgfm		0.8.0
 
-# 4.x has no setup.py?
+#define	bundled_version_flufl_i18n		4.1.1 # 4.x has no setup.py
 %define	bundled_version_flufl_i18n		3.2
 
-# 5.x has no setup.py?
+#define	bundled_version_importlib_resources     5.2.0 # 5.x has no setup.py
 %define	bundled_version_importlib_resources     4.1.1
 
 ## django dependencies
@@ -397,7 +437,7 @@ Source1023:	%{__pypi_url}P/Pygments/Pygments-%{bundled_version_pygments}.tar.gz
 Source1024:	%{__pypi_url}a/asgiref/asgiref-%{bundled_version_asgiref}.tar.gz
 Source1025:	%{__pypi_url}f/flufl.bounce/flufl.bounce-%{bundled_version_flufl_bounce}.tar.gz
 Source1026:	%{__pypi_url}f/flufl.i18n/flufl.i18n-%{bundled_version_flufl_i18n}.tar.gz
-Source1027:	%{__pypi_url}W/Whoosh/Whoosh-%{bundled_version_whoosh}.tar.gz
+Source1027:	%{__pypi_url}W/Whoosh/Whoosh-%{bundled_version_Whoosh}.tar.gz
 Patch1027:      mailman3-whoosh-whoosh3.patch
 
 Source1028:	%{__pypi_url}c/cmarkgfm/cmarkgfm-%{bundled_version_cmarkgfm}.tar.gz
@@ -430,13 +470,11 @@ Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{bun
 ### VIRTUALENV PACKAGING
 ##Source2007:	#{__pypi_url}c/click/click-#{bundled_version_click}.tar.gz
 ##Source2008:	#{__pypi_url}c/cryptography/cryptography-#{bundled_version_cryptography}.tar.gz
-##Source2011:	#{__pypi_url}d/dnspython/dnspython-#{bundled_version_dnspython}.tar.gz
 ##Source2015:	#{__pypi_url}i/idna/idna-#{bundled_version_idna}.tar.gz
 ##Source2018:	#{__pypi_url}M/MarkupSafe/MarkupSafe-#{bundled_version_MarkupSafe}.tar.gz
 Source2009:	%{__pypi_url}C/Cython/Cython-%{bundled_version_Cython}.tar.gz
 Source2012:	%{__pypi_url}f/flit_core/flit_core-%{bundled_version_flit_core}.tar.gz
 
-Source2016:	%{__pypi_url}i/isort/isort-%{bundled_version_isort}.tar.gz
 
 # networkx has too many dependencies if installed via RPM -> bundle
 Source2019:	%{__pypi_url}n/networkx/networkx-%{bundled_version_networkx}.tar.gz
@@ -454,13 +492,11 @@ Source2039:	%{__pypi_url}s/semantic_version/semantic_version-%{bundled_version_s
 Source2040:	%{__pypi_url}s/six/six-%{bundled_version_six}.tar.gz
 Source2041:	%{__pypi_url}s/sqlparse/sqlparse-%{bundled_version_sqlparse}.tar.gz
 Source2043:	%{__pypi_url}t/typing_extensions/typing_extensions-%{bundled_version_typing_extensions}.tar.gz
-Source2044:	%{__pypi_url}t/tomli/tomli-%{bundled_version_tomli}.tar.gz
 Source2045:	%{__pypi_url}u/urllib3/urllib3-%{bundled_version_urllib3}.tar.gz
 Source2046:	%{__pypi_url}w/wcwidth/wcwidth-%{bundled_version_wcwidth}.tar.gz
 Source2047:	%{__pypi_url}w/webencodings/webencodings-%{bundled_version_webencodings}.tar.gz
 Source2048:	%{__pypi_url}w/wheel/wheel-%{bundled_version_wheel}.tar.gz
 Source2053:	%{__pypi_url}z/zipp/zipp-%{bundled_version_zipp}.tar.gz
-
 
 # EL8
 Source2000:	%{__pypi_url}a/alembic/alembic-%{bundled_version_alembic}.tar.gz
@@ -471,8 +507,10 @@ Source2004:	%{__pypi_url}b/blessed/blessed-%{bundled_version_blessed}.tar.gz
 Source2005:	%{__pypi_url}c/certifi/certifi-%{bundled_version_certifi}.tar.gz
 Source2006:	%{__pypi_url}c/charset-normalizer/charset-normalizer-%{bundled_version_charset_normalizer}.tar.gz
 Source2010:	%{__pypi_url}d/defusedxml/defusedxml-%{bundled_version_defusedxml}.tar.gz
+Source2011:	%{__pypi_url}d/dnspython/dnspython-%{bundled_version_dnspython}.tar.gz
 Source2013:	%{__pypi_url}f/flufl.lock/flufl.lock-%{bundled_version_flufl_lock}.tar.gz
 Source2014:	%{__pypi_url}g/greenlet/greenlet-%{bundled_version_greenlet}.tar.gz
+Source2016:	%{__pypi_url}i/isort/isort-%{bundled_version_isort}.tar.gz
 Source2017:	%{__pypi_url}M/Mako/Mako-%{bundled_version_Mako}.tar.gz
 Source2020:	%{__pypi_url}o/oauthlib/oauthlib-%{bundled_version_oauthlib}.tar.gz
 Source2022:	%{__pypi_url}p/passlib/passlib-%{bundled_version_passlib}.tar.gz
@@ -484,11 +522,13 @@ Source2029:	%{__pypi_url}p/pytz/pytz-%{bundled_version_pytz}.tar.gz
 Source2031:	%{__pypi_url}r/rcssmin/rcssmin-%{bundled_version_rcssmin}.tar.gz
 Source2034:	%{__pypi_url}r/requests-oauthlib/requests-oauthlib-%{bundled_version_requests_oauthlib}.tar.gz
 Source2035:	%{__pypi_url}r/robot-detection/robot-detection-%{bundled_version_robot_detection}.tar.gz
-Source2042:	%{__pypi_url}S/SQLAlchemy/SQLAlchemy-%{bundled_version_SQLalchemy}.tar.gz
+Source2042:	%{__pypi_url}S/SQLAlchemy/SQLAlchemy-%{bundled_version_SQLAlchemy}.tar.gz
+Source2044:	%{__pypi_url}t/tomli/tomli-%{bundled_version_tomli}.tar.gz
 Source2049:	%{__pypi_url}z/zope.component/zope.component-%{bundled_version_zope_component}.tar.gz
 Source2050:	%{__pypi_url}z/zope.event/zope.event-%{bundled_version_zope_event}.tar.gz
 Source2051:	%{__pypi_url}z/zope.hookable/zope.hookable-%{bundled_version_zope_hookable}.tar.gz
 Source2052:	%{__pypi_url}z/zope.interface/zope.interface-%{bundled_version_zope_interface}.tar.gz
+Source2054:	%{__pypi_url}d/dataclasses/dataclasses-%{bundled_version_dataclasses}.tar.gz
 
 Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{bundled_version_mailmanclient}.tar.gz
 
@@ -506,10 +546,13 @@ Conflicts:	mailman3
 BuildConflicts:	mailman3
 
 # conflicts with packaged gunicorn to get the startup script
-BuildConflicts:	python3-gunicorn
+BuildConflicts:	python%{python3_version_num}-gunicorn
 
 # will be bundled, too many dependencies existing
-BuildConflicts:	python3-networkx
+BuildConflicts:	python%{python3_version_num}-networkx
+
+# strange issue on EL9
+BuildConflicts:	python%{python3_version_num}-tomli
 
 
 %else
@@ -519,17 +562,19 @@ BuildConflicts:	python3-networkx
 %define		bundled_enabled_postorius		1
 %define		bundled_enabled_django_allauth		1
 
-%if (%{defined fedora} && 0%{?fedora} == 37) || (%{defined rhel} && 0%{?rhel} == 9)
 %define		bundled_enabled_authheaders		1
 %define		bundled_enabled_hyperkitty		1
 %define		bundled_enabled_importlib_resources	1
-%endif
 
-%if %{defined rhel} && 0%{?rhel} == 9
-## Enterprise Linux 9
+%if %{defined rhel} && 0%{?rhel} >= 9
 # base
 %define		bundled_enabled_wheel			1
 %define		bundled_enabled_setuptools_scm		1
+%endif
+
+%if %{defined rhel} && 0%{?rhel} >= 8
+# even while available bundle to avoid install of huge dependencies
+%define		bundled_enabled_networkx		1
 
 # dependencies
 %define		bundled_enabled_lazr_config		1
@@ -551,7 +596,7 @@ BuildConflicts:	python3-networkx
 # >= 3.5.2 required, 3.4.1-3.el9 is too low
 %define		bundled_enabled_asgiref			1
 
-%define		bundled_enabled_whoosh			1
+%define		bundled_enabled_Whoosh			1
 %define		bundled_enabled_cmarkgfm		1
 
 # superseed EL9 appstream
@@ -581,7 +626,23 @@ BuildConflicts:	python3-networkx
 %define		bundled_enabled_django_friendlycaptcha	1
 
 %if %{defined rhel} && 0%{?rhel} == 8
+%define         bundled_enabled_alembic                 1
+%define         bundled_enabled_atpublic                1
+%define         bundled_enabled_attrs                   1
 %define         bundled_enabled_cffi                    1
+%define		bundled_enabled_dataclasses		1
+%define		bundled_enabled_flufl_lock		1
+%define		bundled_enabled_isort			1
+%define		bundled_enabled_tomli			1
+%define		bundled_enabled_typing_extensions	1
+%define		bundled_enabled_SQLAlchemy		1
+%define		bundled_enabled_zope_configuration	1
+%define		bundled_enabled_zope_schema		1
+%define		bundled_enabled_zope_i18nmessageid	1
+%define		bundled_enabled_zope_component		1
+%define		bundled_enabled_zope_event		1
+%define		bundled_enabled_zope_hookable		1
+%define		bundled_enabled_zope_interface		1
 %endif
 
 %endif
@@ -597,55 +658,16 @@ Requires:       python3-cmarkgfm >= 0.8.0
 %endif
 # end of F37
 
-
-
-## define list of bundled packages
-%define bundled %{?bundled_enabled_postorius:postorius=%{bundled_version_postorius}} \
-%{?bundled_enabled_hyperkitty:hyperkitty=%{bundled_version_hyperkitty}} \
-%{?bundled_enabled_authheaders:authheaders=%{bundled_version_authheaders}} \
-%{?bundled_enabled_lazr_config:lazr-config=%{bundled_version_lazr_config}} \
-%{?bundled_enabled_lazr_delegates:lazr-delegates=%{bundled_version_lazr_delegates}} \
-%{?bundled_enabled_aiosmtpd:aiosmtpd=%{bundled_version_aiosmtpd}} \
-%{?bundled_enabled_falcon:falcon=%{bundled_version_falcon}} \
-%{?bundled_enabled_dkimpy:dkimpy=%{bundled_version_dkimpy}} \
-%{?bundled_enabled_mistune:mistune=%{bundled_version_mistune}} \
-%{?bundled_enabled_readme_renderer:readme-renderer=%{bundled_version_readme_renderer}} \
-%{?bundled_enabled_publicsuffix2:publicsuffix2=%{bundled_version_publicsuffix2}} \
-%{?bundled_enabled_rjsmin:rjsmin=%{bundled_version_rjsmin}} \
-%{?bundled_enabled_arrow:arrow=%{bundled_version_arrow}} \
-%{?bundled_enabled_docutils:docutils=%{bundled_version_docutils}} \
-%{?bundled_enabled_bleach:bleach=%{bundled_version_bleach}} \
-%{?bundled_enabled_pygments:pygments=%{bundled_version_pygments}} \
-%{?bundled_enabled_asgiref:asgiref=%{bundled_version_asgiref}} \
-%{?bundled_enabled_flufl_bounce:flufl.bounce=%{bundled_version_flufl_bounce}} \
-%{?bundled_enabled_flufl_i18n:flufl.18n=%{bundled_version_flufl_i18n}} \
-%{?bundled_enabled_whoosh:whoosh=%{bundled_version_whoosh}} \
-%{?bundled_enabled_cmarkgfm:cmarkgfm=%{bundled_version_cmarkgfm}} \
-%{?bundled_enabled_cffi:cffi=%{bundled_version_cffi}} \
-%{?bundled_enabled_importlib_resources:importlib-resources=%{bundled_version_importlib_resources}} \
-%{?bundled_enabled_gunicorn:gunicorn=%{bundled_version_gunicorn}} \
-%{?bundled_enabled_zope_configuration:zope-configuration=%{bundled_version_zope_configuration}} \
-%{?bundled_enabled_zope_schema:zope-schema=%{bundled_version_zope_schema}} \
-%{?bundled_enabled_zope_i18nmessageid:zope-i18nmessageid=%{bundled_version_zope_i18nmessageid}} \
-%{?bundled_enabled_django:django=%{bundled_version_Django}} \
-%{?bundled_enabled_django_haystack:django-haystack=%{bundled_version_django_haystack}} \
-%{?bundled_enabled_django_allauth:django-allauth=%{bundled_version_django_allauth}} \
-%{?bundled_enabled_django_q:django-q=%{bundled_version_django_q}} \
-%{?bundled_enabled_django_compressor:django-compressor=%{bundled_version_django_compressor}} \
-%{?bundled_enabled_django_extensions:django-extensions=%{bundled_version_django_extensions}} \
-%{?bundled_enabled_django_gravatar2:django-gravatar2=%{bundled_version_django_gravatar2}} \
-%{?bundled_enabled_django_restframework:djangorestframework=%{bundled_version_django_restframework}} \
-%{?bundled_enabled_django_appconf:django-appconf%{bundled_version_django_appconf}} \
-%{?bundled_enabled_django_picklefield:django-picklefield=%{bundled_version_django_picklefield}} \
-%{?bundled_enabled_django_mailman3:django-mailman3=%{bundled_version_django_mailman3}} \
-%{?bundled_enabled_django_recaptcha:django-recaptcha=%{bundled_enabled_django_recaptcha}} \
-%{?bundled_enabled_django_hcaptcha:django-hcaptcha=%{bundled_version_django_hcaptcha}} \
-%{?bundled_enabled_django_friendlycaptcha:django-friendlycaptcha=%{bundled_version_django_friendlycaptcha}}
-
 ## Arch adjustments
 %define noarch 1
+
 # has binary packages
+%{?bundled_enabled_cmarkgfm:%define noarch 0}
+%{?bundled_enabled_cffi:%define noarch 0}
 %{?bundled_enabled_rjsmin:%define noarch 0}
+%{?bundled_enabled_zope_hookable:%define noarch 0}
+%{?bundled_enabled_zope_i18nmessageid:%define noarch 0}
+%{?bundled_enabled_zope_interface:%define noarch 0}
 
 %if %{noarch}
 BuildArch:      noarch
@@ -655,43 +677,6 @@ BuildArch:      noarch
 %if 0%{?bundled_enabled_cffi}
 BuildRequires:	libffi-devel
 %endif
-
-## excludes to prevent unexpected installation by requirement of a bundled package
-# strip version, create one-liner separated by "|"
-%if (%{defined fedora} && 0%{?fedora} >= 37) || (%{defined rhel} && 0%{?rhel} > 9)
-%define create_exclude_string %{lua:
-	args = (...)
-	for i,v in ipairs(args) do
-		for k in string.gmatch(v, "([^=]+)=") do
-    			if (i > 1) then io.write('|') end
-	    		io.write(k)
-		end
-	end
-}
-%else
-%define create_exclude_string %{lua:
-	args = {...}
-	for i,v in ipairs(args) do
-		for k in string.gmatch(v, "([^=]+)=") do
-    			if (i > 1) then io.write('|') end
-	    		io.write(k)
-		end
-	end
-}
-%endif
-
-%define excludes %create_exclude_string %{bundled}
-
-# define excludes from provide+requires
-%if (0%{?bundled_enabled_readme_renderer} || 0%{?required_readme_renderer}) && (0%{?bundled_enabled_cmarkgfm} || 0%{?required_cmarkgfm})
-# readme-renderer + cmarkgfm adds suppport for readme-renderer[md]
-%global __provides_exclude_from ^%{python3_sitelib}/(%{excludes}|readme-renderer\\\[md\\\]).*$
-%global __requires_exclude ^python3.*dist\\((%{excludes}|readme-renderer\\\[md\\\])\\).*$
-%else
-%global __provides_exclude_from ^%{python3_sitelib}/(%{excludes}).*$
-%global __requires_exclude ^python3.*dist\\((%{excludes})\\).*$
-%endif
-
 
 # conflict with virtualenv mailman3
 Conflicts:	mailman3-virtualenv
@@ -710,7 +695,7 @@ fi)
 %define build_cond() (\
 echo "BUILD_COND: %1 %2 %3"; \
 if [ "%1" = "1" ]; then \
-pushd %3-%2 \
+pushd %3-%2 || exit 1 \
 %py3_build \
 popd \
 fi)
@@ -718,7 +703,7 @@ fi)
 %define install_cond() (\
 echo "INSTALL_COND: %1 %2 %3"; \
 if [ "%1" = "1" ]; then \
-pushd %3-%2 \
+pushd %3-%2 || exit 1 \
 %py3_install \
 popd \
 fi)
@@ -796,6 +781,7 @@ case second `m'.  Any other spelling is incorrect.
 https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
 %else
 * THIS package contains Mailman 3 and all required but by OS not supported modules
+ USER_SITE: %{usersitedir}
 %endif
 %if 0%{mailman3_separated}
 * THIS package can coexist with Mailman 2
@@ -828,8 +814,6 @@ REST-API     : %{restapiport}
 Web Interface: %{webport}
 %if 0%{?mailman3_virtualenv}
 %else
-* Bundled modules:
-%{bundled}
 %endif
 
 %prep
@@ -921,9 +905,9 @@ set -x
 #{__cp} %{SOURCE2007} pip/
 #{__cp} %{SOURCE2008} pip/
 %{__cp} %{SOURCE2009} pip/
-#{__cp} %{SOURCE2011} pip/
 %{__cp} %{SOURCE2012} pip/
 %{__cp} %{SOURCE2019} pip/
+%{__cp} %{SOURCE2044} pip/
 
 %if (%{defined rhel} && 0%{?rhel} == 8)
 %{__cp} %{SOURCE2000} pip/
@@ -934,8 +918,10 @@ set -x
 %{__cp} %{SOURCE2005} pip/
 %{__cp} %{SOURCE2006} pip/
 %{__cp} %{SOURCE2010} pip/
+%{__cp} %{SOURCE2011} pip/
 %{__cp} %{SOURCE2013} pip/
 %{__cp} %{SOURCE2014} pip/
+%{__cp} %{SOURCE2016} pip/
 %{__cp} %{SOURCE2017} pip/
 %{__cp} %{SOURCE2023} pip/
 %{__cp} %{SOURCE2020} pip/
@@ -957,7 +943,6 @@ set -x
 %endif
 
 #{__cp} %{SOURCE2015} pip/
-%{__cp} %{SOURCE2016} pip/
 #{__cp} %{SOURCE2018} pip/
 %{__cp} %{SOURCE2021} pip/
 %{__cp} %{SOURCE2024} pip/
@@ -971,7 +956,6 @@ set -x
 #{__cp} %{SOURCE2039} pip/
 #{__cp} %{SOURCE2040} pip/
 %{__cp} %{SOURCE2043} pip/
-%{__cp} %{SOURCE2044} pip/
 #{__cp} %{SOURCE2045} pip/
 #{__cp} %{SOURCE2046} pip/
 #{__cp} %{SOURCE2047} pip/
@@ -1014,9 +998,9 @@ set -x
 %prep_cond "%{?bundled_enabled_asgiref}"                1024
 %prep_cond "%{?bundled_enabled_flufl_bounce}"           1025
 %prep_cond "%{?bundled_enabled_flufl_i18n}"             1026
-%prep_cond "%{?bundled_enabled_whoosh}"                 1027
-%if 0%{?bundled_enabled_whoosh}
-cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Whoosh-%{bundled_version_whoosh}
+%prep_cond "%{?bundled_enabled_Whoosh}"                 1027
+%if 0%{?bundled_enabled_Whoosh}
+cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Whoosh-%{bundled_version_Whoosh}
 %endif
 
 %prep_cond "%{?bundled_enabled_cmarkgfm}"               1028
@@ -1027,6 +1011,21 @@ cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?p
 %prep_cond "%{?bundled_enabled_zope_configuration}"     1040
 %prep_cond "%{?bundled_enabled_zope_schema}"            1041
 %prep_cond "%{?bundled_enabled_zope_i18nmessageid}"     1042
+
+%prep_cond "%{?bundled_enabled_alembic}"                2000
+%prep_cond "%{?bundled_enabled_atpublic}"               2001
+%prep_cond "%{?bundled_enabled_attrs}"                  2002
+%prep_cond "%{?bundled_enabled_flufl_lock}"             2013
+%prep_cond "%{?bundled_enabled_isort}"                  2016
+%prep_cond "%{?bundled_enabled_networkx}"               2019
+%prep_cond "%{?bundled_enabled_SQLAlchemy}"             2042
+%prep_cond "%{?bundled_enabled_typing_extensions}"      2043
+%prep_cond "%{?bundled_enabled_tomli}"                  2044
+%prep_cond "%{?bundled_enabled_zope_component}"         2049
+%prep_cond "%{?bundled_enabled_zope_event}"	        2050
+%prep_cond "%{?bundled_enabled_zope_hookable}"          2051
+%prep_cond "%{?bundled_enabled_zope_interface}"         2052
+%prep_cond "%{?bundled_enabled_dataclasses}"            2054
 
 ## django dependencies
 %prep_cond "%{?bundled_enabled_django}"                 1100
@@ -1072,7 +1071,7 @@ cd %{pypi_name}-%{version_mailman}
 cd SELinux
 for selinuxvariant in %{selinux_variants}; do
   make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
-  mv %{pname}.pp %{pname}.pp.${selinuxvariant}
+  %{__mv} %{pname}.pp %{pname}.pp.${selinuxvariant}
   make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile clean
 done
 
@@ -1199,6 +1198,9 @@ echo 'source %{bindir}/activate' >> %{buildroot}%{vardir}/.bash_profile
 %build_cond   "%{?bundled_enabled_cffi}"           "%{?bundled_version_cffi}"           cffi
 %install_cond "%{?bundled_enabled_cffi}"           "%{?bundled_version_cffi}"           cffi
 
+%build_cond "%{?bundled_enabled_isort}"            "%{?bundled_version_isort}"          isort
+%install_cond "%{?bundled_enabled_isort}"          "%{?bundled_version_isort}"          isort
+
 PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
 export PYTHONPATH
 echo "PYTHONPATH=$PYTHONPATH"
@@ -1238,14 +1240,28 @@ popd
 %build_cond "%{?bundled_enabled_asgiref}"                "%{?bundled_version_asgiref}"                asgiref
 %build_cond "%{?bundled_enabled_flufl_i18n}"             "%{?bundled_version_flufl_i18n}"             flufl.i18n
 %build_cond "%{?bundled_enabled_flufl_bounce}"           "%{?bundled_version_flufl_bounce}"           flufl.bounce
-%build_cond "%{?bundled_enabled_whoosh}"                 "%{?bundled_version_whoosh}"                 Whoosh
+%build_cond "%{?bundled_enabled_Whoosh}"                 "%{?bundled_version_Whoosh}"                 Whoosh
 %build_cond "%{?bundled_enabled_cmarkgfm}"               "%{?bundled_version_cmarkgfm}"               cmarkgfm
 %build_cond "%{?bundled_enabled_importlib_resources}"    "%{?bundled_version_importlib_resources}"    importlib_resources
 %build_cond "%{?bundled_enabled_gunicorn}"               "%{?bundled_version_gunicorn}"               gunicorn
 
+%build_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
+%build_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
+%build_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
+%build_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
+%build_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
+%build_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
+%build_cond "%{?bundled_enabled_SQLAlchemy}"             "%{?bundled_version_SQLAlchemy}"             SQLAlchemy
+%build_cond "%{?bundled_enabled_tomli}"                  "%{?bundled_version_tomli}"                  tomli
+%build_cond "%{?bundled_enabled_typing_extensions}"      "%{?bundled_version_typing_extensions}"      typing_extensions
+
 %build_cond "%{?bundled_enabled_zope_configuration}"     "%{?bundled_version_zope_configuration}"     zope.configuration
 %build_cond "%{?bundled_enabled_zope_schema}"            "%{?bundled_version_zope_schema}"            zope.schema
 %build_cond "%{?bundled_enabled_zope_i18nmessageid}"     "%{?bundled_version_zope_i18nmessageid}"     zope.i18nmessageid
+%build_cond "%{?bundled_enabled_zope_component}"         "%{?bundled_version_zope_component}"         zope.component
+%build_cond "%{?bundled_enabled_zope_event}"             "%{?bundled_version_zope_event}"             zope.event
+%build_cond "%{?bundled_enabled_zope_hookable}"          "%{?bundled_version_zope_hookable}"          zope.hookable
+%build_cond "%{?bundled_enabled_zope_interface}"         "%{?bundled_version_zope_interface}"         zope.interface
 
 ## django dependencies
 %build_cond "%{?bundled_enabled_django}"                 "%{?bundled_version_Django}"                 Django
@@ -1287,10 +1303,6 @@ pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
 %py3_install
 popd
 
-## base
-%install_cond "%{?bundled_enabled_wheel}"          "%{?bundled_version_wheel}"          wheel
-%install_cond "%{?bundled_enabled_setuptools_scm}" "%{?bundled_version_setuptools_scm}" setuptools_scm
-
 ## bundled packages
 %install_cond "%{?bundled_enabled_postorius}"  "%{?bundled_version_postorius}"  postorius
 %install_cond "%{?bundled_enabled_hyperkitty}" "%{?bundled_version_hyperkitty}" HyperKitty
@@ -1313,15 +1325,29 @@ popd
 %install_cond "%{?bundled_enabled_asgiref}"                "%{?bundled_version_asgiref}"                asgiref
 %install_cond "%{?bundled_enabled_flufl_bounce}"           "%{?bundled_version_flufl_bounce}"           flufl.bounce
 %install_cond "%{?bundled_enabled_flufl_i18n}"             "%{?bundled_version_flufl_i18n}"             flufl.i18n
-%install_cond "%{?bundled_enabled_whoosh}"                 "%{?bundled_version_whoosh}"                 Whoosh
+%install_cond "%{?bundled_enabled_Whoosh}"                 "%{?bundled_version_Whoosh}"                 Whoosh
 %install_cond "%{?bundled_enabled_cmarkgfm}"               "%{?bundled_version_cmarkgfm}"               cmarkgfm
 %install_cond "%{?bundled_enabled_cffi}"                   "%{?bundled_version_cffi}"                   cffi
 %install_cond "%{?bundled_enabled_importlib_resources}"    "%{?bundled_version_importlib_resources}"    importlib_resources
 %install_cond "%{?bundled_enabled_gunicorn}"               "%{?bundled_version_gunicorn}"               gunicorn
 
+%install_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
+%install_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
+%install_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
+%install_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
+%install_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
+%install_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
+%install_cond "%{?bundled_enabled_SQLAlchemy}"             "%{?bundled_version_SQLAlchemy}"             SQLAlchemy
+%install_cond "%{?bundled_enabled_tomli}"                  "%{?bundled_version_tomli}"                  tomli
+%install_cond "%{?bundled_enabled_typing_extensions}"      "%{?bundled_version_typing_extensions}"      typing_extensions
+
 %install_cond "%{?bundled_enabled_zope_configuration}"     "%{?bundled_version_zope_configuration}"     zope.configuration
 %install_cond "%{?bundled_enabled_zope_schema}"            "%{?bundled_version_zope_schema}"            zope.schema
 %install_cond "%{?bundled_enabled_zope_i18nmessageid}"     "%{?bundled_version_zope_i18nmessageid}"     zope.i18nmessageid
+%install_cond "%{?bundled_enabled_zope_component}"         "%{?bundled_version_zope_component}"         zope.component
+%install_cond "%{?bundled_enabled_zope_event}"             "%{?bundled_version_zope_event}"             zope.event
+%install_cond "%{?bundled_enabled_zope_hookable}"          "%{?bundled_version_zope_hookable}"          zope.hookable
+%install_cond "%{?bundled_enabled_zope_interface}"         "%{?bundled_version_zope_interface}"         zope.interface
 
 ## django* dependencies
 %install_cond "%{?bundled_enabled_django}"                 "%{?bundled_version_Django}"                 Django
@@ -1346,9 +1372,12 @@ export PYTHONPATH
 %install_cond "%{?bundled_enabled_django_hcaptcha}"        "%{?bundled_version_django_hcaptcha}"        django-hCaptcha
 %install_cond "%{?bundled_enabled_django_friendlycaptcha}" "%{?bundled_version_django_friendlycaptcha}" django-friendly-captcha
 
+# cleanup doc files of bundled packages
+%{__rm} -rf %{buildroot}%{_docdir}/*
+
 # move scripts away from _bindir to avoid conflicts and create a wrapper scripts
 install -d -p %{buildroot}%{bindir}
-mv %{buildroot}%{_bindir}/* %{buildroot}%{bindir}
+%{__mv} %{buildroot}%{_bindir}/* %{buildroot}%{bindir}
 
 for wrapper in mailman mailman-web; do
 	cat > %{buildroot}%{_bindir}/$wrapper << EOF
@@ -1390,14 +1419,20 @@ done
 %else
 ### BUNDLED-AS-REQUIRED PACKAGING
 
-## move installed site-package to .local
+## move installed site-package to USER_SITE
 
 # create USER_SITE directory
+install -d -p  %{buildroot}%{dirname:%{sharedstatesitedir}}
+
+# create destination for USER_SITE
 install -d -p %{buildroot}%{usersitedir}
+
+# create softlink to bundled modules
+ln -s %{usersitedir} %{buildroot}%{sharedstatesitedir}
 
 # move noarch
 for f in %{buildroot}%{sitelibdir}/*; do
-	mv $f %{buildroot}%{usersitedir}/
+	%{__mv} $f %{buildroot}%{usersitedir}/
 done
 
 # move arch dependent
@@ -1405,12 +1440,12 @@ for f in %{buildroot}%{sitearchdir}/*; do
 	entry=$(basename "$f")
 	if [ ! -d %{buildroot}%{usersitedir}/$entry ]; then
 		# directory not exiting
-		mv $f %{buildroot}%{usersitedir}/
+		%{__mv} $f %{buildroot}%{usersitedir}/
 	else
 		if [ -d $f ]; then
 			# directory exiting, move subdirectories only
 			for s in $f/*; do
-				mv $s %{buildroot}%{usersitedir}/$entry/
+				%{__mv} $s %{buildroot}%{usersitedir}/$entry/
 			done
 			rmdir $f
 		else
@@ -1418,9 +1453,6 @@ for f in %{buildroot}%{sitearchdir}/*; do
 		fi
 	fi
 done
-
-# create softlink of .local in 'basedir' to 'vardir'
-ln -s %{basedir}/.local %{buildroot}%{vardir}/.local
 
 %endif
 
@@ -1506,6 +1538,39 @@ find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesd
 	# replace ports
 	sed -i -e 's,@WEBPORT@,%{webport},g;s,@LMTPPORT@,%{lmtpport},g;s,@RESTAPIPORT@,%{restapiport},g' $file
 done
+
+
+%check
+PYTHONPATH=%{buildroot}%{python3_sitelib}
+
+%if 0%{?mailman3_virtualenv}
+### VIRTUALENV PACKAGING
+%else
+### BUNDLED-AS-REQUIRED PACKAGING
+PYTHONPATH=$PYTHONPATH:%{buildroot}%{usersitedir}
+%endif
+
+export PYTHONPATH
+
+# check whether online help is working
+set -x
+echo "Check whether 'mailman' is at least able to display online help"
+%{buildroot}%{bindir}/mailman --help >/dev/null
+if [ $? -eq 0 ]; then
+  echo "Check whether 'mailman' is at least able to display online help - SUCCESSFUL"
+else
+  exit 1
+fi
+
+echo "Check whether 'mailman-web' is at least able to display online help"
+MAILMAN_WEB_CONFIG=%{buildroot}%{_sysconfdir}/%{pname}
+export MAILMAN_WEB_CONFIG
+%{buildroot}%{bindir}/%{pname}/mailman-web --help >/dev/null
+if [ $? -eq 0 ]; then
+  echo "Check whether 'mailman-web' is at least able to display online help - SUCCESSFUL"
+else
+  exit 1
+fi
 
 
 %pre
@@ -1832,15 +1897,16 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING 
+### VIRTUALENV PACKAGING
 %{basedir}
 %attr(770,%{mmuser},%{mmgroup}) %{vardir}/.bash_profile
 
 
 %else
-### BUNDLED-AS-REQUIRED PACKAGING 
-%{basedir}/.local/lib/python%{python3_version}/site-packages/
-%{vardir}/.local
+### BUNDLED-AS-REQUIRED PACKAGING
+%{usersitedir}
+%{sharedstatesitedir}
+%dir %attr(700,%{mmuser},%{mmgroup}) %{vardir}/.local
 
 %attr(755,root,root)    %{_bindir}/*
 %attr(755,root,root)    %{bindir}
