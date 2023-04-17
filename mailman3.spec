@@ -9,13 +9,7 @@
 ###   download required packages and store to ~/rpmbuild/SOURCES
 ###   $ rpmbuild -bp --undefine=_disable_source_fetch mailman3.spec
 ###
-###   Known required overloading
-###    EL9:
-###    - cmarkgfm >= 0.7.0 has deadlock with python3-cffi == 1.14.5-5.el9@appstream
-###    - cmarkgfm <= 0.6.0 has deadlock with python3-cffi == 1.14.5-5.el9@appstream
-###    F37/F38:
-###    - python3-flufl-bounce == 3.0-17.fc37@fedora   / req >= 4.0
-###    - python3-flufl-i18n  ==  2.0.2-10.fc37@fedora / req >= 3.2
+###   Known required overloading see below defined: bundled_enabled_*
 ###
 ###  VIRTUALENV PACKAGING
 ###   according to https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
@@ -29,6 +23,9 @@
 ###  mailman3_like_mailman2 (default: 0): create package conflicting with mailman major version 2
 ###  mailman3_cron          (default: 0): package cron-jobs instead of systemd-timers
 ###  mailman3_virtualenv    (default: 0): virtualenv instead of native package
+
+# do not create debug packages
+%define debug_package %{nil}
 
 ## MAIN VERSIONS
 %global version_mailman 			3.3.8
@@ -65,7 +62,7 @@
 
 %global builddir	%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}
 
-%if (%{defined rhel} && 0%{?rhel} == 8)
+%if (0%{?rhel} == 8)
 %define 	python3_version_num	39
 %define		python3_version		3.9
 %else
@@ -74,7 +71,7 @@
 
 
 # Enforce Python >= 3.9
-%if (%{defined rhel} && 0%{?rhel} == 8)
+%if (0%{?rhel} == 8)
 BuildRequires:  python%{python3_version_num}-devel
 BuildRequires:  python%{python3_version_num}-setuptools
 Requires:       python%{python3_version_num}
@@ -88,30 +85,31 @@ Requires:       python3 >= 3.9
 ###  VIRTUALENV PACKAGING 
 BuildRequires:  python%{python3_version_num}-pip
 
-%if (%{defined rhel} && 0%{?rhel} == 8)
+%if (0%{?rhel} == 8)
 # not available for EL8 -> bundle
 %else
 %endif
 
 %else
 ### BUNDLED-AS-REQUIRED PACKAGING
-%if (%{defined rhel} && 0%{?rhel} == 8)
+
+%if (0%{?rhel} == 8)
 # EL8
 BuildRequires:	python%{python3_version_num}-setuptools_scm
 BuildRequires:	python%{python3_version_num}-wheel
-BuildRequires:	python%{python3_version_num}-rpm-macros
 
 %else
 # Fedora/EL9
 BuildRequires:	python%{python3_version_num}-tomli
 Requires:	python%{python3_version_num}-tomli
+
 %endif
 
 %endif
 
 ## common by EL+EPEL supported requirements
 
-%if (%{defined rhel} && 0%{?rhel} == 8)
+%if (0%{?rhel} == 8)
 # not available for EL8 -> bundle
 %else
 BuildRequires:	python%{python3_version_num}-alembic
@@ -165,6 +163,60 @@ Requires:	python%{python3_version_num}-zope-interface
 Requires:	python%{python3_version_num}-zope-hookable
 %endif
 
+%if 0%{?fedora} >= 37 && 0%{?fedora} <= 38
+#BuildRequires:	python#{python3_version_num}-aiosmtpd >= 1.4.3 # f38 has only 1.4.2
+#BuildRequires:	python#{python3_version_num}-flufl-bounce >= 4.0 # f38 has only 2.0.2
+#BuildRequires:	python#{python3_version_num}-flufl-i18n >= 3.2 # f38 has only 2.0.2
+BuildRequires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
+BuildRequires:	python%{python3_version_num}-dkimpy >= 0.7.1
+BuildRequires:	python%{python3_version_num}-django >= 4
+BuildRequires:	python%{python3_version_num}-django-compressor
+BuildRequires:	python%{python3_version_num}-django-extensions >= 1.3.7
+BuildRequires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
+#BuildRequires:	python#{python3_version_num}-django-haystack # f38 has 3.0 which has issues with django: cannot import name 'ungettext' from 'django.utils.translation'
+BuildRequires:	python%{python3_version_num}-django-q
+BuildRequires:	python%{python3_version_num}-django-rest-framework
+BuildRequires:	python%{python3_version_num}-falcon >= 3.0.0
+BuildRequires:	python%{python3_version_num}-gunicorn
+BuildRequires:	python%{python3_version_num}-jwt >= 1.7
+BuildRequires:	python%{python3_version_num}-mistune
+BuildRequires:	python%{python3_version_num}-openid >= 3.0.8
+BuildRequires:	python%{python3_version_num}-lazr-config
+BuildRequires:	python%{python3_version_num}-publicsuffix2
+BuildRequires:	python%{python3_version_num}-readme-renderer
+BuildRequires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
+BuildRequires:	python%{python3_version_num}-zope-configuration
+BuildRequires:	python%{python3_version_num}-whoosh
+
+#Requires:	python#{python3_version_num}-aiosmtpd >= 1.4.3 # f38 has only 1.4.2
+#Requires:	python#{python3_version_num}-flufl-bounce >= 4.0 # f38 has only 2.0.2
+#Requires:	python#{python3_version_num}-flufl-i18n >= 3.2 # f38 has only 2.0.2
+Requires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
+Requires:	python%{python3_version_num}-dkimpy >= 0.7.1
+Requires:	python%{python3_version_num}-django >= 4
+Requires:	python%{python3_version_num}-django-compressor
+Requires:	python%{python3_version_num}-django-extensions >= 1.3.7
+Requires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
+#Requires:	python#{python3_version_num}-django-haystack # f38 has 3.0 which has issues with django: cannot import name 'ungettext' from 'django.utils.translation'
+Requires:	python%{python3_version_num}-django-q
+Requires:	python%{python3_version_num}-django-rest-framework
+Requires:	python%{python3_version_num}-falcon >= 3.0.0
+Requires:	python%{python3_version_num}-gunicorn
+Requires:	python%{python3_version_num}-jwt >= 1.7
+Requires:	python%{python3_version_num}-lazr-config
+Requires:	python%{python3_version_num}-mistune
+Requires:	python%{python3_version_num}-openid >= 3.0.8
+Requires:	python%{python3_version_num}-readme-renderer
+Requires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
+Requires:	python%{python3_version_num}-publicsuffix2
+Requires:	python%{python3_version_num}-zope-configuration
+Requires:	python%{python3_version_num}-whoosh
+%endif
+
+
+## common
+BuildRequires:	python%{python3_version_num}-rpm-macros
+
 BuildRequires:	python%{python3_version_num}-click
 BuildRequires:	python%{python3_version_num}-cryptography
 BuildRequires:	python%{python3_version_num}-idna
@@ -179,12 +231,22 @@ Requires: 	python%{python3_version_num}-markupsafe
 Requires: 	python%{python3_version_num}-requests
 Requires: 	python%{python3_version_num}-toml
 
+BuildRequires: 	publicsuffix-list
 Requires: 	publicsuffix-list
 
-%if (%{defined rhel} && 0%{?rhel} == 8)
+%if (0%{?rhel} == 8)
 %else
 BuildRequires:	python%{python3_version_num}-dns
 Requires:	python%{python3_version_num}-dns
+%endif
+
+%if (0%{?fedora} == 37)
+BuildRequires:  python3-readme-renderer > 32.0
+BuildRequires:  python3-cmarkgfm >= 0.8.0
+
+Requires:       python3-readme-renderer > 32.0 
+Requires:       python3-cmarkgfm >= 0.8.0
+# end of F37
 %endif
 
 
@@ -252,7 +314,8 @@ Requires:	python%{python3_version_num}-dns
 %define	bundled_version_greenlet		2.0.2
 %define	bundled_version_idna			3.4
 %define	bundled_version_isort			5.12.0
-%define	bundled_version_Mako			1.2.4
+%define	bundled_version_Mako			1.2.3
+#define	bundled_version_Mako			1.2.4 # Problem on EL8
 %define	bundled_version_MarkupSafe		2.1.2
 %define	bundled_version_networkx		3.0
 %define	bundled_version_oauthlib		3.2.2
@@ -576,14 +639,29 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define		bundled_enabled_setuptools_scm		1
 %endif
 
-%if %{defined rhel} && 0%{?rhel} >= 8
+%if (0%{?fedora} >= 37 && 0%{?fedora} <= 38) || (0%{?rhel} >= 8 && 0%{?rhel} <= 9)
+## common for Fedora & EL
 # even while available bundle to avoid install of huge dependencies
 %define		bundled_enabled_networkx		1
 
 # dependencies
+%define		bundled_enabled_aiosmtpd		1
+%define		bundled_enabled_flufl_bounce		1
+%define		bundled_enabled_flufl_i18n		1
+
+## django mailman related
+%define		bundled_enabled_django_haystack		1
+%define		bundled_enabled_django_mailman3		1
+%define		bundled_enabled_django_recaptcha	1
+%define		bundled_enabled_django_hcaptcha		1
+%define		bundled_enabled_django_friendlycaptcha	1
+
+%endif
+
+%if (0%{?rhel} >= 8 && 0%{?rhel} <= 9)
+# dependencies
 %define		bundled_enabled_lazr_config		1
 %define		bundled_enabled_lazr_delegates		1
-%define		bundled_enabled_aiosmtpd		1
 %define		bundled_enabled_falcon			1
 %define		bundled_enabled_dkimpy			1
 %define		bundled_enabled_mistune			1
@@ -594,8 +672,6 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define		bundled_enabled_bleach			1
 %define		bundled_enabled_pygments		1
 %define		bundled_enabled_readme_renderer		1
-%define		bundled_enabled_flufl_i18n		1
-%define		bundled_enabled_flufl_bounce		1
 
 # >= 3.5.2 required, 3.4.1-3.el9 is too low
 %define		bundled_enabled_asgiref			1
@@ -614,7 +690,6 @@ BuildConflicts:	python%{python3_version_num}-tomli
 
 ## django dependencies
 %define		bundled_enabled_django			1
-%define		bundled_enabled_django_haystack		1
 %define		bundled_enabled_django_q		1
 %define		bundled_enabled_django_compressor	1
 %define		bundled_enabled_django_extensions	1
@@ -623,22 +698,19 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define		bundled_enabled_django_appconf		1
 %define		bundled_enabled_django_picklefield	1
 
-## django mailman related
-%define		bundled_enabled_django_mailman3		1
-%define		bundled_enabled_django_recaptcha	1
-%define		bundled_enabled_django_hcaptcha		1
-%define		bundled_enabled_django_friendlycaptcha	1
-
 %if %{defined rhel} && 0%{?rhel} == 8
 %define         bundled_enabled_alembic                 1
 %define         bundled_enabled_atpublic                1
 %define         bundled_enabled_attrs                   1
+%define         bundled_enabled_authres                 1
 %define         bundled_enabled_cffi                    1
 %define		bundled_enabled_dataclasses		1
 %define		bundled_enabled_dateutil                1
 %define		bundled_enabled_flufl_lock		1
+%define		bundled_enabled_greenlet		1
 %define		bundled_enabled_isort			1
 %define		bundled_enabled_Mako			1
+%define		bundled_enabled_mailmanclient		1
 %define		bundled_enabled_passlib			1
 %define		bundled_enabled_tomli			1
 %define		bundled_enabled_typing_extensions	1
@@ -652,22 +724,13 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define		bundled_enabled_zope_interface		1
 %endif
 
+# end of >= 8 
 %endif
-# end of EL9
 
-%if (%{defined fedora} && 0%{?fedora} == 37)
-BuildRequires:  python3-readme-renderer > 32.0
-Requires:       python3-readme-renderer > 32.0 
-%define         required_readme_renderer 1
-BuildRequires:  python3-cmarkgfm >= 0.8.0
-Requires:       python3-cmarkgfm >= 0.8.0
-%define         required_cmarkgfm 1
-%endif
-# end of F37
 
 ## Arch adjustments
 %define noarch 1
-
+ 
 # has binary packages
 %{?bundled_enabled_cmarkgfm:%define noarch 0}
 %{?bundled_enabled_cffi:%define noarch 0}
@@ -676,9 +739,6 @@ Requires:       python3-cmarkgfm >= 0.8.0
 %{?bundled_enabled_zope_i18nmessageid:%define noarch 0}
 %{?bundled_enabled_zope_interface:%define noarch 0}
 
-%if %{noarch}
-BuildArch:      noarch
-%endif
 
 ## Build dependencies
 %if 0%{?bundled_enabled_cffi}
@@ -1022,7 +1082,9 @@ cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?p
 %prep_cond "%{?bundled_enabled_alembic}"                2000
 %prep_cond "%{?bundled_enabled_atpublic}"               2001
 %prep_cond "%{?bundled_enabled_attrs}"                  2002
+%prep_cond "%{?bundled_enabled_authres}"                2003
 %prep_cond "%{?bundled_enabled_flufl_lock}"             2013
+%prep_cond "%{?bundled_enabled_greenlet}"               2014
 %prep_cond "%{?bundled_enabled_isort}"                  2016
 %prep_cond "%{?bundled_enabled_Mako}"                   2017
 %prep_cond "%{?bundled_enabled_networkx}"               2019
@@ -1036,6 +1098,8 @@ cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?p
 %prep_cond "%{?bundled_enabled_zope_hookable}"          2051
 %prep_cond "%{?bundled_enabled_zope_interface}"         2052
 %prep_cond "%{?bundled_enabled_dataclasses}"            2054
+
+%prep_cond "%{?bundled_enabled_mailmanclient}"          2090
 
 ## django dependencies
 %prep_cond "%{?bundled_enabled_django}"                 1100
@@ -1258,10 +1322,12 @@ popd
 %build_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
 %build_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
 %build_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
+%build_cond "%{?bundled_enabled_authres}"                "%{?bundled_version_authres}"                authres
 %build_cond "%{?bundled_enabled_dateutil}"               "%{?bundled_version_dateutil}"               python-dateutil
 %build_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
 %build_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
-%build_cond "%{?bundled_enabled_Mako}"                   "%{?bundled_version_Mako}"                   Mako
+%build_cond "%{?bundled_enabled_greenlet}"               "%{?bundled_version_greenlet}"               greenlet
+%build_cond "%{?bundled_enabled_mailmanclient}"          "%{?bundled_version_mailmanclient}"          mailmanclient
 %build_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
 %build_cond "%{?bundled_enabled_passlib}"                "%{?bundled_version_passlib}"                passlib
 %build_cond "%{?bundled_enabled_SQLAlchemy}"             "%{?bundled_version_SQLAlchemy}"             SQLAlchemy
@@ -1347,10 +1413,13 @@ popd
 %install_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
 %install_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
 %install_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
+%install_cond "%{?bundled_enabled_authres}"                "%{?bundled_version_authres}"                authres
 %install_cond "%{?bundled_enabled_dateutil}"               "%{?bundled_version_dateutil}"               python-dateutil
 %install_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
 %install_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
+%install_cond "%{?bundled_enabled_greenlet}"               "%{?bundled_version_greenlet}"               greenlet
 %install_cond "%{?bundled_enabled_Mako}"                   "%{?bundled_version_Mako}"                   Mako
+%install_cond "%{?bundled_enabled_mailmanclient}"          "%{?bundled_version_mailmanclient}"          mailmanclient
 %install_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
 %install_cond "%{?bundled_enabled_passlib}"                "%{?bundled_version_passlib}"                passlib
 %install_cond "%{?bundled_enabled_SQLAlchemy}"             "%{?bundled_version_SQLAlchemy}"             SQLAlchemy
@@ -1470,6 +1539,9 @@ for f in %{buildroot}%{sitearchdir}/*; do
 	fi
 done
 
+# remove any header files installed by bundles
+rm -rf %{buildroot}%{_includedir}
+
 %endif
 
 
@@ -1548,11 +1620,32 @@ install -D -m 0644 %{SOURCE416} %{buildroot}%{_unitdir}/%{basename:%{SOURCE416}}
 
 
 ## substitute all placeholders
+%define bindir_gunicorn %{bindir}
+
+%if 0%{?mailman3_virtualenv}
+### VIRTUALENV PACKAGING
+
+%define pythonpath %{sitelibdir}
+
+%else
+### BUNDLED-AS-REQUIRED PACKAGING
+
+%define pythonpath %{usersitedir}
+
+%if 0%{?bundled_enabled_gunicorn}
+%else
+%define bindir_gunicorn %{_bindir}
+%endif
+
+%endif
+
 find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesdir} -type f | while read file; do
 	# replace directories
 	sed -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' $file
 	# replace ports
 	sed -i -e 's,@WEBPORT@,%{webport},g;s,@LMTPPORT@,%{lmtpport},g;s,@RESTAPIPORT@,%{restapiport},g' $file
+
+	sed -i -e 's,@BINDIR_GUNICORN@,%{bindir_gunicorn},g;s,@PYTHONPATH@,%{pythonpath},g' $file
 done
 
 
@@ -1568,10 +1661,14 @@ PYTHONPATH=$PYTHONPATH:%{buildroot}%{usersitedir}
 
 export PYTHONPATH
 
+# prepare "check" config file
+install -D -m 0640 %{SOURCE1} %{buildroot}%{_sysconfdir}/mailman.cfg.check
+sed -i -e 's,@LOGDIR@,%{buildroot}%{logdir},g;s,@BINDIR@,%{buildroot}%{bindir},g;s,@BASEDIR@,%{buildroot}%{basedir},g;s,@RUNDIR@,%{buildroot}%{rundir},g;s,@VARDIR@,%{buildroot}%{vardir},g;s,@SPOOLDIR@,%{buildroot}%{spooldir},g;s,@ETCDIR@,%{buildroot}%{etcdir},g;s,@LOCKDIR@,%{buildroot}%{lockdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' %{buildroot}%{_sysconfdir}/mailman.cfg.check
+
 # check whether online help is working
 set -x
 echo "Check whether 'mailman' is at least able to display online help"
-python%{python3_version} %{buildroot}%{bindir}/mailman --help >/dev/null
+python%{python3_version} %{buildroot}%{bindir}/mailman --config %{buildroot}%{_sysconfdir}/mailman.cfg.check --help >/dev/null
 if [ $? -eq 0 ]; then
   echo "Check whether 'mailman' is at least able to display online help - SUCCESSFUL"
 else
@@ -1587,6 +1684,12 @@ if [ $? -eq 0 ]; then
 else
   exit 1
 fi
+
+# remove "check" config file
+rm -f %{buildroot}%{_sysconfdir}/mailman.cfg.check
+
+# remove created log/db files
+rm -f %{buildroot}%{logdir}/*.log %{buildroot}%{vardir}/db/*.db
 
 
 %pre
@@ -1936,6 +2039,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 # package binary libs
 %{_libdir}/*
 %endif
+
 
 %endif
 

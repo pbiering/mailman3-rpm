@@ -3,6 +3,7 @@ Description=GNU Mailing List Manager 3 / digests
 
 [Service]
 Type=oneshot
-ExecStart=@BINDIR@/mailman digests --periodic
+Environment="PYTHONPATH=@PYTHONPATH@"
 User=@MMUSER@
 Group=@MMGROUP@
+ExecStart=@BINDIR@/mailman digests --periodic

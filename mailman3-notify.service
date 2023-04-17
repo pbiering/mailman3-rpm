@@ -3,6 +3,7 @@ Description=GNU Mailing List Manager 3 / notify
 
 [Service]
 Type=oneshot
-ExecStart=@BINDIR@/mailman notify
+Environment="PYTHONPATH=@PYTHONPATH@"
 User=@MMUSER@
 Group=@MMGROUP@
+ExecStart=@BINDIR@/mailman notify

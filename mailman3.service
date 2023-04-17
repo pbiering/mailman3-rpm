@@ -12,6 +12,7 @@ Type=forking
 PIDFile=@RUNDIR@/master.pid
 User=@MMUSER@
 Group=@MMGROUP@
+Environment="PYTHONPATH=@PYTHONPATH@"
 ExecStart=@BINDIR@/mailman start --force
 ExecReload=@BINDIR@/mailman restart
 ExecStop=@BINDIR@/mailman stop

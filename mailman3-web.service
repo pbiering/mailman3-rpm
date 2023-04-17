@@ -6,7 +6,8 @@ After=syslog.target network.target mailman3.service
 PIDFile=@RUNDIR@/gunicorn.pid
 User=@MMUSER@
 Group=@MMUSER@
-ExecStart=@BINDIR@/gunicorn -c @ETCDIR@/gunicorn.conf.py mailman_web.wsgi:application
+Environment="PYTHONPATH=@PYTHONPATH@"
+ExecStart=@BINDIR_GUNICORN@/gunicorn -c @ETCDIR@/gunicorn.conf.py mailman_web.wsgi:application
 KillSignal=SIGINT
 
 # wait until listening port is up

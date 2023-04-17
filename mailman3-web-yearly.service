@@ -6,6 +6,7 @@ BindsTo=mailman3-web.service
 
 [Service]
 Type=oneshot
-ExecStart=@BINDIR@/mailman-web runjobs yearly
+Environment="PYTHONPATH=@PYTHONPATH@"
 User=@MMUSER@
 Group=@MMGROUP@
+ExecStart=@BINDIR@/mailman-web runjobs yearly
