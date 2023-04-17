@@ -118,10 +118,12 @@ BuildRequires:	python%{python3_version_num}-alembic
 BuildRequires:	python%{python3_version_num}-attrs
 BuildRequires:	python%{python3_version_num}-authres
 BuildRequires:	python%{python3_version_num}-atpublic
+BuildRequires:	python%{python3_version_num}-dateutil
 BuildRequires:	python%{python3_version_num}-dns
 BuildRequires:	python%{python3_version_num}-flufl-lock
 BuildRequires:	python%{python3_version_num}-greenlet
 BuildRequires:	python%{python3_version_num}-isort
+BuildRequires:	python%{python3_version_num}-mako
 BuildRequires:	python%{python3_version_num}-mailmanclient
 BuildRequires:	python%{python3_version_num}-passlib
 BuildRequires:	python%{python3_version_num}-psutil
@@ -141,10 +143,12 @@ Requires:	python%{python3_version_num}-alembic
 Requires:	python%{python3_version_num}-attrs
 Requires:	python%{python3_version_num}-authres
 Requires:	python%{python3_version_num}-atpublic
+Requires:	python%{python3_version_num}-dateutil
 Requires:	python%{python3_version_num}-dns
 Requires:	python%{python3_version_num}-flufl-lock
 Requires:	python%{python3_version_num}-greenlet
 Requires:	python%{python3_version_num}-isort
+Requires:	python%{python3_version_num}-mako
 Requires:	python%{python3_version_num}-mailmanclient
 Requires: 	python%{python3_version_num}-passlib
 Requires: 	python%{python3_version_num}-psutil
@@ -631,8 +635,11 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define         bundled_enabled_attrs                   1
 %define         bundled_enabled_cffi                    1
 %define		bundled_enabled_dataclasses		1
+%define		bundled_enabled_dateutil                1
 %define		bundled_enabled_flufl_lock		1
 %define		bundled_enabled_isort			1
+%define		bundled_enabled_Mako			1
+%define		bundled_enabled_passlib			1
 %define		bundled_enabled_tomli			1
 %define		bundled_enabled_typing_extensions	1
 %define		bundled_enabled_SQLAlchemy		1
@@ -1017,7 +1024,10 @@ cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?p
 %prep_cond "%{?bundled_enabled_attrs}"                  2002
 %prep_cond "%{?bundled_enabled_flufl_lock}"             2013
 %prep_cond "%{?bundled_enabled_isort}"                  2016
+%prep_cond "%{?bundled_enabled_Mako}"                   2017
 %prep_cond "%{?bundled_enabled_networkx}"               2019
+%prep_cond "%{?bundled_enabled_passlib}"                2022
+%prep_cond "%{?bundled_enabled_dateutil}"               2027
 %prep_cond "%{?bundled_enabled_SQLAlchemy}"             2042
 %prep_cond "%{?bundled_enabled_typing_extensions}"      2043
 %prep_cond "%{?bundled_enabled_tomli}"                  2044
@@ -1248,9 +1258,12 @@ popd
 %build_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
 %build_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
 %build_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
+%build_cond "%{?bundled_enabled_dateutil}"               "%{?bundled_version_dateutil}"               python-dateutil
 %build_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
 %build_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
+%build_cond "%{?bundled_enabled_Mako}"                   "%{?bundled_version_Mako}"                   Mako
 %build_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
+%build_cond "%{?bundled_enabled_passlib}"                "%{?bundled_version_passlib}"                passlib
 %build_cond "%{?bundled_enabled_SQLAlchemy}"             "%{?bundled_version_SQLAlchemy}"             SQLAlchemy
 %build_cond "%{?bundled_enabled_tomli}"                  "%{?bundled_version_tomli}"                  tomli
 %build_cond "%{?bundled_enabled_typing_extensions}"      "%{?bundled_version_typing_extensions}"      typing_extensions
@@ -1334,9 +1347,12 @@ popd
 %install_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
 %install_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
 %install_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
+%install_cond "%{?bundled_enabled_dateutil}"               "%{?bundled_version_dateutil}"               python-dateutil
 %install_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
 %install_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
+%install_cond "%{?bundled_enabled_Mako}"                   "%{?bundled_version_Mako}"                   Mako
 %install_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
+%install_cond "%{?bundled_enabled_passlib}"                "%{?bundled_version_passlib}"                passlib
 %install_cond "%{?bundled_enabled_SQLAlchemy}"             "%{?bundled_version_SQLAlchemy}"             SQLAlchemy
 %install_cond "%{?bundled_enabled_tomli}"                  "%{?bundled_version_tomli}"                  tomli
 %install_cond "%{?bundled_enabled_typing_extensions}"      "%{?bundled_version_typing_extensions}"      typing_extensions
@@ -1541,7 +1557,7 @@ done
 
 
 %check
-PYTHONPATH=%{buildroot}%{python3_sitelib}
+PYTHONPATH=%{buildroot}%{sitelibdir}
 
 %if 0%{?mailman3_virtualenv}
 ### VIRTUALENV PACKAGING
@@ -1555,7 +1571,7 @@ export PYTHONPATH
 # check whether online help is working
 set -x
 echo "Check whether 'mailman' is at least able to display online help"
-%{buildroot}%{bindir}/mailman --help >/dev/null
+python%{python3_version} %{buildroot}%{bindir}/mailman --help >/dev/null
 if [ $? -eq 0 ]; then
   echo "Check whether 'mailman' is at least able to display online help - SUCCESSFUL"
 else
@@ -1565,7 +1581,7 @@ fi
 echo "Check whether 'mailman-web' is at least able to display online help"
 MAILMAN_WEB_CONFIG=%{buildroot}%{_sysconfdir}/%{pname}
 export MAILMAN_WEB_CONFIG
-%{buildroot}%{bindir}/%{pname}/mailman-web --help >/dev/null
+python%{python3_version} %{buildroot}%{bindir}/mailman-web --help >/dev/null
 if [ $? -eq 0 ]; then
   echo "Check whether 'mailman-web' is at least able to display online help - SUCCESSFUL"
 else
