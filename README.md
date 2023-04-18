@@ -4,18 +4,24 @@ RPM packaged mailman3 for Fedora and Enterprise Linux
 
 ## Background
 
-Because of huge Python package dependencies it's in 2023-04 impossible to build a native *mailman3* RPM without creating conflicts with already existing packages in OS like Fedora and Enterprise Linux.
+Because of huge Python package dependencies it's impossible to build a native *mailman3* RPM without providing dependencies in USER_SITE directory. Neither EPEL nor Fedora can fulfill depencencies as of 2023-04.
 
 ### Drivers
 
 - reproducable
   - identical version can be used in test and production
-- no connection to PIP required
+- no connection to PIP required during build and installation
   - should be anyhow avoided on productive systems
 - ready-to-use
 - enriched for CAPTCHA support
 
 ## Solution
+
+### native build using USER_SITE
+
+Package a native *mailman3* package, storing all dependencies in USER_SITE
+
+### virtualenv build
 
 Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install into a RPM.
 
@@ -35,12 +41,13 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 
 ### Supported OS
 
-| OS  | Method     |
-|-----|------------|
-| EL8 | virtualenv |
-| EL9 | virtualenv |
-| F37 | virtualenv |
-| F38 | virtualenv |
+| OS  | Method            |
+|-----|-------------------|
+| EL8 | native+virtualenv |
+| EL9 | native+virtualenv |
+| F37 | native+virtualenv |
+| F38 | native+virtualenv |
+| F39 | native+virtualenv |
 
 ## Usage
 
@@ -70,13 +77,44 @@ tar xzf mailman3-rpm-<VERSION>-<RELEASE>.tar.gz
 cd mailman3-rpm-<VERSION>-<RELEASE>
 ```
 
-#### build
+#### install dependencies
+
+##### as build user
+
+Extract dependencies
 
 ```
-# create Source RPM by downloading external dependencies
-rpmbuild -bs mailman3-virtualenv.spec --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir ."
-# rebuild from created Source RPM
+rpmbuild -bb mailman3.spec 2>&1 | awk '$0 ~ "is needed" { print $1 }' | xargs echo "dnf install"
+```
+
+##### as system user
+
+Install packages listed above
+
+```
+dnf install ...
+```
+
+#### create source RPM
+
+create Source RPM by downloading external dependencies
+
+```
+rpmbuild -bs mailman3.spec --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir ."
+```
+
+#### build binary RPM
+
+##### native build using USER_SITE
+
+```
 rpmbuild --rebuild ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
+```
+
+### virtualenv build
+
+```
+rpmbuild --rebuild -D "mailman3_virtualenv 1" ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
 ```
 
 ### Install RPM
@@ -96,34 +134,16 @@ dnf localinstall mailman3-<VERSION>-<RELEASE>.<DISTa>.<ARCH>.rpm
 
 General: read provided documentation on https://docs.mailman3.org/
 
-## Known issues
+## Features
 
-### Known issues with native builds
+### CAPTCHA support
 
-#### All
-
-- unable to inject CAPTCHA support into existing packages
+CAPTCHA is injected in to
 
 | Package   | File                |
 |-----------|---------------------|
 | postorius | forms/list_forms.py |
 | allauth   | account/forms.py    |
-
-#### Enterprise Linux
-
-- missing a lot of of dependency packages in EPEL
-- conflicts with base repo for
-  - building required cmarkgfm >= 0.7.0 with existing python3-cffi == 1.14.5-5.el9@appstream
-
-#### Fedora
-
-- missing some dependency packages in EPEL
-- conflicts with base repo for
-
-| Package      | Has                              |Requires|
-|--------------|----------------------------------|--------|
-| flufl-bounce | 3.0-17.fc37 <br/>3.0-18.fc38     | >= 4.0 |
-| flufl-i18n   | 2.0.2-10.fc37 <br/>2.0.2-11.fc38 | >= 3.2 |
 
 ## Notes
 
