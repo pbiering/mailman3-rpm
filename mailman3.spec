@@ -1745,7 +1745,7 @@ for port in ${!portlabel[@]}; do
         echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]}) already done"
     else
         echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]})"
-        semanage port -a -t ${portlabel[$port]} -p t%{__cp} $port
+        semanage port -a -t ${portlabel[$port]} -p tcp $port
     fi
 done
 
@@ -1954,7 +1954,7 @@ fi
 if [ $1 -eq 0 ] ; then
     semanage port -l | grep -q "^mailman_.*\s*tcp\s*" | while read port; do
         echo "SELinux delete for %{pname} port tcp/$port"
-        semanage port -d -p t%{__cp} $port
+        semanage port -d -p tcp $port
     done
 fi
 
