@@ -373,10 +373,7 @@ Requires: 	publicsuffix-list
 %define	bundled_version_greenlet		2.0.2
 %define	bundled_version_idna			3.4
 %define	bundled_version_isort			5.12.0
-
-#define	bundled_version_Mako			1.2.4 # Problem on EL8 with 1.2.x
-%define	bundled_version_Mako			1.1.6
-
+%define	bundled_version_Mako			1.2.4
 %define	bundled_version_MarkupSafe		2.1.2
 %define	bundled_version_networkx		3.0
 %define	bundled_version_oauthlib		3.2.2
@@ -1377,6 +1374,7 @@ popd
 %build_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
 %build_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
 %build_cond "%{?bundled_enabled_greenlet}"               "%{?bundled_version_greenlet}"               greenlet
+%build_cond "%{?bundled_enabled_Mako}"                   "%{?bundled_version_Mako}"                   Mako
 %build_cond "%{?bundled_enabled_mailmanclient}"          "%{?bundled_version_mailmanclient}"          mailmanclient
 %build_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
 %build_cond "%{?bundled_enabled_passlib}"                "%{?bundled_version_passlib}"                passlib
