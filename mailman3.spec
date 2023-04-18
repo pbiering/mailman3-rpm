@@ -689,12 +689,9 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define		bundled_enabled_hyperkitty		1
 %define		bundled_enabled_importlib_resources	1
 
-%if 0%{?rhel} >= 8
-# base
-%define		bundled_enabled_wheel			1
 %if 0%{?rhel} >= 9
 %define		bundled_enabled_setuptools_scm		1
-%endif
+%define		bundled_enabled_wheel			1
 %endif
 
 %if (0%{?fedora} >= 37) || (0%{?rhel} >= 8)
