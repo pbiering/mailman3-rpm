@@ -7,16 +7,21 @@
 ### Step 1: create source package by
 ###  BUNDLED-AS-REQUIRED PACKAGING (overload existing older versions if required by storing in USER_SITE)
 ###   download required packages and store to ~/rpmbuild/SOURCES
+###   known required overloading see below defined: bundled_enabled_*
 ###   $ rpmbuild -bp --undefine=_disable_source_fetch mailman3.spec
-###
-###   Known required overloading see below defined: bundled_enabled_*
 ###
 ###  VIRTUALENV PACKAGING
 ###   according to https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
 ###   download main packages and dependencies and store to ~/rpmbuild/SOURCES
 ###   $ rpmbuild -bp --undefine=_disable_source_fetch -D "mailman3_virtualenv 1" mailman3.spec
 ###
-### Step 2: rebuild
+### Step 2: install required build dependencies, get list of required packages
+### $ rpmbuild -bb mailman3.spec 2>&1 | awk '$0 ~ "is needed" { print $1 }' | xargs echo "dnf install"
+###
+### Step 2: install required build dependencies, get list of required packages
+### $ sudo dnf install ...
+###
+### Step 4: rebuild
 ### $ rpmbuild -bb mailman3.spec
 ###
 ### Build toggles
@@ -27,12 +32,18 @@
 # do not create debug packages
 %define debug_package %{nil}
 
-## MAIN VERSIONS
+
+## MAIN VERSIONS+RELEASE
 %global version_mailman 			3.3.8
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
 %global release_token 7
+
+## NAMES
+%global pypi_name mailman
+%global pname     mailman3
+
 
 # toggle to create a with mailman version 2 non-conflicting package
 %if 0%{?mailman3_like_mailman2}
@@ -48,10 +59,245 @@
 %global mailman3_cron 0
 %endif
 
-%global pypi_name mailman
 
-%global pname mailman3
+### dependencies
 
+%if (0%{?rhel} == 8)
+# hardwire to Python 3.9
+%define 	python3_version_num	39
+%define		python3_version		3.9
+BuildRequires:  python%{python3_version_num}-devel
+BuildRequires:  python%{python3_version_num}-setuptools
+Requires:       python%{python3_version_num}
+%else
+# Enforce Python >= 3.9
+%define		python3_version_num	3
+#do not overwrite python3_version from rpm-macros
+BuildRequires:  python3-devel >= 3.9
+BuildRequires:  python3-setuptools
+Requires:       python3 >= 3.9
+%endif
+
+
+%if 0%{?mailman3_virtualenv}
+###  VIRTUALENV PACKAGING 
+BuildRequires:  python%{python3_version_num}-pip
+
+%else
+### BUNDLED-AS-REQUIRED PACKAGING
+
+%if (0%{?rhel} == 8)
+# EL8
+BuildRequires:	python%{python3_version_num}-setuptools_scm
+BuildRequires:	python%{python3_version_num}-wheel
+%else
+# Fedora/EL9
+BuildRequires:	python%{python3_version_num}-tomli
+Requires:	python%{python3_version_num}-tomli
+%endif
+
+%endif
+
+
+## VIRTUALENV+BUNDLED-AS-REQUIRED by EL+EPEL supported  requirements
+
+%if (0%{?rhel} == 8)
+# not available for EL8 -> bundle
+%else
+BuildRequires:	python%{python3_version_num}-alembic
+Requires:	python%{python3_version_num}-alembic
+
+BuildRequires:	python%{python3_version_num}-attrs
+Requires:	python%{python3_version_num}-attrs
+
+BuildRequires:	python%{python3_version_num}-authres
+Requires:	python%{python3_version_num}-authres
+
+BuildRequires:	python%{python3_version_num}-atpublic
+Requires:	python%{python3_version_num}-atpublic
+
+BuildRequires:	python%{python3_version_num}-dateutil
+Requires:	python%{python3_version_num}-dateutil
+
+BuildRequires:	python%{python3_version_num}-flufl-lock
+Requires:	python%{python3_version_num}-flufl-lock
+
+BuildRequires:	python%{python3_version_num}-greenlet
+Requires:	python%{python3_version_num}-greenlet
+
+BuildRequires:	python%{python3_version_num}-isort
+Requires:	python%{python3_version_num}-isort
+
+BuildRequires:	python%{python3_version_num}-mako
+Requires:	python%{python3_version_num}-mako
+
+BuildRequires:	python%{python3_version_num}-mailmanclient
+Requires:	python%{python3_version_num}-mailmanclient
+
+BuildRequires:	python%{python3_version_num}-passlib
+Requires: 	python%{python3_version_num}-passlib
+
+BuildRequires:	python%{python3_version_num}-psutil
+Requires: 	python%{python3_version_num}-psutil
+
+BuildRequires:	python%{python3_version_num}-pytz
+Requires: 	python%{python3_version_num}-pytz
+
+BuildRequires:	python%{python3_version_num}-rcssmin
+Requires: 	python%{python3_version_num}-rcssmin
+
+BuildRequires:	python%{python3_version_num}-robot-detection
+Requires: 	python%{python3_version_num}-robot-detection
+
+BuildRequires:	python%{python3_version_num}-sqlalchemy
+Requires:	python%{python3_version_num}-sqlalchemy
+
+BuildRequires:	python%{python3_version_num}-sqlparse
+Requires:	python%{python3_version_num}-sqlparse
+
+BuildRequires:	python%{python3_version_num}-typing-extensions
+Requires:	python%{python3_version_num}-typing-extensions
+
+BuildRequires:	python%{python3_version_num}-webencodings
+Requires:	python%{python3_version_num}-webencodings
+
+BuildRequires:	python%{python3_version_num}-zope-component
+Requires:	python%{python3_version_num}-zope-component
+
+BuildRequires:	python%{python3_version_num}-zope-event
+Requires:	python%{python3_version_num}-zope-event
+
+BuildRequires:	python%{python3_version_num}-zope-interface
+Requires:	python%{python3_version_num}-zope-interface
+
+BuildRequires:	python%{python3_version_num}-zope-hookable
+Requires:	python%{python3_version_num}-zope-hookable
+%endif
+
+%if 0%{?fedora} >= 37
+## Fedora supports more packages than EL+EPEL
+
+%if 0%{?fedora} >= 40
+# guessing that f40 will have updated versions...
+# f37/f38/f39: 1.4.2
+BuildRequires:	python#{python3_version_num}-aiosmtpd >= 1.4.3
+Requires:	python#{python3_version_num}-aiosmtpd >= 1.4.3
+
+# f37/f38/f39: 3.0
+BuildRequires:	python#{python3_version_num}-flufl-bounce >= 4.0
+Requires:	python#{python3_version_num}-flufl-bounce >= 4.0
+
+# f37/f38/f39: 2.0.2
+BuildRequires:	python#{python3_version_num}-flufl-i18n >= 3.2
+Requires:	python#{python3_version_num}-flufl-i18n >= 3.2
+
+# f37/f38/f39: 3.0
+# 3.0 has issue with django: cannot import name 'ungettext' from 'django.utils.translation' (BZ#2187604)
+BuildRequires:	python#{python3_version_num}-django-haystack >= 3.2
+Requires:	python#{python3_version_num}-django-haystack >= 3.2
+
+# end of >= f40
+%endif
+
+BuildRequires:	python%{python3_version_num}-asgiref >= 3.5.2
+Requires:	python%{python3_version_num}-asgiref >= 3.5.2
+
+BuildRequires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
+Requires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
+
+BuildRequires:	python%{python3_version_num}-dkimpy >= 0.7.1
+Requires:	python%{python3_version_num}-dkimpy >= 0.7.1
+
+BuildRequires:	python%{python3_version_num}-django >= 4
+Requires:	python%{python3_version_num}-django >= 4
+
+BuildRequires:	python%{python3_version_num}-django-compressor
+Requires:	python%{python3_version_num}-django-compressor
+
+BuildRequires:	python%{python3_version_num}-django-extensions >= 1.3.7
+Requires:	python%{python3_version_num}-django-extensions >= 1.3.7
+
+BuildRequires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
+Requires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
+
+BuildRequires:	python%{python3_version_num}-django-q
+Requires:	python%{python3_version_num}-django-q
+
+BuildRequires:	python%{python3_version_num}-django-rest-framework
+Requires:	python%{python3_version_num}-django-rest-framework
+
+BuildRequires:	python%{python3_version_num}-falcon >= 3.0.0
+Requires:	python%{python3_version_num}-falcon >= 3.0.0
+
+BuildRequires:	python%{python3_version_num}-gunicorn
+Requires:	python%{python3_version_num}-gunicorn
+
+BuildRequires:	python%{python3_version_num}-jwt >= 1.7
+Requires:	python%{python3_version_num}-jwt >= 1.7
+
+BuildRequires:	python%{python3_version_num}-mistune
+Requires:	python%{python3_version_num}-mistune
+
+BuildRequires:	python%{python3_version_num}-openid >= 3.0.8
+Requires:	python%{python3_version_num}-openid >= 3.0.8
+
+BuildRequires:	python%{python3_version_num}-lazr-config
+Requires:	python%{python3_version_num}-lazr-config
+
+BuildRequires:	python%{python3_version_num}-publicsuffix2
+Requires:	python%{python3_version_num}-publicsuffix2
+
+BuildRequires:	python%{python3_version_num}-readme-renderer
+Requires:	python%{python3_version_num}-readme-renderer
+
+BuildRequires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
+Requires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
+
+BuildRequires:	python%{python3_version_num}-six
+Requires:	python%{python3_version_num}-six
+
+BuildRequires:	python%{python3_version_num}-urllib3
+Requires:	python%{python3_version_num}-urllib3
+
+BuildRequires:	python%{python3_version_num}-zope-configuration
+Requires:	python%{python3_version_num}-zope-configuration
+
+BuildRequires:	python%{python3_version_num}-whoosh
+Requires:	python%{python3_version_num}-whoosh
+
+# end of >= f37
+%endif
+
+
+## ALL supported OS versions
+BuildRequires:	python%{python3_version_num}-rpm-macros
+
+BuildRequires:	python%{python3_version_num}-click
+Requires: 	python%{python3_version_num}-click
+
+BuildRequires:	python%{python3_version_num}-cryptography
+Requires: 	python%{python3_version_num}-cryptography
+
+BuildRequires:	python%{python3_version_num}-dns
+Requires:	python%{python3_version_num}-dns
+
+BuildRequires:	python%{python3_version_num}-idna
+Requires:	python%{python3_version_num}-idna
+
+BuildRequires:	python%{python3_version_num}-markupsafe
+Requires: 	python%{python3_version_num}-markupsafe
+
+BuildRequires:	python%{python3_version_num}-requests
+Requires: 	python%{python3_version_num}-requests
+
+BuildRequires:	python%{python3_version_num}-toml
+Requires: 	python%{python3_version_num}-toml
+
+BuildRequires: 	publicsuffix-list
+Requires: 	publicsuffix-list
+
+
+## VIRTUALENV+BUNDLED-AS-REQUIRED by EL+EPEL destination directories
 %global basedir         /usr/lib/%{pname}
 %global logdir          %{_localstatedir}/log/%{pname}
 %global rundir          %{_rundir}/%{pname}
@@ -63,200 +309,11 @@
 
 %global builddir	%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}
 
-%if (0%{?rhel} == 8)
-%define 	python3_version_num	39
-%define		python3_version		3.9
-%else
-%define		python3_version_num	3
-%endif
-
-
-# Enforce Python >= 3.9
-%if (0%{?rhel} == 8)
-BuildRequires:  python%{python3_version_num}-devel
-BuildRequires:  python%{python3_version_num}-setuptools
-Requires:       python%{python3_version_num}
-%else
-BuildRequires:  python3-devel >= 3.9
-BuildRequires:  python3-setuptools
-Requires:       python3 >= 3.9
-%endif
-
-%if 0%{?mailman3_virtualenv}
-###  VIRTUALENV PACKAGING 
-BuildRequires:  python%{python3_version_num}-pip
-
-%if (0%{?rhel} == 8)
-# not available for EL8 -> bundle
-%else
-%endif
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
-
-%if (0%{?rhel} == 8)
-# EL8
-BuildRequires:	python%{python3_version_num}-setuptools_scm
-BuildRequires:	python%{python3_version_num}-wheel
-
-%else
-# Fedora/EL9
-BuildRequires:	python%{python3_version_num}-tomli
-Requires:	python%{python3_version_num}-tomli
-
-%endif
-
-%endif
-
-## common by EL+EPEL supported requirements
-
-%if (0%{?rhel} == 8)
-# not available for EL8 -> bundle
-%else
-BuildRequires:	python%{python3_version_num}-alembic
-BuildRequires:	python%{python3_version_num}-attrs
-BuildRequires:	python%{python3_version_num}-authres
-BuildRequires:	python%{python3_version_num}-atpublic
-BuildRequires:	python%{python3_version_num}-dateutil
-BuildRequires:	python%{python3_version_num}-dns
-BuildRequires:	python%{python3_version_num}-flufl-lock
-BuildRequires:	python%{python3_version_num}-greenlet
-BuildRequires:	python%{python3_version_num}-isort
-BuildRequires:	python%{python3_version_num}-mako
-BuildRequires:	python%{python3_version_num}-mailmanclient
-BuildRequires:	python%{python3_version_num}-passlib
-BuildRequires:	python%{python3_version_num}-psutil
-BuildRequires:	python%{python3_version_num}-pytz
-BuildRequires:	python%{python3_version_num}-rcssmin
-BuildRequires:	python%{python3_version_num}-robot-detection
-BuildRequires:	python%{python3_version_num}-sqlalchemy
-BuildRequires:	python%{python3_version_num}-sqlparse
-BuildRequires:	python%{python3_version_num}-typing-extensions
-BuildRequires:	python%{python3_version_num}-webencodings
-BuildRequires:	python%{python3_version_num}-zope-component
-BuildRequires:	python%{python3_version_num}-zope-event
-BuildRequires:	python%{python3_version_num}-zope-interface
-BuildRequires:	python%{python3_version_num}-zope-hookable
-
-Requires:	python%{python3_version_num}-alembic
-Requires:	python%{python3_version_num}-attrs
-Requires:	python%{python3_version_num}-authres
-Requires:	python%{python3_version_num}-atpublic
-Requires:	python%{python3_version_num}-dateutil
-Requires:	python%{python3_version_num}-dns
-Requires:	python%{python3_version_num}-flufl-lock
-Requires:	python%{python3_version_num}-greenlet
-Requires:	python%{python3_version_num}-isort
-Requires:	python%{python3_version_num}-mako
-Requires:	python%{python3_version_num}-mailmanclient
-Requires: 	python%{python3_version_num}-passlib
-Requires: 	python%{python3_version_num}-psutil
-Requires: 	python%{python3_version_num}-pytz
-Requires: 	python%{python3_version_num}-rcssmin
-Requires: 	python%{python3_version_num}-robot-detection
-Requires:	python%{python3_version_num}-sqlalchemy
-Requires:	python%{python3_version_num}-sqlparse
-Requires:	python%{python3_version_num}-typing-extensions
-Requires:	python%{python3_version_num}-webencodings
-Requires:	python%{python3_version_num}-zope-component
-Requires:	python%{python3_version_num}-zope-event
-Requires:	python%{python3_version_num}-zope-interface
-Requires:	python%{python3_version_num}-zope-hookable
-%endif
-
-%if 0%{?fedora} >= 37 && 0%{?fedora} <= 38
-#BuildRequires:	python#{python3_version_num}-aiosmtpd >= 1.4.3 # f38 has only 1.4.2
-#BuildRequires:	python#{python3_version_num}-flufl-bounce >= 4.0 # f38 has only 2.0.2
-#BuildRequires:	python#{python3_version_num}-flufl-i18n >= 3.2 # f38 has only 2.0.2
-BuildRequires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
-BuildRequires:	python%{python3_version_num}-dkimpy >= 0.7.1
-BuildRequires:	python%{python3_version_num}-django >= 4
-BuildRequires:	python%{python3_version_num}-django-compressor
-BuildRequires:	python%{python3_version_num}-django-extensions >= 1.3.7
-BuildRequires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
-#BuildRequires:	python#{python3_version_num}-django-haystack # f38 has 3.0 which has issues with django: cannot import name 'ungettext' from 'django.utils.translation'
-BuildRequires:	python%{python3_version_num}-django-q
-BuildRequires:	python%{python3_version_num}-django-rest-framework
-BuildRequires:	python%{python3_version_num}-falcon >= 3.0.0
-BuildRequires:	python%{python3_version_num}-gunicorn
-BuildRequires:	python%{python3_version_num}-jwt >= 1.7
-BuildRequires:	python%{python3_version_num}-mistune
-BuildRequires:	python%{python3_version_num}-openid >= 3.0.8
-BuildRequires:	python%{python3_version_num}-lazr-config
-BuildRequires:	python%{python3_version_num}-publicsuffix2
-BuildRequires:	python%{python3_version_num}-readme-renderer
-BuildRequires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
-BuildRequires:	python%{python3_version_num}-zope-configuration
-BuildRequires:	python%{python3_version_num}-whoosh
-
-#Requires:	python#{python3_version_num}-aiosmtpd >= 1.4.3 # f38 has only 1.4.2
-#Requires:	python#{python3_version_num}-flufl-bounce >= 4.0 # f38 has only 2.0.2
-#Requires:	python#{python3_version_num}-flufl-i18n >= 3.2 # f38 has only 2.0.2
-Requires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
-Requires:	python%{python3_version_num}-dkimpy >= 0.7.1
-Requires:	python%{python3_version_num}-django >= 4
-Requires:	python%{python3_version_num}-django-compressor
-Requires:	python%{python3_version_num}-django-extensions >= 1.3.7
-Requires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
-#Requires:	python#{python3_version_num}-django-haystack # f38 has 3.0 which has issues with django: cannot import name 'ungettext' from 'django.utils.translation'
-Requires:	python%{python3_version_num}-django-q
-Requires:	python%{python3_version_num}-django-rest-framework
-Requires:	python%{python3_version_num}-falcon >= 3.0.0
-Requires:	python%{python3_version_num}-gunicorn
-Requires:	python%{python3_version_num}-jwt >= 1.7
-Requires:	python%{python3_version_num}-lazr-config
-Requires:	python%{python3_version_num}-mistune
-Requires:	python%{python3_version_num}-openid >= 3.0.8
-Requires:	python%{python3_version_num}-readme-renderer
-Requires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
-Requires:	python%{python3_version_num}-publicsuffix2
-Requires:	python%{python3_version_num}-zope-configuration
-Requires:	python%{python3_version_num}-whoosh
-%endif
-
-
-## common
-BuildRequires:	python%{python3_version_num}-rpm-macros
-
-BuildRequires:	python%{python3_version_num}-click
-BuildRequires:	python%{python3_version_num}-cryptography
-BuildRequires:	python%{python3_version_num}-idna
-BuildRequires:	python%{python3_version_num}-markupsafe
-BuildRequires:	python%{python3_version_num}-requests
-BuildRequires:	python%{python3_version_num}-toml
-
-Requires: 	python%{python3_version_num}-click
-Requires: 	python%{python3_version_num}-cryptography
-Requires:	python%{python3_version_num}-idna
-Requires: 	python%{python3_version_num}-markupsafe
-Requires: 	python%{python3_version_num}-requests
-Requires: 	python%{python3_version_num}-toml
-
-BuildRequires: 	publicsuffix-list
-Requires: 	publicsuffix-list
-
-%if (0%{?rhel} == 8)
-%else
-BuildRequires:	python%{python3_version_num}-dns
-Requires:	python%{python3_version_num}-dns
-%endif
-
-%if (0%{?fedora} == 37)
-BuildRequires:  python3-readme-renderer > 32.0
-BuildRequires:  python3-cmarkgfm >= 0.8.0
-
-Requires:       python3-readme-renderer > 32.0 
-Requires:       python3-cmarkgfm >= 0.8.0
-# end of F37
-%endif
-
-
 %if 0%{?mailman3_virtualenv}
 ### VIRTUALENV PACKAGING 
 %global virtualenvsubdir venv
 %global bindir		%{basedir}/%{virtualenvsubdir}/bin
 %global sitelibdir	%{basedir}/%{virtualenvsubdir}/lib64/python%{python3_version}/site-packages
-
 %else
 ### BUNDLED-AS-REQUIRED PACKAGING 
 %global bindir		   %{_libexecdir}/%{pname}
@@ -288,7 +345,8 @@ Requires:       python3-cmarkgfm >= 0.8.0
 %global mmgroupid    ""
 %endif
 
-## BUNDLED VERSIONS
+
+## BUNDLED DEPENDENCIES VERSIONS
 #define	bundled_version_alembic			1.10.3 # typing_extensions/TypeGuard problem
 %define	bundled_version_alembic			1.9.4
 
@@ -315,8 +373,10 @@ Requires:       python3-cmarkgfm >= 0.8.0
 %define	bundled_version_greenlet		2.0.2
 %define	bundled_version_idna			3.4
 %define	bundled_version_isort			5.12.0
-%define	bundled_version_Mako			1.2.3
-#define	bundled_version_Mako			1.2.4 # Problem on EL8
+
+#define	bundled_version_Mako			1.2.4 # Problem on EL8 with 1.2.x
+%define	bundled_version_Mako			1.1.6
+
 %define	bundled_version_MarkupSafe		2.1.2
 %define	bundled_version_networkx		3.0
 %define	bundled_version_oauthlib		3.2.2
@@ -327,18 +387,20 @@ Requires:       python3-cmarkgfm >= 0.8.0
 %define	bundled_version_poetry_core		1.5.2
 %define	bundled_version_psutil			5.9.4
 %define	bundled_version_pycparser		2.21
-%define	bundled_version_PyJWT			2.6.0
+
+#define	bundled_version_PyJWT			2.6.0 # conflicts on EL with python39-cryptography==3.3.1
+%define	bundled_version_PyJWT			2.5.0
+
 %define	bundled_version_pytz			2023.3
 %define	bundled_version_rcssmin			1.1.1
-%define	bundled_version_requests		2.28.2
+#N#define	bundled_version_requests		2.28.2
 %define	bundled_version_requests_oauthlib	1.3.1
-%define	bundled_version_redis			3.5.3
+#N#define	bundled_version_redis			3.5.3
 %define	bundled_version_robot_detection		0.4
-%define	bundled_version_semantic_version	2.10.0 
+#N#define	bundled_version_semantic_version	2.10.0 
 %define	bundled_version_setuptools		67.6.1
 %define	bundled_version_setuptools_scm		7.1.0
-%define	bundled_version_setuptools_rust		1.5.2 
-%define	bundled_version_six			1.16.0
+#N#define	bundled_version_six			1.16.0
 
 #define	bundled_version_SQLAlchemy		2.0.9 # EL8 problem typing_extensions/Concatenate
 %define	bundled_version_SQLAlchemy		1.4.47
@@ -353,11 +415,13 @@ Requires:       python3-cmarkgfm >= 0.8.0
 #define	bundled_version_typing_extensions	3.10.0.2  # causes dataclass_transform dependency problems
 %define	bundled_version_typing_extensions	3.7.4.3
 
-%define	bundled_version_urllib3			1.26.15
+%define	bundled_version_types_cryptography	3.3.23.2
+
+#N#define	bundled_version_urllib3			1.26.15
 %define	bundled_version_wcwidth			0.2.6
 %define	bundled_version_webencodings		0.5.1
 %define	bundled_version_wheel			0.40.0
-%define	bundled_version_zipp			3.15.0
+#N#define	bundled_version_zipp			3.15.0
 %define	bundled_version_zope_component		5.1.0
 %define	bundled_version_zope_event		4.6
 %define	bundled_version_zope_hookable		5.4
@@ -422,7 +486,7 @@ Requires:       python3-cmarkgfm >= 0.8.0
 %define	bundled_version_django_friendlycaptcha	0.1.7
 
 
-## HEADER
+### HEADER
 %if 0%{?mailman3_virtualenv}
 ###  VIRTUALENV PACKAGING 
 Name:           %{pname}-virtualenv
@@ -536,10 +600,6 @@ Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{bundled_version_dja
 Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{bundled_version_django_friendlycaptcha}.tar.gz
 
 ### VIRTUALENV PACKAGING
-##Source2007:	#{__pypi_url}c/click/click-#{bundled_version_click}.tar.gz
-##Source2008:	#{__pypi_url}c/cryptography/cryptography-#{bundled_version_cryptography}.tar.gz
-##Source2015:	#{__pypi_url}i/idna/idna-#{bundled_version_idna}.tar.gz
-##Source2018:	#{__pypi_url}M/MarkupSafe/MarkupSafe-#{bundled_version_MarkupSafe}.tar.gz
 Source2009:	%{__pypi_url}C/Cython/Cython-%{bundled_version_Cython}.tar.gz
 Source2012:	%{__pypi_url}f/flit_core/flit_core-%{bundled_version_flit_core}.tar.gz
 
@@ -551,20 +611,19 @@ Source2021:	%{__pypi_url}p/packaging/packaging-%{bundled_version_packaging}.tar.
 Source2024:	%{__pypi_url}p/poetry_core/poetry_core-%{bundled_version_poetry_core}.tar.gz
 Source2026:	%{__pypi_url}p/pycparser/pycparser-%{bundled_version_pycparser}.tar.gz
 Source2030:	%{__pypi_url}P/PyJWT/PyJWT-%{bundled_version_PyJWT}.tar.gz
-Source2032:	%{__pypi_url}r/redis/redis-%{bundled_version_redis}.tar.gz
-Source2033:	%{__pypi_url}r/requests/requests-%{bundled_version_requests}.tar.gz
+#N#Source2032:	#{__pypi_url}r/redis/redis-#{bundled_version_redis}.tar.gz
+#N#Source2033:	#{__pypi_url}r/requests/requests-#{bundled_version_requests}.tar.gz
 Source2036:	%{__pypi_url}s/setuptools/setuptools-%{bundled_version_setuptools}.tar.gz
 Source2037:	%{__pypi_url}s/setuptools_scm/setuptools_scm-%{bundled_version_setuptools_scm}.tar.gz
-Source2038:	%{__pypi_url}s/setuptools-rust/setuptools-rust-%{bundled_version_setuptools_rust}.tar.gz
-Source2039:	%{__pypi_url}s/semantic_version/semantic_version-%{bundled_version_semantic_version}.tar.gz
-Source2040:	%{__pypi_url}s/six/six-%{bundled_version_six}.tar.gz
+#N#Source2039:	#{__pypi_url}s/semantic_version/semantic_version-#{bundled_version_semantic_version}.tar.gz
+#N#Source2040:	#{__pypi_url}s/six/six-#{bundled_version_six}.tar.gz
 Source2041:	%{__pypi_url}s/sqlparse/sqlparse-%{bundled_version_sqlparse}.tar.gz
 Source2043:	%{__pypi_url}t/typing_extensions/typing_extensions-%{bundled_version_typing_extensions}.tar.gz
-Source2045:	%{__pypi_url}u/urllib3/urllib3-%{bundled_version_urllib3}.tar.gz
+#N#Source2045:	#{__pypi_url}u/urllib3/urllib3-#{bundled_version_urllib3}.tar.gz
 Source2046:	%{__pypi_url}w/wcwidth/wcwidth-%{bundled_version_wcwidth}.tar.gz
 Source2047:	%{__pypi_url}w/webencodings/webencodings-%{bundled_version_webencodings}.tar.gz
 Source2048:	%{__pypi_url}w/wheel/wheel-%{bundled_version_wheel}.tar.gz
-Source2053:	%{__pypi_url}z/zipp/zipp-%{bundled_version_zipp}.tar.gz
+#N#Source2053:	#{__pypi_url}z/zipp/zipp-#{bundled_version_zipp}.tar.gz
 
 # EL8
 Source2000:	%{__pypi_url}a/alembic/alembic-%{bundled_version_alembic}.tar.gz
@@ -575,7 +634,6 @@ Source2004:	%{__pypi_url}b/blessed/blessed-%{bundled_version_blessed}.tar.gz
 Source2005:	%{__pypi_url}c/certifi/certifi-%{bundled_version_certifi}.tar.gz
 Source2006:	%{__pypi_url}c/charset-normalizer/charset-normalizer-%{bundled_version_charset_normalizer}.tar.gz
 Source2010:	%{__pypi_url}d/defusedxml/defusedxml-%{bundled_version_defusedxml}.tar.gz
-Source2011:	%{__pypi_url}d/dnspython/dnspython-%{bundled_version_dnspython}.tar.gz
 Source2013:	%{__pypi_url}f/flufl.lock/flufl.lock-%{bundled_version_flufl_lock}.tar.gz
 Source2014:	%{__pypi_url}g/greenlet/greenlet-%{bundled_version_greenlet}.tar.gz
 Source2016:	%{__pypi_url}i/isort/isort-%{bundled_version_isort}.tar.gz
@@ -583,7 +641,6 @@ Source2017:	%{__pypi_url}M/Mako/Mako-%{bundled_version_Mako}.tar.gz
 Source2020:	%{__pypi_url}o/oauthlib/oauthlib-%{bundled_version_oauthlib}.tar.gz
 Source2022:	%{__pypi_url}p/passlib/passlib-%{bundled_version_passlib}.tar.gz
 Source2023:	%{__pypi_url}p/pdm-pep517/pdm-pep517-%{bundled_version_pdm_pep517}.tar.gz
-Source2025:	%{__pypi_url}p/psutil/psutil-%{bundled_version_psutil}.tar.gz
 Source2027:	%{__pypi_url}p/python-dateutil/python-dateutil-%{bundled_version_dateutil}.tar.gz
 Source2028:	%{__pypi_url}p/python3-openid/python3-openid-%{bundled_version_openid}.tar.gz
 Source2029:	%{__pypi_url}p/pytz/pytz-%{bundled_version_pytz}.tar.gz
@@ -597,6 +654,7 @@ Source2050:	%{__pypi_url}z/zope.event/zope.event-%{bundled_version_zope_event}.t
 Source2051:	%{__pypi_url}z/zope.hookable/zope.hookable-%{bundled_version_zope_hookable}.tar.gz
 Source2052:	%{__pypi_url}z/zope.interface/zope.interface-%{bundled_version_zope_interface}.tar.gz
 Source2054:	%{__pypi_url}d/dataclasses/dataclasses-%{bundled_version_dataclasses}.tar.gz
+Source2055:	%{__pypi_url}t/types-cryptography/types-cryptography-%{bundled_version_types_cryptography}.tar.gz
 
 Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{bundled_version_mailmanclient}.tar.gz
 
@@ -634,13 +692,15 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define		bundled_enabled_hyperkitty		1
 %define		bundled_enabled_importlib_resources	1
 
-%if %{defined rhel} && 0%{?rhel} >= 9
+%if 0%{?rhel} >= 8
 # base
 %define		bundled_enabled_wheel			1
+%if 0%{?rhel} >= 9
 %define		bundled_enabled_setuptools_scm		1
 %endif
+%endif
 
-%if (0%{?fedora} >= 37 && 0%{?fedora} <= 38) || (0%{?rhel} >= 8 && 0%{?rhel} <= 9)
+%if (0%{?fedora} >= 37) || (0%{?rhel} >= 8)
 ## common for Fedora & EL
 # even while available bundle to avoid install of huge dependencies
 %define		bundled_enabled_networkx		1
@@ -659,7 +719,7 @@ BuildConflicts:	python%{python3_version_num}-tomli
 
 %endif
 
-%if (0%{?rhel} >= 8 && 0%{?rhel} <= 9)
+%if 0%{?rhel} >= 8
 # dependencies
 %define		bundled_enabled_lazr_config		1
 %define		bundled_enabled_lazr_delegates		1
@@ -699,7 +759,8 @@ BuildConflicts:	python%{python3_version_num}-tomli
 %define		bundled_enabled_django_appconf		1
 %define		bundled_enabled_django_picklefield	1
 
-%if %{defined rhel} && 0%{?rhel} == 8
+%if 0%{?rhel} == 8
+# EL8 only bundles
 %define         bundled_enabled_alembic                 1
 %define         bundled_enabled_atpublic                1
 %define         bundled_enabled_attrs                   1
@@ -970,8 +1031,6 @@ set -x
 %{__cp} %{SOURCE1192} pip/
 
 ## VIRTUALENV related
-#{__cp} %{SOURCE2007} pip/
-#{__cp} %{SOURCE2008} pip/
 %{__cp} %{SOURCE2009} pip/
 %{__cp} %{SOURCE2012} pip/
 %{__cp} %{SOURCE2019} pip/
@@ -986,7 +1045,6 @@ set -x
 %{__cp} %{SOURCE2005} pip/
 %{__cp} %{SOURCE2006} pip/
 %{__cp} %{SOURCE2010} pip/
-%{__cp} %{SOURCE2011} pip/
 %{__cp} %{SOURCE2013} pip/
 %{__cp} %{SOURCE2014} pip/
 %{__cp} %{SOURCE2016} pip/
@@ -994,7 +1052,6 @@ set -x
 %{__cp} %{SOURCE2023} pip/
 %{__cp} %{SOURCE2020} pip/
 %{__cp} %{SOURCE2022} pip/
-%{__cp} %{SOURCE2025} pip/
 %{__cp} %{SOURCE2027} pip/
 %{__cp} %{SOURCE2028} pip/
 %{__cp} %{SOURCE2029} pip/
@@ -1003,32 +1060,24 @@ set -x
 %{__cp} %{SOURCE2035} pip/
 %{__cp} %{SOURCE2041} pip/
 %{__cp} %{SOURCE2042} pip/
+%{__cp} %{SOURCE2046} pip/
+%{__cp} %{SOURCE2047} pip/
 %{__cp} %{SOURCE2049} pip/
 %{__cp} %{SOURCE2050} pip/
 %{__cp} %{SOURCE2051} pip/
 %{__cp} %{SOURCE2052} pip/
+%{__cp} %{SOURCE2030} pip/
+%{__cp} %{SOURCE2055} pip/
 %{__cp} %{SOURCE2090} pip/
 %endif
 
-#{__cp} %{SOURCE2015} pip/
-#{__cp} %{SOURCE2018} pip/
 %{__cp} %{SOURCE2021} pip/
 %{__cp} %{SOURCE2024} pip/
 %{__cp} %{SOURCE2026} pip/
-#{__cp} %{SOURCE2030} pip/
-#{__cp} %{SOURCE2032} pip/
-#{__cp} %{SOURCE2033} pip/
 %{__cp} %{SOURCE2036} pip/
 %{__cp} %{SOURCE2037} pip/
-#{__cp} %{SOURCE2038} pip/
-#{__cp} %{SOURCE2039} pip/
-#{__cp} %{SOURCE2040} pip/
 %{__cp} %{SOURCE2043} pip/
-#{__cp} %{SOURCE2045} pip/
-#{__cp} %{SOURCE2046} pip/
-#{__cp} %{SOURCE2047} pip/
 %{__cp} %{SOURCE2048} pip/
-#{__cp} %{SOURCE2053} pip/
 
 
 
@@ -1041,8 +1090,8 @@ set -x
 %setup -T -D -a 102 -n %{pypi_name}-%{version_mailman}%{?prerelease}
 
 ## base
-%prep_cond "%{?bundled_enabled_wheel}"                  2037
-%prep_cond "%{?bundled_enabled_setuptools_scm}"         2048
+%prep_cond "%{?bundled_enabled_setuptools_scm}"         2037
+%prep_cond "%{?bundled_enabled_wheel}"                  2048
 
 ## bundled packages
 %prep_cond "%{?bundled_enabled_postorius}"              1000
