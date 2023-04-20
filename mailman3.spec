@@ -1720,18 +1720,38 @@ else
   exit 1
 fi
 
+## mailman-web
+# prepare "check" config file
+install -d %{buildroot}%{etcdir}/check/
+install -D -m 0644 %{SOURCE8} %{buildroot}%{etcdir}/check/settings.py
+sed -i -e 's,@LOGDIR@,%{buildroot}%{logdir},g;s,@BINDIR@,%{buildroot}%{bindir},g;s,@BASEDIR@,%{buildroot}%{basedir},g;s,@RUNDIR@,%{buildroot}%{rundir},g;s,@VARDIR@,%{buildroot}%{vardir},g;s,@SPOOLDIR@,%{buildroot}%{spooldir},g;s,@ETCDIR@,%{buildroot}%{etcdir},g;s,@LOCKDIR@,%{buildroot}%{lockdir},g;s,@SYSCONFDIR@,%{buildroot}%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' %{buildroot}%{etcdir}/check/settings.py
+
+# check whether online help is working
 echo "Check whether 'mailman-web' is at least able to display online help"
-MAILMAN_WEB_CONFIG=%{buildroot}%{_sysconfdir}/%{pname}
+MAILMAN_WEB_CONFIG=%{buildroot}%{etcdir}/check/settings.py
 export MAILMAN_WEB_CONFIG
-python%{python3_version} %{buildroot}%{bindir}/mailman-web --help >/dev/null
+set +x
+output=$(python%{python3_version} %{buildroot}%{bindir}/mailman-web --help)
 if [ $? -eq 0 ]; then
   echo "Check whether 'mailman-web' is at least able to display online help - SUCCESSFUL"
+
+  for module in postorius hyperkitty staticfiles sessions rest_framework haystack django_q django_extensions contenttypes compressor auth account; do
+    echo -n "Check for module in 'mailman-web --help': $module"
+    if echo "$output" | %{__grep} -F -q "[$module]"; then
+      echo " OK"
+    else
+      echo " NOT FOUND"
+      exit 1
+    fi
+  done
 else
   exit 1
 fi
+set -x
 
 # remove "check" config file
 rm -f %{buildroot}%{_sysconfdir}/mailman.cfg.check
+rm -rf %{buildroot}%{etcdir}/check/
 
 # remove created log/db files
 rm -f %{buildroot}%{logdir}/*.log %{buildroot}%{vardir}/db/*.db
