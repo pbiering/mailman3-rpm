@@ -7,7 +7,7 @@
 ### Step 1: create source package by
 ###  BUNDLED-AS-REQUIRED PACKAGING (overload existing older versions if required by storing in USER_SITE)
 ###   download required packages and store to ~/rpmbuild/SOURCES
-###   known required overloading see below defined: bundled_enabled_*
+###   known required overloading see below defined: b_e_* / b_v_* (*b*undle_*e*nabled / *b*undle_*v*ersion))
 ###   $ rpmbuild -bp --undefine=_disable_source_fetch mailman3.spec
 ###
 ###  VIRTUALENV PACKAGING
@@ -88,51 +88,51 @@ BuildRequires:  python%{python3_version_num}-pip
 ## VIRTUALENV + BUNDLED-AS-REQUIRED by EL+EPEL supported  requirements
 
 # mandatory packages for mailman
-%define		bundled_enabled_django_mailman3		1
-%define		bundled_enabled_hyperkitty		1
-%define		bundled_enabled_postorius		1
+%define	b_e_django_mailman3		1
+%define	b_e_hyperkitty			1
+%define	b_e_postorius			1
 
 # mandatory packages for enabling CAPTCHA
-%define		bundled_enabled_django_allauth		1
-%define		bundled_enabled_django_recaptcha	1
-%define		bundled_enabled_django_hcaptcha		1
-%define		bundled_enabled_django_friendlycaptcha	1
+%define	b_e_django_allauth		1
+%define	b_e_django_recaptcha		1
+%define	b_e_django_hcaptcha		1
+%define	b_e_django_friendlycaptcha	1
 
 %if (0%{?rhel} == 8)
 # not available for EL == 8 -> bundle
 
-%define		bundled_enabled_alembic                 1
-%define		bundled_enabled_atpublic                1
-%define		bundled_enabled_attrs                   1
-%define		bundled_enabled_authres                 1
-%define		bundled_enabled_blessed                 1
-%define		bundled_enabled_cffi                    1
-%define		bundled_enabled_dataclasses		1
-%define		bundled_enabled_dateutil                1
-%define		bundled_enabled_defusedxml              1
-%define		bundled_enabled_flufl_lock		1
-%define		bundled_enabled_greenlet		1
-%define		bundled_enabled_isort			1
-%define		bundled_enabled_jwt			1
-%define		bundled_enabled_mailmanclient		1
-%define		bundled_enabled_mako			1
-%define		bundled_enabled_oauthlib		1
-%define		bundled_enabled_passlib			1
-%define		bundled_enabled_pytz			1
-%define		bundled_enabled_rcssmin			1
-%define		bundled_enabled_requests_oauthlib	1
-%define		bundled_enabled_robot_detection		1
-%define		bundled_enabled_sqlparse		1
-%define		bundled_enabled_sqlalchemy		1
-%define		bundled_enabled_types_cryptography	1
-%define		bundled_enabled_wcwidth			1
-%define		bundled_enabled_zope_configuration	1
-%define		bundled_enabled_zope_schema		1
-%define		bundled_enabled_zope_i18nmessageid	1
-%define		bundled_enabled_zope_component		1
-%define		bundled_enabled_zope_event		1
-%define		bundled_enabled_zope_hookable		1
-%define		bundled_enabled_zope_interface		1
+%define	b_e_alembic			1
+%define	b_e_atpublic			1
+%define	b_e_attrs			1
+%define	b_e_authres			1
+%define	b_e_blessed			1
+%define	b_e_cffi			1
+%define	b_e_dateutil			1
+%define	b_e_defusedxml			1
+%define	b_e_flufl_lock			1
+%define	b_e_greenlet			1
+%define	b_e_isort			1
+%define	b_e_jwt				1
+%define	b_e_mailmanclient		1
+%define	b_e_mako			1
+%define	b_e_oauthlib			1
+%define	b_e_passlib			1
+%define	b_e_pytz			1
+%define	b_e_rcssmin			1
+%define	b_e_requests_oauthlib		1
+%define	b_e_robot_detection		1
+%define	b_e_sqlparse			1
+%define	b_e_sqlalchemy			1
+%define	b_e_tomli			1
+%define	b_e_types_cryptography		1
+%define	b_e_wcwidth			1
+%define	b_e_zope_configuration		1
+%define	b_e_zope_schema			1
+%define	b_e_zope_i18nmessageid		1
+%define	b_e_zope_component		1
+%define	b_e_zope_event			1
+%define	b_e_zope_hookable		1
+%define	b_e_zope_interface		1
 
 # end of rhel==8
 %endif
@@ -141,393 +141,200 @@ BuildRequires:  python%{python3_version_num}-pip
 %if 0%{?rhel} >= 9
 # not available for EL >= 9 -> bundle
 ## build dependencies
-%define		bundled_enabled_cython			1
-%define		bundled_enabled_flit_core		1
-%define		bundled_enabled_packaging		1
-%define		bundled_enabled_pycparser		1
-%define		bundled_enabled_setuptools		1
-%define		bundled_enabled_setuptools_scm		1
-%define		bundled_enabled_wheel			1
+%define	b_e_cython			1
+%define	b_e_flit_core			1
+%define	b_e_packaging			1
+%define	b_e_pycparser			1
+%define	b_e_setuptools			1
+%define	b_e_setuptools_scm		1
+%define	b_e_wheel			1
 %endif
 
 
 %if 0%{?rhel} >= 8
 # not available for EL >= 8 -> bundle
 
-%define		bundled_enabled_arrow			1
-%define		bundled_enabled_authheaders		1
+%define	b_e_arrow			1
+%define	b_e_authheaders			1
 
 # >= 3.5.2 required, 3.4.1-3.el9 is too low
-%define		bundled_enabled_asgiref			1
+%define	b_e_asgiref			1
 
-%define		bundled_enabled_bleach			1
+%define	b_e_bleach			1
 
 # superseed EL9 appstream
-%define         bundled_enabled_cffi                    1
+%define	b_e_cffi			1
 
-%define		bundled_enabled_cmarkgfm		1
-%define		bundled_enabled_dkimpy			1
-%define		bundled_enabled_docutils		1
-%define		bundled_enabled_falcon			1
-%define		bundled_enabled_gunicorn		1
-%define		bundled_enabled_lazr_config		1
-%define		bundled_enabled_lazr_delegates		1
-%define		bundled_enabled_mistune			1
-%define		bundled_enabled_openid			1
-%define		bundled_enabled_publicsuffix2		1
-%define		bundled_enabled_pygments		1
-%define		bundled_enabled_readme_renderer		1
-%define		bundled_enabled_rjsmin			1
+%define	b_e_cmarkgfm			1
+%define	b_e_dkimpy			1
+%define	b_e_docutils			1
+%define	b_e_falcon			1
+%define	b_e_gunicorn			1
+%define	b_e_lazr_config			1
+%define	b_e_lazr_delegates		1
+%define	b_e_mistune			1
+%define	b_e_openid			1
+%define	b_e_publicsuffix2		1
+%define	b_e_pygments			1
+%define	b_e_readme_renderer		1
+%define	b_e_rjsmin			1
 
 # available for EL9, but strange problem
-%define		bundled_enabled_tomli			1
+#define	b_e_tomli			1
 
-%define		bundled_enabled_typing_extensions	1
-%define		bundled_enabled_webencodings		1
-%define		bundled_enabled_whoosh			1
-%define		bundled_enabled_zope_configuration	1
-%define		bundled_enabled_zope_schema		1
-%define		bundled_enabled_zope_i18nmessageid	1
+%define	b_e_typing_extensions		1
+%define	b_e_webencodings		1
+%define	b_e_whoosh			1
+%define	b_e_zope_configuration		1
+%define	b_e_zope_schema			1
+%define	b_e_zope_i18nmessageid		1
 
 ## django dependencies
-%define		bundled_enabled_django			1
-%define		bundled_enabled_django_q		1
-%define		bundled_enabled_django_compressor	1
-%define		bundled_enabled_django_extensions	1
-%define		bundled_enabled_django_gravatar2	1
-%define		bundled_enabled_django_restframework	1
-%define		bundled_enabled_django_appconf		1
-%define		bundled_enabled_django_picklefield	1
+%define	b_e_django			1
+%define	b_e_django_q			1
+%define	b_e_django_compressor		1
+%define	b_e_django_extensions		1
+%define	b_e_django_gravatar2		1
+%define	b_e_django_rest_framework	1
+%define	b_e_django_appconf		1
+%define	b_e_django_picklefield		1
 
 # end of rhel>=8
 %endif
 
 %if (0%{?fedora} >= 37) || (0%{?rhel} >= 8)
 ## common for Fedora & EL
-%define		bundled_enabled_importlib_resources	1
+%define	b_e_importlib_resources		1
 
 # even while available bundle to avoid install of huge dependencies
-%define		bundled_enabled_networkx		1
+%define	b_e_networkx			1
 
 
 %if (0%{?fedora} > 40)
 # guessing that f40 will have updated versions...
 %else
 # dependencies
-%define		bundled_enabled_aiosmtpd		1
-%define		bundled_enabled_flufl_bounce		1
-%define		bundled_enabled_flufl_i18n		1
-%define		bundled_enabled_django_haystack		1
+%define	b_e_aiosmtpd			1
+%define	b_e_flufl_bounce		1
+%define	b_e_flufl_i18n			1
+%define	b_e_django_haystack		1
 %endif
 
 # end of fedora>=37 && rhel>=8
 %endif
 
-## build-only related
 
-%if ! 0%{?bundled_enabled_setuptools}
-BuildRequires:	python%{python3_version_num}-setuptools
+### Requirements
+
+## Macros
+
+# requirement conditional build-only without version
+%define req_cond_b_o_n_v()  \
+%if ! %1 \
+BuildRequires:	python%{python3_version_num}-%2 \
 %endif
 
-%if ! 0%{?bundled_enabled_setuptools_scm}
-BuildRequires:	python%{python3_version_num}-setuptools_scm
+# requirement conditional build+install without version
+%define req_cond_b_i_n_v()  \
+%if ! %1 \
+BuildRequires:	python%{python3_version_num}-%2 \
+Requires:	python%{python3_version_num}-%2 \
 %endif
 
-%if ! 0%{?bundled_enabled_wheel}
-BuildRequires:	python%{python3_version_num}-wheel
+# requirement conditional build+install with version
+%define req_cond_b_i_w_v()  \
+%if ! %1 \
+BuildRequires:	python%{python3_version_num}-%2 %3 %4 \
+Requires:	python%{python3_version_num}-%2 %3 %4 \
 %endif
+
+
+### build-only related
+%req_cond_b_o_n_v	1				rpm-macros
+
+%req_cond_b_o_n_v	0%{?b_e_setuptools}		setuptools
+%req_cond_b_o_n_v	0%{?b_e_setuptools_scm}		setuptools_scm
+%req_cond_b_o_n_v	0%{?b_e_wheel}			wheel
 
 ## Build dependencies
-%if 0%{?bundled_enabled_cffi}
+%if 0%{?b_e_cffi}
 BuildRequires:	libffi-devel
 %endif
 
 
-## build+install related
+### build+install related
 
-%if ! 0%{?bundled_enabled_alembic}
-BuildRequires:	python%{python3_version_num}-alembic
-Requires:	python%{python3_version_num}-alembic
-%endif
+%req_cond_b_i_w_v	0%{?b_e_aiosmtpd}		aiosmtpd >= 1.4.3
+%req_cond_b_i_n_v	0%{?b_e_alembic}		alembic
+%req_cond_b_i_w_v	0%{?b_e_asgiref}		asgiref >= 3.5.2
+%req_cond_b_i_n_v	0%{?b_e_atpublic}		atpublic
+%req_cond_b_i_n_v	0%{?b_e_attrs}			attrs
+%req_cond_b_i_n_v	0%{?b_e_authres}		authres
+%req_cond_b_i_n_v	0%{?b_e_blessed}		blessed
+%req_cond_b_i_n_v	0%{?b_e_dateutil}		dateutil
+%req_cond_b_i_w_v	0%{?b_e_dkimpy}			dkimpy >= 0.7.1
+%req_cond_b_i_w_v	0%{?b_e_django}			django >= 4
+%req_cond_b_i_n_v	0%{?b_e_django_compressor}	django-compressor
+%req_cond_b_i_w_v	0%{?b_e_django_extensions}	django-extensions >= 1.3.7
+%req_cond_b_i_w_v	0%{?b_e_django_gravatar2}	django-gravatar2 >= 1.0.6
 
-%if ! 0%{?bundled_enabled_atpublic}
-BuildRequires:	python%{python3_version_num}-atpublic
-Requires:	python%{python3_version_num}-atpublic
-%endif
-
-%if ! 0%{?bundled_enabled_attrs}
-BuildRequires:	python%{python3_version_num}-attrs
-Requires:	python%{python3_version_num}-attrs
-%endif
-
-%if ! 0%{?bundled_enabled_authres}
-BuildRequires:	python%{python3_version_num}-authres
-Requires:	python%{python3_version_num}-authres
-%endif
-
-%if ! 0%{?bundled_enabled_blessed}
-BuildRequires:	python%{python3_version_num}-blessed
-Requires:	python%{python3_version_num}-blessed
-%endif
-
-%if ! 0%{?bundled_enabled_dateutil}
-BuildRequires:	python%{python3_version_num}-dateutil
-Requires:	python%{python3_version_num}-dateutil
-%endif
-
-%if ! 0%{?bundled_enabled_flufl_lock}
-BuildRequires:	python%{python3_version_num}-flufl-lock
-Requires:	python%{python3_version_num}-flufl-lock
-%endif
-
-%if ! 0%{?bundled_enabled_greenlet}
-BuildRequires:	python%{python3_version_num}-greenlet
-Requires:	python%{python3_version_num}-greenlet
-%endif
-
-%if ! 0%{?bundled_enabled_isort}
-BuildRequires:	python%{python3_version_num}-isort
-Requires:	python%{python3_version_num}-isort
-%endif
-
-%if ! 0%{?bundled_enabled_mako}
-BuildRequires:	python%{python3_version_num}-mako
-Requires:	python%{python3_version_num}-mako
-%endif
-
-%if ! 0%{?bundled_enabled_mailmanclient}
-BuildRequires:	python%{python3_version_num}-mailmanclient
-Requires:	python%{python3_version_num}-mailmanclient
-%endif
-
-%if ! 0%{?bundled_enabled_passlib}
-BuildRequires:	python%{python3_version_num}-passlib
-Requires: 	python%{python3_version_num}-passlib
-%endif
-
-%if ! 0%{?bundled_enabled_pytz}
-BuildRequires:	python%{python3_version_num}-pytz
-Requires: 	python%{python3_version_num}-pytz
-%endif
-
-%if ! 0%{?bundled_enabled_rcssmin}
-BuildRequires:	python%{python3_version_num}-rcssmin
-Requires: 	python%{python3_version_num}-rcssmin
-%endif
-
-%if ! 0%{?bundled_enabled_robot_detection}
-BuildRequires:	python%{python3_version_num}-robot-detection
-Requires: 	python%{python3_version_num}-robot-detection
-%endif
-
-%if ! 0%{?bundled_enabled_sqlalchemy}
-BuildRequires:	python%{python3_version_num}-sqlalchemy
-Requires:	python%{python3_version_num}-sqlalchemy
-%endif
-
-%if ! 0%{?bundled_enabled_sqlparse}
-BuildRequires:	python%{python3_version_num}-sqlparse
-Requires:	python%{python3_version_num}-sqlparse
-%endif
-
-%if ! 0%{?bundled_enabled_typing_extensions}
-BuildRequires:	python%{python3_version_num}-typing-extensions
-Requires:	python%{python3_version_num}-typing-extensions
-%endif
-
-%if ! 0%{?bundled_enabled_tomli}
-BuildRequires:	python%{python3_version_num}-tomli
-Requires:	python%{python3_version_num}-tomli
-%else
-# strange issue on EL9
-BuildConflicts:	python%{python3_version_num}-tomli
-%endif
-
-%if ! 0%{?bundled_enabled_webencodings}
-BuildRequires:	python%{python3_version_num}-webencodings
-Requires:	python%{python3_version_num}-webencodings
-%endif
-
-%if ! 0%{?bundled_enabled_zope_component}
-BuildRequires:	python%{python3_version_num}-zope-component
-Requires:	python%{python3_version_num}-zope-component
-%endif
-
-%if ! 0%{?bundled_enabled_zope_event}
-BuildRequires:	python%{python3_version_num}-zope-event
-Requires:	python%{python3_version_num}-zope-event
-%endif
-
-%if ! 0%{?bundled_enabled_zope_interface}
-BuildRequires:	python%{python3_version_num}-zope-interface
-Requires:	python%{python3_version_num}-zope-interface
-%endif
-
-%if ! 0%{?bundled_enabled_zope_hookable}
-BuildRequires:	python%{python3_version_num}-zope-hookable
-Requires:	python%{python3_version_num}-zope-hookable
-%endif
-
-%if ! 0%{?bundled_enabled_aiosmtpd}
-# f37/f38/f39: 1.4.2
-BuildRequires:	python#{python3_version_num}-aiosmtpd >= 1.4.3
-Requires:	python#{python3_version_num}-aiosmtpd >= 1.4.3
-%endif
-
-%if ! 0%{?bundled_enabled_flufl_bounce}
-# f37/f38/f39: 3.0
-BuildRequires:	python#{python3_version_num}-flufl-bounce >= 4.0
-Requires:	python#{python3_version_num}-flufl-bounce >= 4.0
-%endif
-
-%if ! 0%{?bundled_enabled_flufl_i18n}
-# f37/f38/f39: 2.0.2
-BuildRequires:	python#{python3_version_num}-flufl-i18n >= 3.2
-Requires:	python#{python3_version_num}-flufl-i18n >= 3.2
-%endif
-
-%if ! 0%{?bundled_enabled_django_haystack}
 # f37/f38/f39: 3.0
 # 3.0 has issue with django: cannot import name 'ungettext' from 'django.utils.translation' (BZ#2187604)
-BuildRequires:	python#{python3_version_num}-django-haystack >= 3.2
-Requires:	python#{python3_version_num}-django-haystack >= 3.2
-%endif
+%req_cond_b_i_w_v	0%{?b_e_django_haystack}	django-haystack >= 3.2
 
-%if ! 0%{?bundled_enabled_asgiref}
-BuildRequires:	python%{python3_version_num}-asgiref >= 3.5.2
-Requires:	python%{python3_version_num}-asgiref >= 3.5.2
-%endif
+%req_cond_b_i_n_v	0%{?b_e_django_q}		django-q
+%req_cond_b_i_n_v	0%{?b_e_django_rest_framework}	django-rest-framework
+%req_cond_b_i_w_v	0%{?b_e_falcon}			falcon >= 3.0.0
 
-%if ! 0%{?bundled_enabled_cmarkgfm}
-BuildRequires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
-Requires:	python%{python3_version_num}-cmarkgfm >= 0.8.0
-%endif
+# f37/f38/f39: 3.0
+%req_cond_b_i_w_v	0%{?b_e_flufl_bounce}		bounce >= 4.0
 
-%if ! 0%{?bundled_enabled_dkimpy}
-BuildRequires:	python%{python3_version_num}-dkimpy >= 0.7.1
-Requires:	python%{python3_version_num}-dkimpy >= 0.7.1
-%endif
+# f37/f38/f39: 2.0.2
+%req_cond_b_i_w_v	0%{?b_e_flufl_i18n}		flufl-i18n >= 3.2
 
-%if ! 0%{?bundled_enabled_django}
-BuildRequires:	python%{python3_version_num}-django >= 4
-Requires:	python%{python3_version_num}-django >= 4
-%endif
-
-%if ! 0%{?bundled_enabled_django_compressor}
-BuildRequires:	python%{python3_version_num}-django-compressor
-Requires:	python%{python3_version_num}-django-compressor
-%endif
-
-%if ! 0%{?bundled_enabled_django_extensions}
-BuildRequires:	python%{python3_version_num}-django-extensions >= 1.3.7
-Requires:	python%{python3_version_num}-django-extensions >= 1.3.7
-%endif
-
-%if ! 0%{?bundled_enabled_django_gravatar2}
-BuildRequires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
-Requires:	python%{python3_version_num}-django-gravatar2 >= 1.0.6
-%endif
-
-%if ! 0%{?bundled_enabled_django_q}
-BuildRequires:	python%{python3_version_num}-django-q
-Requires:	python%{python3_version_num}-django-q
-%endif
-
-%if ! 0%{?bundled_enabled_django_restframework}
-BuildRequires:	python%{python3_version_num}-django-rest-framework
-Requires:	python%{python3_version_num}-django-rest-framework
-%endif
-
-%if ! 0%{?bundled_enabled_falcon}
-BuildRequires:	python%{python3_version_num}-falcon >= 3.0.0
-Requires:	python%{python3_version_num}-falcon >= 3.0.0
-%endif
-
-%if ! 0%{?bundled_enabled_gunicorn}
-BuildRequires:	python%{python3_version_num}-gunicorn
-Requires:	python%{python3_version_num}-gunicorn
-%endif
-
-%if ! 0%{?bundled_enabled_jwt}
-BuildRequires:	python%{python3_version_num}-jwt >= 1.7
-Requires:	python%{python3_version_num}-jwt >= 1.7
-%endif
-
-%if ! 0%{?bundled_enabled_mistune}
-BuildRequires:	python%{python3_version_num}-mistune
-Requires:	python%{python3_version_num}-mistune
-%endif
-
-%if ! 0%{?bundled_enabled_openid}
-BuildRequires:	python%{python3_version_num}-openid >= 3.0.8
-Requires:	python%{python3_version_num}-openid >= 3.0.8
-%endif
-
-%if ! 0%{?bundled_enabled_lazr_config}
-BuildRequires:	python%{python3_version_num}-lazr-config
-Requires:	python%{python3_version_num}-lazr-config
-%endif
-
-%if ! 0%{?bundled_enabled_publicsuffix2}
-BuildRequires:	python%{python3_version_num}-publicsuffix2
-Requires:	python%{python3_version_num}-publicsuffix2
-%endif
-
-%if ! 0%{?bundled_enabled_readme_renderer}
-BuildRequires:	python%{python3_version_num}-readme-renderer
-Requires:	python%{python3_version_num}-readme-renderer
-%endif
-
-%if ! 0%{?bundled_enabled_requests_oauthlib}
-BuildRequires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
-Requires:	python%{python3_version_num}-requests-oauthlib >= 0.3.0
-%endif
-
-%if ! 0%{?bundled_enabled_zope_configuration}
-BuildRequires:	python%{python3_version_num}-zope-configuration
-Requires:	python%{python3_version_num}-zope-configuration
-%endif
-
-%if ! 0%{?bundled_enabled_whoosh}
-BuildRequires:	python%{python3_version_num}-whoosh
-Requires:	python%{python3_version_num}-whoosh
-%endif
-
+%req_cond_b_i_n_v	0%{?b_e_flufl_lock}		flufl-lock
+%req_cond_b_i_n_v	0%{?b_e_gunicorn}		gunicorn
+%req_cond_b_i_n_v	0%{?b_e_greenlet}		greenlet
+%req_cond_b_i_n_v	0%{?b_e_isort}			isort
+%req_cond_b_i_w_v	0%{?b_e_jwt}			jwt >= 1.7
+%req_cond_b_i_n_v	0%{?b_e_lazr_config}		lazr-config
+%req_cond_b_i_n_v	0%{?b_e_mako}			mako
+%req_cond_b_i_n_v	0%{?b_e_mailmanclient}		mailmanclient
+%req_cond_b_i_w_v	0%{?b_e_cmarkgfm}		markgfm >= 0.8.0
+%req_cond_b_i_n_v	0%{?b_e_mistune}		mistune
+%req_cond_b_i_w_v	0%{?b_e_openid}			openid >= 3.0.8
+%req_cond_b_i_n_v	0%{?b_e_passlib}		passlib
+%req_cond_b_i_n_v	0%{?b_e_publicsuffix2}		publicsuffix2
+%req_cond_b_i_n_v	0%{?b_e_pytz}			pytz
+%req_cond_b_i_n_v	0%{?b_e_rcssmin}		rcssmin
+%req_cond_b_i_n_v	0%{?b_e_readme_renderer}	readme-renderer
+%req_cond_b_i_w_v	0%{?b_e_requests_oauthlib}	requests-oauthlib >= 0.3.0
+%req_cond_b_i_n_v	0%{?b_e_robot_detection}	robot-detection
+%req_cond_b_i_n_v	0%{?b_e_sqlalchemy}		sqlalchemy
+%req_cond_b_i_n_v	0%{?b_e_sqlparse}		sqlparse
+%req_cond_b_i_n_v	0%{?b_e_tomli}			tomli
+%req_cond_b_i_n_v	0%{?b_e_typing_extensions}	typing-extensions
+%req_cond_b_i_n_v	0%{?b_e_webencodings}		webencodings
+%req_cond_b_i_n_v	0%{?b_e_whoosh}			whoosh
+%req_cond_b_i_n_v	0%{?b_e_zope_component}		zope-component
+%req_cond_b_i_n_v	0%{?b_e_zope_configuration}	zope-configuration
+%req_cond_b_i_n_v	0%{?b_e_zope_event}		zope-event
+%req_cond_b_i_n_v	0%{?b_e_zope_interface}		zope-interface
+%req_cond_b_i_n_v	0%{?b_e_zope_hookable}		zope-hookable
 
 ## ALL supported OS versions
-BuildRequires:	python%{python3_version_num}-rpm-macros
+%req_cond_b_i_n_v	1				click
+%req_cond_b_i_n_v	1				cryptography
+%req_cond_b_i_n_v	1				dns
+%req_cond_b_i_n_v	1				idna
+%req_cond_b_i_n_v	1				markusafe
+%req_cond_b_i_n_v	1				psutil
+%req_cond_b_i_n_v	1				requests
+%req_cond_b_i_n_v	1				six
+%req_cond_b_i_n_v	1				toml
+%req_cond_b_i_n_v	1				urllib3
 
-BuildRequires:	python%{python3_version_num}-click
-Requires: 	python%{python3_version_num}-click
-
-BuildRequires:	python%{python3_version_num}-cryptography
-Requires: 	python%{python3_version_num}-cryptography
-
-BuildRequires:	python%{python3_version_num}-dns
-Requires:	python%{python3_version_num}-dns
-
-BuildRequires:	python%{python3_version_num}-idna
-Requires:	python%{python3_version_num}-idna
-
-BuildRequires:	python%{python3_version_num}-markupsafe
-Requires: 	python%{python3_version_num}-markupsafe
-
-BuildRequires:	python%{python3_version_num}-psutil
-Requires: 	python%{python3_version_num}-psutil
-
-BuildRequires:	python%{python3_version_num}-requests
-Requires: 	python%{python3_version_num}-requests
-
-BuildRequires:	python%{python3_version_num}-six
-Requires:	python%{python3_version_num}-six
-
-BuildRequires:	python%{python3_version_num}-toml
-Requires: 	python%{python3_version_num}-toml
-
-BuildRequires:	python%{python3_version_num}-urllib3
-Requires:	python%{python3_version_num}-urllib3
-
-
+# extra
 BuildRequires: 	publicsuffix-list
 Requires: 	publicsuffix-list
 
@@ -583,137 +390,136 @@ Requires: 	publicsuffix-list
 
 ## BUNDLED DEPENDENCIES VERSIONS
 
-#define	bundled_version_alembic			1.10.3 # typing_extensions/TypeGuard problem
-%define	bundled_version_alembic			1.9.4
+#define	b_v_alembic			1.10.3 # typing_extensions/TypeGuard problem
+%define	b_v_alembic			1.9.4
 
-#define	bundled_version_atpublic		3.1.1 # >= 3.x has no setup.py
-%define	bundled_version_atpublic		2.3
+#define	b_v_atpublic		3.1.1 # >= 3.x has no setup.py
+%define	b_v_atpublic		2.3
 
-%define	bundled_version_attrs			22.2.0
-%define	bundled_version_authres			1.2.0
-%define	bundled_version_blessed			1.20.0
-%define	bundled_version_certifi			2022.12.7
-%define	bundled_version_charset_normalizer	3.1.0
-%define	bundled_version_click			8.1.3
-%define	bundled_version_cython			0.29.34
-%define	bundled_version_cryptography		40.0.1
-%define	bundled_version_dataclasses		0.8
-%define	bundled_version_dateutil		2.8.2
-%define	bundled_version_defusedxml		0.7.1
-%define	bundled_version_dnspython		2.3.0
-%define	bundled_version_flit_core		3.8.0
+%define	b_v_attrs			22.2.0
+%define	b_v_authres			1.2.0
+%define	b_v_blessed			1.20.0
+%define	b_v_certifi			2022.12.7
+%define	b_v_charset_normalizer		3.1.0
+%define	b_v_click			8.1.3
+%define	b_v_cython			0.29.34
+%define	b_v_cryptography		40.0.1
+%define	b_v_dateutil			2.8.2
+%define	b_v_defusedxml			0.7.1
+%define	b_v_dnspython			2.3.0
+%define	b_v_flit_core			3.8.0
 
-#define	bundled_version_flufl_lock		7.1.1 # >= 7.x has no setup.py
-%define	bundled_version_flufl_lock		6.0
+#define	b_v_flufl_lock			7.1.1 # >= 7.x has no setup.py
+%define	b_v_flufl_lock			6.0
 
-%define	bundled_version_greenlet		2.0.2
-%define	bundled_version_idna			3.4
-%define	bundled_version_isort			5.12.0
-%define	bundled_version_mako			1.2.4
-%define	bundled_version_MarkupSafe		2.1.2
-%define	bundled_version_networkx		3.0
-%define	bundled_version_oauthlib		3.2.2
-%define	bundled_version_openid			3.2.0
-%define	bundled_version_packaging		23.0
-%define	bundled_version_passlib			1.7.4
-%define	bundled_version_pdm_pep517		1.1.3
-%define	bundled_version_poetry_core		1.5.2
-%define	bundled_version_psutil			5.9.4
-%define	bundled_version_pycparser		2.21
+%define	b_v_greenlet			2.0.2
+%define	b_v_idna			3.4
+%define	b_v_isort			5.12.0
+%define	b_v_mako			1.2.4
+%define	b_v_MarkupSafe			2.1.2
+%define	b_v_networkx			3.0
+%define	b_v_oauthlib			3.2.2
+%define	b_v_openid			3.2.0
+%define	b_v_packaging			23.0
+%define	b_v_passlib			1.7.4
+%define	b_v_pdm_pep517			1.1.3
+%define	b_v_poetry_core			1.5.2
+%define	b_v_psutil			5.9.4
+%define	b_v_pycparser			2.21
 
-#define	bundled_version_jwt			2.6.0 # conflicts on EL with python39-cryptography==3.3.1
-%define	bundled_version_jwt			2.5.0
+#define	b_v_jwt				2.6.0 # conflicts on EL with python39-cryptography==3.3.1
+%define	b_v_jwt				2.5.0
 
-%define	bundled_version_pytz			2023.3
-%define	bundled_version_rcssmin			1.1.1
-%define	bundled_version_requests_oauthlib	1.3.1
-#N2#define	bundled_version_redis			3.5.3
-%define	bundled_version_robot_detection		0.4
-#N2#define	bundled_version_semantic_version	2.10.0 
-%define	bundled_version_setuptools		67.6.1
-%define	bundled_version_setuptools_scm		7.1.0
+%define	b_v_pytz			2023.3
+%define	b_v_rcssmin			1.1.1
+%define	b_v_requests_oauthlib		1.3.1
+#N2#define	b_v_redis			3.5.3
+%define	b_v_robot_detection		0.4
+#N2#define	b_v_semantic_version	2.10.0 
+%define	b_v_setuptools			67.6.1
+%define	b_v_setuptools_scm		7.1.0
 
-#define	bundled_version_sqlalchemy		2.0.9 # EL8 problem typing_extensions/Concatenate
-%define	bundled_version_sqlalchemy		1.4.47
+#define	b_v_sqlalchemy			2.0.9 # EL8 problem typing_extensions/Concatenate
+%define	b_v_sqlalchemy			1.4.47
 
-%define	bundled_version_sqlparse		0.4.3
+%define	b_v_sqlparse			0.4.3
 
-#define	bundled_version_tomli			2.0.1 # >= 2.x has no setup.py
-#define	bundled_version_tomli			1.2.3 # >= 1.2.x has no setup.py
-%define	bundled_version_tomli			1.1.0
+#define	b_v_tomli			2.0.1 # >= 2.x has no setup.py
+#define	b_v_tomli			1.2.3 # >= 1.2.x has no setup.py
+%define	b_v_tomli			1.1.0
 
-#define	bundled_version_typing_extensions	4.5.0 # >= 4.x has no setup.py / 3.10.0.2 causes dataclass_transform dependency problems
-#define	bundled_version_typing_extensions	3.10.0.2  # causes dataclass_transform dependency problems
-%define	bundled_version_typing_extensions	3.7.4.3
+#define	b_v_typing_extensions		4.5.0 # >= 4.x has no setup.py / 3.10.0.2 causes dataclass_transform dependency problems
+#define	b_v_typing_extensions		3.10.0.2  # causes dataclass_transform dependency problems
+%define	b_v_typing_extensions		3.7.4.3
 
-%define	bundled_version_types_cryptography	3.3.23.2
+%define	b_v_types_cryptography		3.3.23.2
 
-%define	bundled_version_wcwidth			0.2.6
-%define	bundled_version_webencodings		0.5.1
-%define	bundled_version_wheel			0.40.0
-#N2#define	bundled_version_zipp			3.15.0
-%define	bundled_version_zope_component		5.1.0
-%define	bundled_version_zope_event		4.6
-%define	bundled_version_zope_hookable		5.4
-%define	bundled_version_zope_interface		6.0
+%define	b_v_wcwidth			0.2.6
+%define	b_v_webencodings		0.5.1
+%define	b_v_wheel			0.40.0
+#N2#define	b_v_zipp			3.15.0
+%define	b_v_zope_component		5.1.0
+%define	b_v_zope_event			4.6
+%define	b_v_zope_hookable		5.4
+%define	b_v_zope_interface		6.0
 
-%define	bundled_version_mailmanclient		3.3.5
+%define	b_v_mailmanclient		3.3.5
 
 ## BUNDLED VERSIONS
 # base
-%define	bundled_version_postorius		1.3.8
-%define	bundled_version_hyperkitty		1.3.7
+%define	b_v_postorius			1.3.8
+%define	b_v_hyperkitty			1.3.7
 
 # dependencies
-%define	bundled_version_aiosmtpd		1.4.4.post2
-%define	bundled_version_arrow			1.2.3
-%define	bundled_version_asgiref			3.6.0
-%define	bundled_version_authheaders		0.15.2
-%define	bundled_version_bleach			6.0.0
-%define	bundled_version_cffi                    1.15.1
-%define	bundled_version_dkimpy			1.1.1
-%define	bundled_version_docutils		0.19
-%define	bundled_version_falcon			3.1.1
-%define	bundled_version_flufl_bounce		4.0
-%define	bundled_version_gunicorn		20.1.0
-%define	bundled_version_lazr_config		2.2.3
-%define	bundled_version_lazr_delegates		2.1.0
-%define	bundled_version_mistune			2.0.5
-%define	bundled_version_publicsuffix2		2.20191221
-%define	bundled_version_pygments		2.14.0
-%define	bundled_version_rjsmin			1.2.1
-%define	bundled_version_whoosh			2.7.4
+%define	b_v_aiosmtpd			1.4.4.post2
+%define	b_v_arrow			1.2.3
+%define	b_v_asgiref			3.6.0
+%define	b_v_authheaders			0.15.2
+%define	b_v_bleach			6.0.0
+%define	b_v_cffi                	1.15.1
+%define	b_v_dkimpy			1.1.1
+%define	b_v_docutils			0.19
+%define	b_v_falcon			3.1.1
+%define	b_v_flufl_bounce		4.0
+%define	b_v_gunicorn			20.1.0
+%define	b_v_lazr_config			2.2.3
+%define	b_v_lazr_delegates		2.1.0
+%define	b_v_mistune			2.0.5
+%define	b_v_publicsuffix2		2.20191221
+%define	b_v_pygments			2.14.0
+%define	b_v_rjsmin			1.2.1
+%define	b_v_whoosh			2.7.4
 
-%define	bundled_version_zope_configuration	4.4.1
-%define	bundled_version_zope_schema		7.0.1
-%define	bundled_version_zope_i18nmessageid	6.0.1
+%define	b_v_zope_configuration		4.4.1
+%define	b_v_zope_schema			7.0.1
+%define	b_v_zope_i18nmessageid		6.0.1
 
-%define	bundled_version_readme_renderer		37.3
-%define	bundled_version_cmarkgfm		0.8.0
+%define	b_v_readme_renderer		37.3
+%define	b_v_cmarkgfm			0.8.0
 
-#define	bundled_version_flufl_i18n		4.1.1 # 4.x has no setup.py
-%define	bundled_version_flufl_i18n		3.2
+#define	b_v_flufl_i18n			4.1.1 # 4.x has no setup.py
+%define	b_v_flufl_i18n			3.2
 
-#define	bundled_version_importlib_resources     5.2.0 # 5.x has no setup.py
-%define	bundled_version_importlib_resources     4.1.1
+#define	b_v_importlib_resources		5.2.0 # 5.x has no setup.py
+%define	b_v_importlib_resources		4.1.1
 
 ## django dependencies
-%define	bundled_version_django			4.1.7
-%define	bundled_version_django_allauth		0.54.0
-%define	bundled_version_django_appconf		1.0.5
-%define	bundled_version_django_compressor	4.3.1
-%define	bundled_version_django_extensions	3.2.1
-%define	bundled_version_django_gravatar2	1.4.4
-%define	bundled_version_django_haystack		3.2.1
-%define	bundled_version_django_picklefield	3.1
-%define	bundled_version_django_restframework	3.14.0
-%define	bundled_version_django_q		1.3.9
+%define	b_v_django			4.1.7
+%define	b_v_django_allauth		0.54.0
+%define	b_v_django_appconf		1.0.5
+%define	b_v_django_compressor		4.3.1
+%define	b_v_django_extensions		3.2.1
+%define	b_v_django_gravatar2		1.4.4
+%define	b_v_django_haystack		3.2.1
+%define	b_v_django_picklefield		3.1
+%define	b_v_django_rest_framework	3.14.0
+%define	b_v_django_q			1.3.9
 
 ## django mailman related
-%define	bundled_version_django_mailman3		1.3.9
-%define	bundled_version_django_recaptcha	3.0.0
-%define	bundled_version_django_hcaptcha		0.2.0
-%define	bundled_version_django_friendlycaptcha	0.1.7
+%define	b_v_django_mailman3		1.3.9
+%define	b_v_django_recaptcha		3.0.0
+%define	b_v_django_hcaptcha		0.2.0
+%define	b_v_django_friendlycaptcha	0.1.7
 
 
 ### HEADER
@@ -779,110 +585,109 @@ Source415:	%{pname}-web-monthly.timer
 Source416:	%{pname}-web-yearly.timer
 
 ### COMMON PACKAGING
-Source1000:	%{__pypi_url}p/postorius/postorius-%{bundled_version_postorius}.tar.gz
-Source1001:	%{__pypi_url}H/HyperKitty/HyperKitty-%{bundled_version_hyperkitty}.tar.gz
+Source1000:	%{__pypi_url}p/postorius/postorius-%{b_v_postorius}.tar.gz
+Source1001:	%{__pypi_url}H/HyperKitty/HyperKitty-%{b_v_hyperkitty}.tar.gz
 
-Source1010:	%{__pypi_url}a/authheaders/authheaders-%{bundled_version_authheaders}.tar.gz
-Source1011:	%{__pypi_url}l/lazr.config/lazr.config-%{bundled_version_lazr_config}.tar.gz
-Source1012:	%{__pypi_url}l/lazr.delegates/lazr.delegates-%{bundled_version_lazr_delegates}.tar.gz
-Source1013:	%{__pypi_url}a/aiosmtpd/aiosmtpd-%{bundled_version_aiosmtpd}.tar.gz
-Source1014:	%{__pypi_url}f/falcon/falcon-%{bundled_version_falcon}.tar.gz
-Source1015:	%{__pypi_url}d/dkimpy/dkimpy-%{bundled_version_dkimpy}.tar.gz
-Source1016:	%{__pypi_url}m/mistune/mistune-%{bundled_version_mistune}.tar.gz
-Source1017:	%{__pypi_url}r/readme_renderer/readme_renderer-%{bundled_version_readme_renderer}.tar.gz
-Source1018:	%{__pypi_url}p/publicsuffix2/publicsuffix2-%{bundled_version_publicsuffix2}.tar.gz
-Source1019:	%{__pypi_url}r/rjsmin/rjsmin-%{bundled_version_rjsmin}.tar.gz
-Source1020:	%{__pypi_url}a/arrow/arrow-%{bundled_version_arrow}.tar.gz
-Source1021:	%{__pypi_url}d/docutils/docutils-%{bundled_version_docutils}.tar.gz
-Source1022:	%{__pypi_url}b/bleach/bleach-%{bundled_version_bleach}.tar.gz
-Source1023:	%{__pypi_url}P/Pygments/Pygments-%{bundled_version_pygments}.tar.gz
-Source1024:	%{__pypi_url}a/asgiref/asgiref-%{bundled_version_asgiref}.tar.gz
-Source1025:	%{__pypi_url}f/flufl.bounce/flufl.bounce-%{bundled_version_flufl_bounce}.tar.gz
-Source1026:	%{__pypi_url}f/flufl.i18n/flufl.i18n-%{bundled_version_flufl_i18n}.tar.gz
-Source1027:	%{__pypi_url}W/Whoosh/Whoosh-%{bundled_version_whoosh}.tar.gz
+Source1010:	%{__pypi_url}a/authheaders/authheaders-%{b_v_authheaders}.tar.gz
+Source1011:	%{__pypi_url}l/lazr.config/lazr.config-%{b_v_lazr_config}.tar.gz
+Source1012:	%{__pypi_url}l/lazr.delegates/lazr.delegates-%{b_v_lazr_delegates}.tar.gz
+Source1013:	%{__pypi_url}a/aiosmtpd/aiosmtpd-%{b_v_aiosmtpd}.tar.gz
+Source1014:	%{__pypi_url}f/falcon/falcon-%{b_v_falcon}.tar.gz
+Source1015:	%{__pypi_url}d/dkimpy/dkimpy-%{b_v_dkimpy}.tar.gz
+Source1016:	%{__pypi_url}m/mistune/mistune-%{b_v_mistune}.tar.gz
+Source1017:	%{__pypi_url}r/readme_renderer/readme_renderer-%{b_v_readme_renderer}.tar.gz
+Source1018:	%{__pypi_url}p/publicsuffix2/publicsuffix2-%{b_v_publicsuffix2}.tar.gz
+Source1019:	%{__pypi_url}r/rjsmin/rjsmin-%{b_v_rjsmin}.tar.gz
+Source1020:	%{__pypi_url}a/arrow/arrow-%{b_v_arrow}.tar.gz
+Source1021:	%{__pypi_url}d/docutils/docutils-%{b_v_docutils}.tar.gz
+Source1022:	%{__pypi_url}b/bleach/bleach-%{b_v_bleach}.tar.gz
+Source1023:	%{__pypi_url}P/Pygments/Pygments-%{b_v_pygments}.tar.gz
+Source1024:	%{__pypi_url}a/asgiref/asgiref-%{b_v_asgiref}.tar.gz
+Source1025:	%{__pypi_url}f/flufl.bounce/flufl.bounce-%{b_v_flufl_bounce}.tar.gz
+Source1026:	%{__pypi_url}f/flufl.i18n/flufl.i18n-%{b_v_flufl_i18n}.tar.gz
+Source1027:	%{__pypi_url}W/Whoosh/Whoosh-%{b_v_whoosh}.tar.gz
 Patch1027:      mailman3-whoosh-whoosh3.patch
 
-Source1028:	%{__pypi_url}c/cmarkgfm/cmarkgfm-%{bundled_version_cmarkgfm}.tar.gz
-Source1029:	%{__pypi_url}c/cffi/cffi-%{bundled_version_cffi}.tar.gz
-Source1030:	%{__pypi_url}i/importlib_resources/importlib_resources-%{bundled_version_importlib_resources}.tar.gz
-Source1031:	%{__pypi_url}g/gunicorn/gunicorn-%{bundled_version_gunicorn}.tar.gz
+Source1028:	%{__pypi_url}c/cmarkgfm/cmarkgfm-%{b_v_cmarkgfm}.tar.gz
+Source1029:	%{__pypi_url}c/cffi/cffi-%{b_v_cffi}.tar.gz
+Source1030:	%{__pypi_url}i/importlib_resources/importlib_resources-%{b_v_importlib_resources}.tar.gz
+Source1031:	%{__pypi_url}g/gunicorn/gunicorn-%{b_v_gunicorn}.tar.gz
 
-Source1040:	%{__pypi_url}z/zope.configuration/zope.configuration-%{bundled_version_zope_configuration}.tar.gz
-Source1041:	%{__pypi_url}z/zope.schema/zope.schema-%{bundled_version_zope_schema}.tar.gz
-Source1042:	%{__pypi_url}z/zope.i18nmessageid/zope.i18nmessageid-%{bundled_version_zope_i18nmessageid}.tar.gz
+Source1040:	%{__pypi_url}z/zope.configuration/zope.configuration-%{b_v_zope_configuration}.tar.gz
+Source1041:	%{__pypi_url}z/zope.schema/zope.schema-%{b_v_zope_schema}.tar.gz
+Source1042:	%{__pypi_url}z/zope.i18nmessageid/zope.i18nmessageid-%{b_v_zope_i18nmessageid}.tar.gz
 
 ## django dependencies
-Source1100:	%{__pypi_url}D/Django/Django-%{bundled_version_django}.tar.gz
-Source1101:	%{__pypi_url}d/django-haystack/django-haystack-%{bundled_version_django_haystack}.tar.gz
-Source1102:	%{__pypi_url}d/django-allauth/django-allauth-%{bundled_version_django_allauth}.tar.gz
-Source1104:	%{__pypi_url}d/django-q/django-q-%{bundled_version_django_q}.tar.gz
-Source1105:	%{__pypi_url}d/django_compressor/django_compressor-%{bundled_version_django_compressor}.tar.gz
-Source1106:	%{__pypi_url}d/django-extensions/django-extensions-%{bundled_version_django_extensions}.tar.gz
-Source1107:	%{__pypi_url}d/django-gravatar2/django-gravatar2-%{bundled_version_django_gravatar2}.tar.gz
-Source1108:	%{__pypi_url}d/djangorestframework/djangorestframework-%{bundled_version_django_restframework}.tar.gz
-Source1109:	%{__pypi_url}d/django-appconf/django-appconf-%{bundled_version_django_appconf}.tar.gz
-Source1110:	%{__pypi_url}d/django-picklefield/django-picklefield-%{bundled_version_django_picklefield}.tar.gz
+Source1100:	%{__pypi_url}D/Django/Django-%{b_v_django}.tar.gz
+Source1101:	%{__pypi_url}d/django-haystack/django-haystack-%{b_v_django_haystack}.tar.gz
+Source1102:	%{__pypi_url}d/django-allauth/django-allauth-%{b_v_django_allauth}.tar.gz
+Source1104:	%{__pypi_url}d/django-q/django-q-%{b_v_django_q}.tar.gz
+Source1105:	%{__pypi_url}d/django_compressor/django_compressor-%{b_v_django_compressor}.tar.gz
+Source1106:	%{__pypi_url}d/django-extensions/django-extensions-%{b_v_django_extensions}.tar.gz
+Source1107:	%{__pypi_url}d/django-gravatar2/django-gravatar2-%{b_v_django_gravatar2}.tar.gz
+Source1108:	%{__pypi_url}d/djangorestframework/djangorestframework-%{b_v_django_rest_framework}.tar.gz
+Source1109:	%{__pypi_url}d/django-appconf/django-appconf-%{b_v_django_appconf}.tar.gz
+Source1110:	%{__pypi_url}d/django-picklefield/django-picklefield-%{b_v_django_picklefield}.tar.gz
 
 ## django mailman related
-Source1180:	%{__pypi_url}d/django-mailman3/django-mailman3-%{bundled_version_django_mailman3}.tar.gz
-Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{bundled_version_django_recaptcha}.tar.gz
-Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{bundled_version_django_hcaptcha}.tar.gz
-Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{bundled_version_django_friendlycaptcha}.tar.gz
+Source1180:	%{__pypi_url}d/django-mailman3/django-mailman3-%{b_v_django_mailman3}.tar.gz
+Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{b_v_django_recaptcha}.tar.gz
+Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{b_v_django_hcaptcha}.tar.gz
+Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{b_v_django_friendlycaptcha}.tar.gz
 
 ### VIRTUALENV PACKAGING
-Source2009:	%{__pypi_url}C/Cython/Cython-%{bundled_version_cython}.tar.gz
-Source2012:	%{__pypi_url}f/flit_core/flit_core-%{bundled_version_flit_core}.tar.gz
+Source2009:	%{__pypi_url}C/Cython/Cython-%{b_v_cython}.tar.gz
+Source2012:	%{__pypi_url}f/flit_core/flit_core-%{b_v_flit_core}.tar.gz
 
 # networkx has too many dependencies if installed via RPM -> bundle
-Source2019:	%{__pypi_url}n/networkx/networkx-%{bundled_version_networkx}.tar.gz
+Source2019:	%{__pypi_url}n/networkx/networkx-%{b_v_networkx}.tar.gz
 
-Source2021:	%{__pypi_url}p/packaging/packaging-%{bundled_version_packaging}.tar.gz
-Source2024:	%{__pypi_url}p/poetry_core/poetry_core-%{bundled_version_poetry_core}.tar.gz
-Source2026:	%{__pypi_url}p/pycparser/pycparser-%{bundled_version_pycparser}.tar.gz
-Source2030:	#{__pypi_url}P/PyJWT/PyJWT-%{bundled_version_jwt}.tar.gz
-#N2#Source2032:	#{__pypi_url}r/redis/redis-#{bundled_version_redis}.tar.gz
-Source2036:	%{__pypi_url}s/setuptools/setuptools-%{bundled_version_setuptools}.tar.gz
-Source2037:	%{__pypi_url}s/setuptools_scm/setuptools_scm-%{bundled_version_setuptools_scm}.tar.gz
-#N2#Source2039:	#{__pypi_url}s/semantic_version/semantic_version-#{bundled_version_semantic_version}.tar.gz
-Source2041:	%{__pypi_url}s/sqlparse/sqlparse-%{bundled_version_sqlparse}.tar.gz
-Source2043:	%{__pypi_url}t/typing_extensions/typing_extensions-%{bundled_version_typing_extensions}.tar.gz
-Source2046:	%{__pypi_url}w/wcwidth/wcwidth-%{bundled_version_wcwidth}.tar.gz
-Source2047:	%{__pypi_url}w/webencodings/webencodings-%{bundled_version_webencodings}.tar.gz
-Source2048:	%{__pypi_url}w/wheel/wheel-%{bundled_version_wheel}.tar.gz
-#N2#Source2053:	#{__pypi_url}z/zipp/zipp-#{bundled_version_zipp}.tar.gz
+Source2021:	%{__pypi_url}p/packaging/packaging-%{b_v_packaging}.tar.gz
+Source2024:	%{__pypi_url}p/poetry_core/poetry_core-%{b_v_poetry_core}.tar.gz
+Source2026:	%{__pypi_url}p/pycparser/pycparser-%{b_v_pycparser}.tar.gz
+Source2030:	#{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
+#N2#Source2032:	#{__pypi_url}r/redis/redis-#{b_v_redis}.tar.gz
+Source2036:	%{__pypi_url}s/setuptools/setuptools-%{b_v_setuptools}.tar.gz
+Source2037:	%{__pypi_url}s/setuptools_scm/setuptools_scm-%{b_v_setuptools_scm}.tar.gz
+#N2#Source2039:	#{__pypi_url}s/semantic_version/semantic_version-#{b_v_semantic_version}.tar.gz
+Source2041:	%{__pypi_url}s/sqlparse/sqlparse-%{b_v_sqlparse}.tar.gz
+Source2043:	%{__pypi_url}t/typing_extensions/typing_extensions-%{b_v_typing_extensions}.tar.gz
+Source2046:	%{__pypi_url}w/wcwidth/wcwidth-%{b_v_wcwidth}.tar.gz
+Source2047:	%{__pypi_url}w/webencodings/webencodings-%{b_v_webencodings}.tar.gz
+Source2048:	%{__pypi_url}w/wheel/wheel-%{b_v_wheel}.tar.gz
+#N2#Source2053:	#{__pypi_url}z/zipp/zipp-#{b_v_zipp}.tar.gz
 
 # EL8
-Source2000:	%{__pypi_url}a/alembic/alembic-%{bundled_version_alembic}.tar.gz
-Source2001:	%{__pypi_url}a/atpublic/atpublic-%{bundled_version_atpublic}.tar.gz
-Source2002:	%{__pypi_url}a/attrs/attrs-%{bundled_version_attrs}.tar.gz
-Source2003:	%{__pypi_url}a/authres/authres-%{bundled_version_authres}.tar.gz
-Source2004:	%{__pypi_url}b/blessed/blessed-%{bundled_version_blessed}.tar.gz
-Source2005:	%{__pypi_url}c/certifi/certifi-%{bundled_version_certifi}.tar.gz
-Source2006:	%{__pypi_url}c/charset-normalizer/charset-normalizer-%{bundled_version_charset_normalizer}.tar.gz
-Source2010:	%{__pypi_url}d/defusedxml/defusedxml-%{bundled_version_defusedxml}.tar.gz
-Source2013:	%{__pypi_url}f/flufl.lock/flufl.lock-%{bundled_version_flufl_lock}.tar.gz
-Source2014:	%{__pypi_url}g/greenlet/greenlet-%{bundled_version_greenlet}.tar.gz
-Source2016:	%{__pypi_url}i/isort/isort-%{bundled_version_isort}.tar.gz
-Source2017:	%{__pypi_url}M/Mako/Mako-%{bundled_version_mako}.tar.gz
-Source2020:	%{__pypi_url}o/oauthlib/oauthlib-%{bundled_version_oauthlib}.tar.gz
-Source2022:	%{__pypi_url}p/passlib/passlib-%{bundled_version_passlib}.tar.gz
-Source2023:	%{__pypi_url}p/pdm-pep517/pdm-pep517-%{bundled_version_pdm_pep517}.tar.gz
-Source2027:	%{__pypi_url}p/python-dateutil/python-dateutil-%{bundled_version_dateutil}.tar.gz
-Source2028:	%{__pypi_url}p/python3-openid/python3-openid-%{bundled_version_openid}.tar.gz
-Source2029:	%{__pypi_url}p/pytz/pytz-%{bundled_version_pytz}.tar.gz
-Source2031:	%{__pypi_url}r/rcssmin/rcssmin-%{bundled_version_rcssmin}.tar.gz
-Source2034:	%{__pypi_url}r/requests-oauthlib/requests-oauthlib-%{bundled_version_requests_oauthlib}.tar.gz
-Source2035:	%{__pypi_url}r/robot-detection/robot-detection-%{bundled_version_robot_detection}.tar.gz
-Source2042:	%{__pypi_url}S/SQLAlchemy/SQLAlchemy-%{bundled_version_sqlalchemy}.tar.gz
-Source2044:	%{__pypi_url}t/tomli/tomli-%{bundled_version_tomli}.tar.gz
-Source2049:	%{__pypi_url}z/zope.component/zope.component-%{bundled_version_zope_component}.tar.gz
-Source2050:	%{__pypi_url}z/zope.event/zope.event-%{bundled_version_zope_event}.tar.gz
-Source2051:	%{__pypi_url}z/zope.hookable/zope.hookable-%{bundled_version_zope_hookable}.tar.gz
-Source2052:	%{__pypi_url}z/zope.interface/zope.interface-%{bundled_version_zope_interface}.tar.gz
-Source2054:	%{__pypi_url}d/dataclasses/dataclasses-%{bundled_version_dataclasses}.tar.gz
-Source2055:	%{__pypi_url}t/types-cryptography/types-cryptography-%{bundled_version_types_cryptography}.tar.gz
+Source2000:	%{__pypi_url}a/alembic/alembic-%{b_v_alembic}.tar.gz
+Source2001:	%{__pypi_url}a/atpublic/atpublic-%{b_v_atpublic}.tar.gz
+Source2002:	%{__pypi_url}a/attrs/attrs-%{b_v_attrs}.tar.gz
+Source2003:	%{__pypi_url}a/authres/authres-%{b_v_authres}.tar.gz
+Source2004:	%{__pypi_url}b/blessed/blessed-%{b_v_blessed}.tar.gz
+Source2005:	%{__pypi_url}c/certifi/certifi-%{b_v_certifi}.tar.gz
+Source2006:	%{__pypi_url}c/charset-normalizer/charset-normalizer-%{b_v_charset_normalizer}.tar.gz
+Source2010:	%{__pypi_url}d/defusedxml/defusedxml-%{b_v_defusedxml}.tar.gz
+Source2013:	%{__pypi_url}f/flufl.lock/flufl.lock-%{b_v_flufl_lock}.tar.gz
+Source2014:	%{__pypi_url}g/greenlet/greenlet-%{b_v_greenlet}.tar.gz
+Source2016:	%{__pypi_url}i/isort/isort-%{b_v_isort}.tar.gz
+Source2017:	%{__pypi_url}M/Mako/Mako-%{b_v_mako}.tar.gz
+Source2020:	%{__pypi_url}o/oauthlib/oauthlib-%{b_v_oauthlib}.tar.gz
+Source2022:	%{__pypi_url}p/passlib/passlib-%{b_v_passlib}.tar.gz
+Source2023:	%{__pypi_url}p/pdm-pep517/pdm-pep517-%{b_v_pdm_pep517}.tar.gz
+Source2027:	%{__pypi_url}p/python-dateutil/python-dateutil-%{b_v_dateutil}.tar.gz
+Source2028:	%{__pypi_url}p/python3-openid/python3-openid-%{b_v_openid}.tar.gz
+Source2029:	%{__pypi_url}p/pytz/pytz-%{b_v_pytz}.tar.gz
+Source2031:	%{__pypi_url}r/rcssmin/rcssmin-%{b_v_rcssmin}.tar.gz
+Source2034:	%{__pypi_url}r/requests-oauthlib/requests-oauthlib-%{b_v_requests_oauthlib}.tar.gz
+Source2035:	%{__pypi_url}r/robot-detection/robot-detection-%{b_v_robot_detection}.tar.gz
+Source2042:	%{__pypi_url}S/SQLAlchemy/SQLAlchemy-%{b_v_sqlalchemy}.tar.gz
+Source2044:	%{__pypi_url}t/tomli/tomli-%{b_v_tomli}.tar.gz
+Source2049:	%{__pypi_url}z/zope.component/zope.component-%{b_v_zope_component}.tar.gz
+Source2050:	%{__pypi_url}z/zope.event/zope.event-%{b_v_zope_event}.tar.gz
+Source2051:	%{__pypi_url}z/zope.hookable/zope.hookable-%{b_v_zope_hookable}.tar.gz
+Source2052:	%{__pypi_url}z/zope.interface/zope.interface-%{b_v_zope_interface}.tar.gz
+Source2055:	%{__pypi_url}t/types-cryptography/types-cryptography-%{b_v_types_cryptography}.tar.gz
 
-Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{bundled_version_mailmanclient}.tar.gz
+Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{b_v_mailmanclient}.tar.gz
 
 # special patches
 Patch900:	mailman3-haystack-whoosh_backend-PR1870.patch
@@ -910,12 +715,12 @@ BuildConflicts:	python%{python3_version_num}-networkx
 %define noarch 1
  
 # has binary packages
-%{?bundled_enabled_cmarkgfm:%define noarch 0}
-%{?bundled_enabled_cffi:%define noarch 0}
-%{?bundled_enabled_rjsmin:%define noarch 0}
-%{?bundled_enabled_zope_hookable:%define noarch 0}
-%{?bundled_enabled_zope_i18nmessageid:%define noarch 0}
-%{?bundled_enabled_zope_interface:%define noarch 0}
+%{?b_e_cmarkgfm:%define noarch 0}
+%{?b_e_cffi:%define noarch 0}
+%{?b_e_rjsmin:%define noarch 0}
+%{?b_e_zope_hookable:%define noarch 0}
+%{?b_e_zope_i18nmessageid:%define noarch 0}
+%{?b_e_zope_interface:%define noarch 0}
 
 
 # conflict with virtualenv mailman3
@@ -1112,99 +917,98 @@ set -x
 ### ALL
 
 ## build dependencies (no need to build/install)
-%prep_cond "%{?bundled_enabled_cython}"                 2009
-%prep_cond "%{?bundled_enabled_flit_core}"		2012
-%prep_cond "%{?bundled_enabled_packaging}"		2021
-%prep_cond "%{?bundled_enabled_pycparser}"		2026
-%prep_cond "%{?bundled_enabled_setuptools}"		2036
-%prep_cond "%{?bundled_enabled_setuptools_scm}"         2037
-%prep_cond "%{?bundled_enabled_wheel}"                  2048
+%prep_cond "%{?b_e_cython}"                 2009
+%prep_cond "%{?b_e_flit_core}"              2012
+%prep_cond "%{?b_e_packaging}"              2021
+%prep_cond "%{?b_e_pycparser}"              2026
+%prep_cond "%{?b_e_setuptools}"             2036
+%prep_cond "%{?b_e_setuptools_scm}"         2037
+%prep_cond "%{?b_e_wheel}"                  2048
 
 ## bundled packages
-%prep_cond "%{?bundled_enabled_postorius}"              1000
-%prep_cond "%{?bundled_enabled_hyperkitty}"             1001
+%prep_cond "%{?b_e_postorius}"              1000
+%prep_cond "%{?b_e_hyperkitty}"             1001
 
 ## dependencies
-%prep_cond "%{?bundled_enabled_authheaders}"            1010
-%prep_cond "%{?bundled_enabled_lazr_config}"            1011
-%prep_cond "%{?bundled_enabled_lazr_delegates}"         1012
-%prep_cond "%{?bundled_enabled_aiosmtpd}"               1013
-%prep_cond "%{?bundled_enabled_falcon}"                 1014
-%prep_cond "%{?bundled_enabled_dkimpy}"                 1015
-%prep_cond "%{?bundled_enabled_mistune}"                1016
-%prep_cond "%{?bundled_enabled_readme_renderer}"        1017
-%prep_cond "%{?bundled_enabled_publicsuffix2}"          1018
-%prep_cond "%{?bundled_enabled_rjsmin}"                 1019
-%prep_cond "%{?bundled_enabled_arrow}"                  1020
-%prep_cond "%{?bundled_enabled_docutils}"               1021
-%prep_cond "%{?bundled_enabled_bleach}"                 1022
-%prep_cond "%{?bundled_enabled_pygments}"               1023
-%prep_cond "%{?bundled_enabled_asgiref}"                1024
-%prep_cond "%{?bundled_enabled_flufl_bounce}"           1025
-%prep_cond "%{?bundled_enabled_flufl_i18n}"             1026
-%prep_cond "%{?bundled_enabled_whoosh}"                 1027
+%prep_cond "%{?b_e_authheaders}"            1010
+%prep_cond "%{?b_e_lazr_config}"            1011
+%prep_cond "%{?b_e_lazr_delegates}"         1012
+%prep_cond "%{?b_e_aiosmtpd}"               1013
+%prep_cond "%{?b_e_falcon}"                 1014
+%prep_cond "%{?b_e_dkimpy}"                 1015
+%prep_cond "%{?b_e_mistune}"                1016
+%prep_cond "%{?b_e_readme_renderer}"        1017
+%prep_cond "%{?b_e_publicsuffix2}"          1018
+%prep_cond "%{?b_e_rjsmin}"                 1019
+%prep_cond "%{?b_e_arrow}"                  1020
+%prep_cond "%{?b_e_docutils}"               1021
+%prep_cond "%{?b_e_bleach}"                 1022
+%prep_cond "%{?b_e_pygments}"               1023
+%prep_cond "%{?b_e_asgiref}"                1024
+%prep_cond "%{?b_e_flufl_bounce}"           1025
+%prep_cond "%{?b_e_flufl_i18n}"             1026
+%prep_cond "%{?b_e_whoosh}"                 1027
 
-%prep_cond "%{?bundled_enabled_cmarkgfm}"               1028
-%prep_cond "%{?bundled_enabled_cffi}"                   1029
-%prep_cond "%{?bundled_enabled_importlib_resources}"    1030
-%prep_cond "%{?bundled_enabled_gunicorn}"               1031
+%prep_cond "%{?b_e_cmarkgfm}"               1028
+%prep_cond "%{?b_e_cffi}"                   1029
+%prep_cond "%{?b_e_importlib_resources}"    1030
+%prep_cond "%{?b_e_gunicorn}"               1031
 
-%prep_cond "%{?bundled_enabled_zope_configuration}"     1040
-%prep_cond "%{?bundled_enabled_zope_schema}"            1041
-%prep_cond "%{?bundled_enabled_zope_i18nmessageid}"     1042
+%prep_cond "%{?b_e_zope_configuration}"     1040
+%prep_cond "%{?b_e_zope_schema}"            1041
+%prep_cond "%{?b_e_zope_i18nmessageid}"     1042
 
-%prep_cond "%{?bundled_enabled_alembic}"                2000
-%prep_cond "%{?bundled_enabled_atpublic}"               2001
-%prep_cond "%{?bundled_enabled_attrs}"                  2002
-%prep_cond "%{?bundled_enabled_authres}"                2003
-%prep_cond "%{?bundled_enabled_blessed}"                2004
-%prep_cond "%{?bundled_enabled_defusedxml}"             2010
-%prep_cond "%{?bundled_enabled_flufl_lock}"             2013
-%prep_cond "%{?bundled_enabled_greenlet}"               2014
-%prep_cond "%{?bundled_enabled_isort}"                  2016
-%prep_cond "%{?bundled_enabled_mako}"                   2017
-%prep_cond "%{?bundled_enabled_networkx}"               2019
-%prep_cond "%{?bundled_enabled_oauthlib}"               2020
-%prep_cond "%{?bundled_enabled_passlib}"                2022
-%prep_cond "%{?bundled_enabled_dateutil}"               2027
-%prep_cond "%{?bundled_enabled_openid}"                 2028
-%prep_cond "%{?bundled_enabled_pytz}"                   2029
-%prep_cond "%{?bundled_enabled_jwt}"                    2030
-%prep_cond "%{?bundled_enabled_rcssmin}"                2031
-%prep_cond "%{?bundled_enabled_requests_oauthlib}"      2034
-%prep_cond "%{?bundled_enabled_robot_detection}"        2035
-%prep_cond "%{?bundled_enabled_sqlparse}"               2041
-%prep_cond "%{?bundled_enabled_sqlalchemy}"             2042
-%prep_cond "%{?bundled_enabled_typing_extensions}"      2043
-%prep_cond "%{?bundled_enabled_tomli}"                  2044
-%prep_cond "%{?bundled_enabled_wcwidth}"                2046
-%prep_cond "%{?bundled_enabled_webencodings}"           2047
-%prep_cond "%{?bundled_enabled_zope_component}"         2049
-%prep_cond "%{?bundled_enabled_zope_event}"	        2050
-%prep_cond "%{?bundled_enabled_zope_hookable}"          2051
-%prep_cond "%{?bundled_enabled_zope_interface}"         2052
-%prep_cond "%{?bundled_enabled_dataclasses}"            2054
-%prep_cond "%{?bundled_enabled_types_cryptography}"     2055
+%prep_cond "%{?b_e_alembic}"                2000
+%prep_cond "%{?b_e_atpublic}"               2001
+%prep_cond "%{?b_e_attrs}"                  2002
+%prep_cond "%{?b_e_authres}"                2003
+%prep_cond "%{?b_e_blessed}"                2004
+%prep_cond "%{?b_e_defusedxml}"             2010
+%prep_cond "%{?b_e_flufl_lock}"             2013
+%prep_cond "%{?b_e_greenlet}"               2014
+%prep_cond "%{?b_e_isort}"                  2016
+%prep_cond "%{?b_e_mako}"                   2017
+%prep_cond "%{?b_e_networkx}"               2019
+%prep_cond "%{?b_e_oauthlib}"               2020
+%prep_cond "%{?b_e_passlib}"                2022
+%prep_cond "%{?b_e_dateutil}"               2027
+%prep_cond "%{?b_e_openid}"                 2028
+%prep_cond "%{?b_e_pytz}"                   2029
+%prep_cond "%{?b_e_jwt}"                    2030
+%prep_cond "%{?b_e_rcssmin}"                2031
+%prep_cond "%{?b_e_requests_oauthlib}"      2034
+%prep_cond "%{?b_e_robot_detection}"        2035
+%prep_cond "%{?b_e_sqlparse}"               2041
+%prep_cond "%{?b_e_sqlalchemy}"             2042
+%prep_cond "%{?b_e_typing_extensions}"      2043
+%prep_cond "%{?b_e_tomli}"                  2044
+%prep_cond "%{?b_e_wcwidth}"                2046
+%prep_cond "%{?b_e_webencodings}"           2047
+%prep_cond "%{?b_e_zope_component}"         2049
+%prep_cond "%{?b_e_zope_event}"             2050
+%prep_cond "%{?b_e_zope_hookable}"          2051
+%prep_cond "%{?b_e_zope_interface}"         2052
+%prep_cond "%{?b_e_types_cryptography}"     2055
 
-%prep_cond "%{?bundled_enabled_mailmanclient}"          2090
+%prep_cond "%{?b_e_mailmanclient}"          2090
 
 ## django dependencies
-%prep_cond "%{?bundled_enabled_django}"                 1100
-%prep_cond "%{?bundled_enabled_django_haystack}"        1101
-%prep_cond "%{?bundled_enabled_django_allauth}"         1102
-%prep_cond "%{?bundled_enabled_django_q}"               1104
-%prep_cond "%{?bundled_enabled_django_compressor}"      1105
-%prep_cond "%{?bundled_enabled_django_extensions}"      1106
-%prep_cond "%{?bundled_enabled_django_gravatar2}"       1107
-%prep_cond "%{?bundled_enabled_django_restframework}"   1108
-%prep_cond "%{?bundled_enabled_django_appconf}"         1109
-%prep_cond "%{?bundled_enabled_django_picklefield}"     1110
+%prep_cond "%{?b_e_django}"                 1100
+%prep_cond "%{?b_e_django_haystack}"        1101
+%prep_cond "%{?b_e_django_allauth}"         1102
+%prep_cond "%{?b_e_django_q}"               1104
+%prep_cond "%{?b_e_django_compressor}"      1105
+%prep_cond "%{?b_e_django_extensions}"      1106
+%prep_cond "%{?b_e_django_gravatar2}"       1107
+%prep_cond "%{?b_e_django_rest_framework}"  1108
+%prep_cond "%{?b_e_django_appconf}"         1109
+%prep_cond "%{?b_e_django_picklefield}"     1110
 
 ## django mailman related
-%prep_cond "%{?bundled_enabled_django_mailman3}"        1180
-%prep_cond "%{?bundled_enabled_django_recaptcha}"       1190
-%prep_cond "%{?bundled_enabled_django_hcaptcha}"        1191
-%prep_cond "%{?bundled_enabled_django_friendlycaptcha}" 1192
+%prep_cond "%{?b_e_django_mailman3}"        1180
+%prep_cond "%{?b_e_django_recaptcha}"       1190
+%prep_cond "%{?b_e_django_hcaptcha}"        1191
+%prep_cond "%{?b_e_django_friendlycaptcha}" 1192
 
 
 %if 0%{?mailman3_virtualenv}
@@ -1213,8 +1017,8 @@ set -x
 %else
 ### BUNDLED-AS-REQUIRED PACKAGING
 
-%if 0%{?bundled_enabled_whoosh}
-cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Whoosh-%{bundled_version_whoosh}
+%if 0%{?b_e_whoosh}
+cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Whoosh-%{b_v_whoosh}
 %endif
 
 %endif
@@ -1275,8 +1079,8 @@ python%{python3_version} -m venv --system-site-packages %{buildroot}%{basedir}/%
 # activate virtual environment
 source %{buildroot}%{bindir}/activate
 
-PYTHONPATH=$PYTHONPATH:%{_buildroot}%{sitelibdir}/Django-%{?bundled_version_django}/build/lib
-PYTHONPATH=$PYTHONPATH:%{_buildroot}%{sitelibdir}/asgiref-%{?bundled_version_asgiref}/build/lib
+PYTHONPATH=$PYTHONPATH:%{_buildroot}%{sitelibdir}/Django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{_buildroot}%{sitelibdir}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
 
 # install from local files basic support tools
@@ -1357,20 +1161,20 @@ echo 'source %{bindir}/activate' >> %{buildroot}%{vardir}/.bash_profile
 ### BUNDLED-AS-REQUIRED PACKAGING
 
 ## precondition (build+install)
-%build_cond   "%{?bundled_enabled_wheel}"          "%{?bundled_version_wheel}"          wheel
-%install_cond "%{?bundled_enabled_wheel}"          "%{?bundled_version_wheel}"          wheel
+%build_cond   "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
+%install_cond "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
 
-%build_cond   "%{?bundled_enabled_setuptools_scm}" "%{?bundled_version_setuptools_scm}" setuptools_scm
-%install_cond "%{?bundled_enabled_setuptools_scm}" "%{?bundled_version_setuptools_scm}" setuptools_scm
+%build_cond   "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm
+%install_cond "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm
 
-%build_cond   "%{?bundled_enabled_tomli}"          "%{?bundled_version_tomli}"          tomli
-%install_cond "%{?bundled_enabled_tomli}"          "%{?bundled_version_tomli}"          tomli
+%build_cond   "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
+%install_cond "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
 
-%build_cond   "%{?bundled_enabled_cffi}"           "%{?bundled_version_cffi}"           cffi
-%install_cond "%{?bundled_enabled_cffi}"           "%{?bundled_version_cffi}"           cffi
+%build_cond   "%{?b_e_cffi}"           "%{?b_v_cffi}"           cffi
+%install_cond "%{?b_e_cffi}"           "%{?b_v_cffi}"           cffi
 
-%build_cond   "%{?bundled_enabled_isort}"          "%{?bundled_version_isort}"          isort
-%install_cond "%{?bundled_enabled_isort}"          "%{?bundled_version_isort}"          isort
+%build_cond   "%{?b_e_isort}"          "%{?b_v_isort}"          isort
+%install_cond "%{?b_e_isort}"          "%{?b_v_isort}"          isort
 
 PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
 export PYTHONPATH
@@ -1390,89 +1194,88 @@ pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
 popd
 
 ## bundled packages
-%build_cond "%{?bundled_enabled_postorius}"              "%{?bundled_version_postorius}"              postorius
-%build_cond "%{?bundled_enabled_hyperkitty}"             "%{?bundled_version_hyperkitty}"             HyperKitty
+%build_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
+%build_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             HyperKitty
 
 ## dependencies
-%build_cond "%{?bundled_enabled_aiosmtpd}"               "%{?bundled_version_aiosmtpd}"               aiosmtpd
-%build_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
-%build_cond "%{?bundled_enabled_arrow}"                  "%{?bundled_version_arrow}"                  arrow
-%build_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
-%build_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
-%build_cond "%{?bundled_enabled_asgiref}"                "%{?bundled_version_asgiref}"                asgiref
-%build_cond "%{?bundled_enabled_authheaders}"            "%{?bundled_version_authheaders}"            authheaders
-%build_cond "%{?bundled_enabled_authres}"                "%{?bundled_version_authres}"                authres
-%build_cond "%{?bundled_enabled_bleach}"                 "%{?bundled_version_bleach}"                 bleach
-%build_cond "%{?bundled_enabled_blessed}"                "%{?bundled_version_blessed}"                blessed
-%build_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
-%build_cond "%{?bundled_enabled_dateutil}"               "%{?bundled_version_dateutil}"               python-dateutil
-%build_cond "%{?bundled_enabled_defusedxml}"             "%{?bundled_version_defusedxml}"             defusedxml
-%build_cond "%{?bundled_enabled_cmarkgfm}"               "%{?bundled_version_cmarkgfm}"               cmarkgfm
-%build_cond "%{?bundled_enabled_dkimpy}"                 "%{?bundled_version_dkimpy}"                 dkimpy
-%build_cond "%{?bundled_enabled_docutils}"               "%{?bundled_version_docutils}"               docutils
-%build_cond "%{?bundled_enabled_falcon}"                 "%{?bundled_version_falcon}"                 falcon
-%build_cond "%{?bundled_enabled_flufl_i18n}"             "%{?bundled_version_flufl_i18n}"             flufl.i18n
-%build_cond "%{?bundled_enabled_flufl_bounce}"           "%{?bundled_version_flufl_bounce}"           flufl.bounce
-%build_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
-%build_cond "%{?bundled_enabled_greenlet}"               "%{?bundled_version_greenlet}"               greenlet
-%build_cond "%{?bundled_enabled_gunicorn}"               "%{?bundled_version_gunicorn}"               gunicorn
-%build_cond "%{?bundled_enabled_importlib_resources}"    "%{?bundled_version_importlib_resources}"    importlib_resources
-%build_cond "%{?bundled_enabled_jwt}"                    "%{?bundled_version_jwt}"                    PyJWT
-%build_cond "%{?bundled_enabled_lazr_config}"            "%{?bundled_version_lazr_config}"            lazr.config
-%build_cond "%{?bundled_enabled_lazr_delegates}"         "%{?bundled_version_lazr_delegates}"         lazr.delegates
-%build_cond "%{?bundled_enabled_mako}"                   "%{?bundled_version_mako}"                   Mako
-%build_cond "%{?bundled_enabled_mailmanclient}"          "%{?bundled_version_mailmanclient}"          mailmanclient
-%build_cond "%{?bundled_enabled_mistune}"                "%{?bundled_version_mistune}"                mistune
-%build_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
-%build_cond "%{?bundled_enabled_oauthlib}"               "%{?bundled_version_oauthlib}"               oauthlib
-%build_cond "%{?bundled_enabled_openid}"                 "%{?bundled_version_openid}"                 python3-openid
-%build_cond "%{?bundled_enabled_passlib}"                "%{?bundled_version_passlib}"                passlib
-%build_cond "%{?bundled_enabled_publicsuffix2}"          "%{?bundled_version_publicsuffix2}"          publicsuffix2
-%build_cond "%{?bundled_enabled_pytz}"                   "%{?bundled_version_pytz}"                   pytz
-%build_cond "%{?bundled_enabled_rcssmin}"                "%{?bundled_version_rcssmin}"                rcssmin
-%build_cond "%{?bundled_enabled_readme_renderer}"        "%{?bundled_version_readme_renderer}"        readme_renderer
-%build_cond "%{?bundled_enabled_requests_oauthlib}"      "%{?bundled_version_requests_oauthlib}"      requests-oauthlib
-%build_cond "%{?bundled_enabled_rjsmin}"                 "%{?bundled_version_rjsmin}"                 rjsmin
-%build_cond "%{?bundled_enabled_robot_detection}"        "%{?bundled_version_robot_detection}"        robot-detection
-%build_cond "%{?bundled_enabled_pygments}"               "%{?bundled_version_pygments}"               Pygments
-%build_cond "%{?bundled_enabled_sqlparse}"               "%{?bundled_version_sqlparse}"               sqlparse
-%build_cond "%{?bundled_enabled_sqlalchemy}"             "%{?bundled_version_sqlalchemy}"             SQLAlchemy
-%build_cond "%{?bundled_enabled_types_cryptography}"     "%{?bundled_version_types_cryptography}"     types-cryptography
-%build_cond "%{?bundled_enabled_typing_extensions}"      "%{?bundled_version_typing_extensions}"      typing_extensions
-%build_cond "%{?bundled_enabled_wcwidth}"                "%{?bundled_version_wcwidth}"                wcwidth
-%build_cond "%{?bundled_enabled_webencodings}"           "%{?bundled_version_webencodings}"           webencodings
-%build_cond "%{?bundled_enabled_whoosh}"                 "%{?bundled_version_whoosh}"                 Whoosh
+%build_cond "%{?b_e_aiosmtpd}"               "%{?b_v_aiosmtpd}"               aiosmtpd
+%build_cond "%{?b_e_alembic}"                "%{?b_v_alembic}"                alembic
+%build_cond "%{?b_e_arrow}"                  "%{?b_v_arrow}"                  arrow
+%build_cond "%{?b_e_atpublic}"               "%{?b_v_atpublic}"               atpublic
+%build_cond "%{?b_e_attrs}"                  "%{?b_v_attrs}"                  attrs
+%build_cond "%{?b_e_asgiref}"                "%{?b_v_asgiref}"                asgiref
+%build_cond "%{?b_e_authheaders}"            "%{?b_v_authheaders}"            authheaders
+%build_cond "%{?b_e_authres}"                "%{?b_v_authres}"                authres
+%build_cond "%{?b_e_bleach}"                 "%{?b_v_bleach}"                 bleach
+%build_cond "%{?b_e_blessed}"                "%{?b_v_blessed}"                blessed
+%build_cond "%{?b_e_dateutil}"               "%{?b_v_dateutil}"               python-dateutil
+%build_cond "%{?b_e_defusedxml}"             "%{?b_v_defusedxml}"             defusedxml
+%build_cond "%{?b_e_cmarkgfm}"               "%{?b_v_cmarkgfm}"               cmarkgfm
+%build_cond "%{?b_e_dkimpy}"                 "%{?b_v_dkimpy}"                 dkimpy
+%build_cond "%{?b_e_docutils}"               "%{?b_v_docutils}"               docutils
+%build_cond "%{?b_e_falcon}"                 "%{?b_v_falcon}"                 falcon
+%build_cond "%{?b_e_flufl_i18n}"             "%{?b_v_flufl_i18n}"             flufl.i18n
+%build_cond "%{?b_e_flufl_bounce}"           "%{?b_v_flufl_bounce}"           flufl.bounce
+%build_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock
+%build_cond "%{?b_e_greenlet}"               "%{?b_v_greenlet}"               greenlet
+%build_cond "%{?b_e_gunicorn}"               "%{?b_v_gunicorn}"               gunicorn
+%build_cond "%{?b_e_importlib_resources}"    "%{?b_v_importlib_resources}"    importlib_resources
+%build_cond "%{?b_e_jwt}"                    "%{?b_v_jwt}"                    PyJWT
+%build_cond "%{?b_e_lazr_config}"            "%{?b_v_lazr_config}"            lazr.config
+%build_cond "%{?b_e_lazr_delegates}"         "%{?b_v_lazr_delegates}"         lazr.delegates
+%build_cond "%{?b_e_mako}"                   "%{?b_v_mako}"                   Mako
+%build_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
+%build_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune
+%build_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
+%build_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
+%build_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
+%build_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
+%build_cond "%{?b_e_publicsuffix2}"          "%{?b_v_publicsuffix2}"          publicsuffix2
+%build_cond "%{?b_e_pytz}"                   "%{?b_v_pytz}"                   pytz
+%build_cond "%{?b_e_rcssmin}"                "%{?b_v_rcssmin}"                rcssmin
+%build_cond "%{?b_e_readme_renderer}"        "%{?b_v_readme_renderer}"        readme_renderer
+%build_cond "%{?b_e_requests_oauthlib}"      "%{?b_v_requests_oauthlib}"      requests-oauthlib
+%build_cond "%{?b_e_rjsmin}"                 "%{?b_v_rjsmin}"                 rjsmin
+%build_cond "%{?b_e_robot_detection}"        "%{?b_v_robot_detection}"        robot-detection
+%build_cond "%{?b_e_pygments}"               "%{?b_v_pygments}"               Pygments
+%build_cond "%{?b_e_sqlparse}"               "%{?b_v_sqlparse}"               sqlparse
+%build_cond "%{?b_e_sqlalchemy}"             "%{?b_v_sqlalchemy}"             SQLAlchemy
+%build_cond "%{?b_e_types_cryptography}"     "%{?b_v_types_cryptography}"     types-cryptography
+%build_cond "%{?b_e_typing_extensions}"      "%{?b_v_typing_extensions}"      typing_extensions
+%build_cond "%{?b_e_wcwidth}"                "%{?b_v_wcwidth}"                wcwidth
+%build_cond "%{?b_e_webencodings}"           "%{?b_v_webencodings}"           webencodings
+%build_cond "%{?b_e_whoosh}"                 "%{?b_v_whoosh}"                 Whoosh
 
-%build_cond "%{?bundled_enabled_zope_configuration}"     "%{?bundled_version_zope_configuration}"     zope.configuration
-%build_cond "%{?bundled_enabled_zope_schema}"            "%{?bundled_version_zope_schema}"            zope.schema
-%build_cond "%{?bundled_enabled_zope_i18nmessageid}"     "%{?bundled_version_zope_i18nmessageid}"     zope.i18nmessageid
-%build_cond "%{?bundled_enabled_zope_component}"         "%{?bundled_version_zope_component}"         zope.component
-%build_cond "%{?bundled_enabled_zope_event}"             "%{?bundled_version_zope_event}"             zope.event
-%build_cond "%{?bundled_enabled_zope_hookable}"          "%{?bundled_version_zope_hookable}"          zope.hookable
-%build_cond "%{?bundled_enabled_zope_interface}"         "%{?bundled_version_zope_interface}"         zope.interface
+%build_cond "%{?b_e_zope_configuration}"     "%{?b_v_zope_configuration}"     zope.configuration
+%build_cond "%{?b_e_zope_schema}"            "%{?b_v_zope_schema}"            zope.schema
+%build_cond "%{?b_e_zope_i18nmessageid}"     "%{?b_v_zope_i18nmessageid}"     zope.i18nmessageid
+%build_cond "%{?b_e_zope_component}"         "%{?b_v_zope_component}"         zope.component
+%build_cond "%{?b_e_zope_event}"             "%{?b_v_zope_event}"             zope.event
+%build_cond "%{?b_e_zope_hookable}"          "%{?b_v_zope_hookable}"          zope.hookable
+%build_cond "%{?b_e_zope_interface}"         "%{?b_v_zope_interface}"         zope.interface
 
 ## django dependencies
-%build_cond "%{?bundled_enabled_django}"                 "%{?bundled_version_django}"                 Django
-%build_cond "%{?bundled_enabled_django_allauth}"         "%{?bundled_version_django_allauth}"         django-allauth
-%build_cond "%{?bundled_enabled_django_appconf}"         "%{?bundled_version_django_appconf}"         django-appconf
-%build_cond "%{?bundled_enabled_django_compressor}"      "%{?bundled_version_django_compressor}"      django_compressor
-%build_cond "%{?bundled_enabled_django_extensions}"      "%{?bundled_version_django_extensions}"      django-extensions
-%build_cond "%{?bundled_enabled_django_gravatar2}"       "%{?bundled_version_django_gravatar2}"       django-gravatar2
-%build_cond "%{?bundled_enabled_django_haystack}"        "%{?bundled_version_django_haystack}"        django-haystack
-%build_cond "%{?bundled_enabled_django_q}"               "%{?bundled_version_django_q}"               django-q
-%build_cond "%{?bundled_enabled_django_restframework}"   "%{?bundled_version_django_restframework}"   djangorestframework
+%build_cond "%{?b_e_django}"                 "%{?b_v_django}"                 Django
+%build_cond "%{?b_e_django_allauth}"         "%{?b_v_django_allauth}"         django-allauth
+%build_cond "%{?b_e_django_appconf}"         "%{?b_v_django_appconf}"         django-appconf
+%build_cond "%{?b_e_django_compressor}"      "%{?b_v_django_compressor}"      django_compressor
+%build_cond "%{?b_e_django_extensions}"      "%{?b_v_django_extensions}"      django-extensions
+%build_cond "%{?b_e_django_gravatar2}"       "%{?b_v_django_gravatar2}"       django-gravatar2
+%build_cond "%{?b_e_django_haystack}"        "%{?b_v_django_haystack}"        django-haystack
+%build_cond "%{?b_e_django_q}"               "%{?b_v_django_q}"               django-q
+%build_cond "%{?b_e_django_rest_framework}"  "%{?b_v_django_rest_framework}"  djangorestframework
 
 # django-picklefield depends on django
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Django-%{?bundled_version_django}/build/lib
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/asgiref-%{?bundled_version_asgiref}/build/lib
+PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
-%build_cond "%{?bundled_enabled_django_picklefield}"     "%{?bundled_version_django_picklefield}"     django-picklefield
+%build_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
 ## django mailman related
-%build_cond "%{?bundled_enabled_django_mailman3}"        "%{?bundled_version_django_mailman3}"        django-mailman3
-%build_cond "%{?bundled_enabled_django_recaptcha}"       "%{?bundled_version_django_recaptcha}"       django-recaptcha
-%build_cond "%{?bundled_enabled_django_hcaptcha}"        "%{?bundled_version_django_hcaptcha}"        django-hCaptcha
-%build_cond "%{?bundled_enabled_django_friendlycaptcha}" "%{?bundled_version_django_friendlycaptcha}" django-friendly-captcha
+%build_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django-mailman3
+%build_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
+%build_cond "%{?b_e_django_hcaptcha}"        "%{?b_v_django_hcaptcha}"        django-hCaptcha
+%build_cond "%{?b_e_django_friendlycaptcha}" "%{?b_v_django_friendlycaptcha}" django-friendly-captcha
 
 
 PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
@@ -1492,90 +1295,89 @@ pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
 popd
 
 ## bundled packages
-%install_cond "%{?bundled_enabled_postorius}"              "%{?bundled_version_postorius}"              postorius
-%install_cond "%{?bundled_enabled_hyperkitty}"             "%{?bundled_version_hyperkitty}"             HyperKitty
+%install_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
+%install_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             HyperKitty
 
 ## dependencies
-%install_cond "%{?bundled_enabled_aiosmtpd}"               "%{?bundled_version_aiosmtpd}"               aiosmtpd
-%install_cond "%{?bundled_enabled_alembic}"                "%{?bundled_version_alembic}"                alembic
-%install_cond "%{?bundled_enabled_arrow}"                  "%{?bundled_version_arrow}"                  arrow
-%install_cond "%{?bundled_enabled_asgiref}"                "%{?bundled_version_asgiref}"                asgiref
-%install_cond "%{?bundled_enabled_atpublic}"               "%{?bundled_version_atpublic}"               atpublic
-%install_cond "%{?bundled_enabled_attrs}"                  "%{?bundled_version_attrs}"                  attrs
-%install_cond "%{?bundled_enabled_authheaders}"            "%{?bundled_version_authheaders}"            authheaders
-%install_cond "%{?bundled_enabled_authres}"                "%{?bundled_version_authres}"                authres
-%install_cond "%{?bundled_enabled_bleach}"                 "%{?bundled_version_bleach}"                 bleach
-%install_cond "%{?bundled_enabled_blessed}"                "%{?bundled_version_blessed}"                blessed
-%install_cond "%{?bundled_enabled_cffi}"                   "%{?bundled_version_cffi}"                   cffi
-%install_cond "%{?bundled_enabled_cmarkgfm}"               "%{?bundled_version_cmarkgfm}"               cmarkgfm
-%install_cond "%{?bundled_enabled_dataclasses}"            "%{?bundled_version_dataclasses}"            dataclasses
-%install_cond "%{?bundled_enabled_dateutil}"               "%{?bundled_version_dateutil}"               python-dateutil
-%install_cond "%{?bundled_enabled_defusedxml}"             "%{?bundled_version_defusedxml}"             defusedxml
-%install_cond "%{?bundled_enabled_dkimpy}"                 "%{?bundled_version_dkimpy}"                 dkimpy
-%install_cond "%{?bundled_enabled_docutils}"               "%{?bundled_version_docutils}"               docutils
-%install_cond "%{?bundled_enabled_falcon}"                 "%{?bundled_version_falcon}"                 falcon
-%install_cond "%{?bundled_enabled_flufl_bounce}"           "%{?bundled_version_flufl_bounce}"           flufl.bounce
-%install_cond "%{?bundled_enabled_flufl_i18n}"             "%{?bundled_version_flufl_i18n}"             flufl.i18n
-%install_cond "%{?bundled_enabled_flufl_lock}"             "%{?bundled_version_flufl_lock}"             flufl.lock
-%install_cond "%{?bundled_enabled_gunicorn}"               "%{?bundled_version_gunicorn}"               gunicorn
-%install_cond "%{?bundled_enabled_greenlet}"               "%{?bundled_version_greenlet}"               greenlet
-%install_cond "%{?bundled_enabled_importlib_resources}"    "%{?bundled_version_importlib_resources}"    importlib_resources
-%install_cond "%{?bundled_enabled_jwt}"                    "%{?bundled_version_jwt}"                    PyJWT
-%install_cond "%{?bundled_enabled_lazr_config}"            "%{?bundled_version_lazr_config}"            lazr.config
-%install_cond "%{?bundled_enabled_lazr_delegates}"         "%{?bundled_version_lazr_delegates}"         lazr.delegates
-%install_cond "%{?bundled_enabled_mako}"                   "%{?bundled_version_mako}"                   Mako
-%install_cond "%{?bundled_enabled_mailmanclient}"          "%{?bundled_version_mailmanclient}"          mailmanclient
-%install_cond "%{?bundled_enabled_mistune}"                "%{?bundled_version_mistune}"                mistune
-%install_cond "%{?bundled_enabled_networkx}"               "%{?bundled_version_networkx}"               networkx
-%install_cond "%{?bundled_enabled_oauthlib}"               "%{?bundled_version_oauthlib}"               oauthlib
-%install_cond "%{?bundled_enabled_openid}"                 "%{?bundled_version_openid}"                 python3-openid
-%install_cond "%{?bundled_enabled_passlib}"                "%{?bundled_version_passlib}"                passlib
-%install_cond "%{?bundled_enabled_publicsuffix2}"          "%{?bundled_version_publicsuffix2}"          publicsuffix2
-%install_cond "%{?bundled_enabled_pygments}"               "%{?bundled_version_pygments}"               Pygments
-%install_cond "%{?bundled_enabled_pytz}"                   "%{?bundled_version_pytz}"                   pytz
-%install_cond "%{?bundled_enabled_readme_renderer}"        "%{?bundled_version_readme_renderer}"        readme_renderer
-%install_cond "%{?bundled_enabled_requests_oauthlib}"      "%{?bundled_version_requests_oauthlib}"      requests-oauthlib
-%install_cond "%{?bundled_enabled_rcssmin}"                "%{?bundled_version_rcssmin}"                rcssmin
-%install_cond "%{?bundled_enabled_rjsmin}"                 "%{?bundled_version_rjsmin}"                 rjsmin
-%install_cond "%{?bundled_enabled_robot_detection}"        "%{?bundled_version_robot_detection}"        robot-detection
-%install_cond "%{?bundled_enabled_sqlparse}"               "%{?bundled_version_sqlparse}"               sqlparse
-%install_cond "%{?bundled_enabled_sqlalchemy}"             "%{?bundled_version_sqlalchemy}"             SQLAlchemy
-%install_cond "%{?bundled_enabled_types_cryptography}"     "%{?bundled_version_types_cryptography}"     types-cryptography
-%install_cond "%{?bundled_enabled_typing_extensions}"      "%{?bundled_version_typing_extensions}"      typing_extensions
-%install_cond "%{?bundled_enabled_wcwidth}"                "%{?bundled_version_wcwidth}"                wcwidth
-%install_cond "%{?bundled_enabled_webencodings}"           "%{?bundled_version_webencodings}"           webencodings
-%install_cond "%{?bundled_enabled_whoosh}"                 "%{?bundled_version_whoosh}"                 Whoosh
+%install_cond "%{?b_e_aiosmtpd}"               "%{?b_v_aiosmtpd}"               aiosmtpd
+%install_cond "%{?b_e_alembic}"                "%{?b_v_alembic}"                alembic
+%install_cond "%{?b_e_arrow}"                  "%{?b_v_arrow}"                  arrow
+%install_cond "%{?b_e_asgiref}"                "%{?b_v_asgiref}"                asgiref
+%install_cond "%{?b_e_atpublic}"               "%{?b_v_atpublic}"               atpublic
+%install_cond "%{?b_e_attrs}"                  "%{?b_v_attrs}"                  attrs
+%install_cond "%{?b_e_authheaders}"            "%{?b_v_authheaders}"            authheaders
+%install_cond "%{?b_e_authres}"                "%{?b_v_authres}"                authres
+%install_cond "%{?b_e_bleach}"                 "%{?b_v_bleach}"                 bleach
+%install_cond "%{?b_e_blessed}"                "%{?b_v_blessed}"                blessed
+%install_cond "%{?b_e_cffi}"                   "%{?b_v_cffi}"                   cffi
+%install_cond "%{?b_e_cmarkgfm}"               "%{?b_v_cmarkgfm}"               cmarkgfm
+%install_cond "%{?b_e_dateutil}"               "%{?b_v_dateutil}"               python-dateutil
+%install_cond "%{?b_e_defusedxml}"             "%{?b_v_defusedxml}"             defusedxml
+%install_cond "%{?b_e_dkimpy}"                 "%{?b_v_dkimpy}"                 dkimpy
+%install_cond "%{?b_e_docutils}"               "%{?b_v_docutils}"               docutils
+%install_cond "%{?b_e_falcon}"                 "%{?b_v_falcon}"                 falcon
+%install_cond "%{?b_e_flufl_bounce}"           "%{?b_v_flufl_bounce}"           flufl.bounce
+%install_cond "%{?b_e_flufl_i18n}"             "%{?b_v_flufl_i18n}"             flufl.i18n
+%install_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock
+%install_cond "%{?b_e_gunicorn}"               "%{?b_v_gunicorn}"               gunicorn
+%install_cond "%{?b_e_greenlet}"               "%{?b_v_greenlet}"               greenlet
+%install_cond "%{?b_e_importlib_resources}"    "%{?b_v_importlib_resources}"    importlib_resources
+%install_cond "%{?b_e_jwt}"                    "%{?b_v_jwt}"                    PyJWT
+%install_cond "%{?b_e_lazr_config}"            "%{?b_v_lazr_config}"            lazr.config
+%install_cond "%{?b_e_lazr_delegates}"         "%{?b_v_lazr_delegates}"         lazr.delegates
+%install_cond "%{?b_e_mako}"                   "%{?b_v_mako}"                   Mako
+%install_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
+%install_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune
+%install_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
+%install_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
+%install_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
+%install_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
+%install_cond "%{?b_e_publicsuffix2}"          "%{?b_v_publicsuffix2}"          publicsuffix2
+%install_cond "%{?b_e_pygments}"               "%{?b_v_pygments}"               Pygments
+%install_cond "%{?b_e_pytz}"                   "%{?b_v_pytz}"                   pytz
+%install_cond "%{?b_e_readme_renderer}"        "%{?b_v_readme_renderer}"        readme_renderer
+%install_cond "%{?b_e_requests_oauthlib}"      "%{?b_v_requests_oauthlib}"      requests-oauthlib
+%install_cond "%{?b_e_rcssmin}"                "%{?b_v_rcssmin}"                rcssmin
+%install_cond "%{?b_e_rjsmin}"                 "%{?b_v_rjsmin}"                 rjsmin
+%install_cond "%{?b_e_robot_detection}"        "%{?b_v_robot_detection}"        robot-detection
+%install_cond "%{?b_e_sqlparse}"               "%{?b_v_sqlparse}"               sqlparse
+%install_cond "%{?b_e_sqlalchemy}"             "%{?b_v_sqlalchemy}"             SQLAlchemy
+%install_cond "%{?b_e_types_cryptography}"     "%{?b_v_types_cryptography}"     types-cryptography
+%install_cond "%{?b_e_typing_extensions}"      "%{?b_v_typing_extensions}"      typing_extensions
+%install_cond "%{?b_e_wcwidth}"                "%{?b_v_wcwidth}"                wcwidth
+%install_cond "%{?b_e_webencodings}"           "%{?b_v_webencodings}"           webencodings
+%install_cond "%{?b_e_whoosh}"                 "%{?b_v_whoosh}"                 Whoosh
 
-%install_cond "%{?bundled_enabled_zope_component}"         "%{?bundled_version_zope_component}"         zope.component
-%install_cond "%{?bundled_enabled_zope_configuration}"     "%{?bundled_version_zope_configuration}"     zope.configuration
-%install_cond "%{?bundled_enabled_zope_event}"             "%{?bundled_version_zope_event}"             zope.event
-%install_cond "%{?bundled_enabled_zope_i18nmessageid}"     "%{?bundled_version_zope_i18nmessageid}"     zope.i18nmessageid
-%install_cond "%{?bundled_enabled_zope_interface}"         "%{?bundled_version_zope_interface}"         zope.interface
-%install_cond "%{?bundled_enabled_zope_hookable}"          "%{?bundled_version_zope_hookable}"          zope.hookable
-%install_cond "%{?bundled_enabled_zope_schema}"            "%{?bundled_version_zope_schema}"            zope.schema
+%install_cond "%{?b_e_zope_component}"         "%{?b_v_zope_component}"         zope.component
+%install_cond "%{?b_e_zope_configuration}"     "%{?b_v_zope_configuration}"     zope.configuration
+%install_cond "%{?b_e_zope_event}"             "%{?b_v_zope_event}"             zope.event
+%install_cond "%{?b_e_zope_i18nmessageid}"     "%{?b_v_zope_i18nmessageid}"     zope.i18nmessageid
+%install_cond "%{?b_e_zope_interface}"         "%{?b_v_zope_interface}"         zope.interface
+%install_cond "%{?b_e_zope_hookable}"          "%{?b_v_zope_hookable}"          zope.hookable
+%install_cond "%{?b_e_zope_schema}"            "%{?b_v_zope_schema}"            zope.schema
 
 ## django* dependencies
-%install_cond "%{?bundled_enabled_django}"                 "%{?bundled_version_django}"                 Django
-%install_cond "%{?bundled_enabled_django_allauth}"         "%{?bundled_version_django_allauth}"         django-allauth
-%install_cond "%{?bundled_enabled_django_appconf}"         "%{?bundled_version_django_appconf}"         django-appconf
-%install_cond "%{?bundled_enabled_django_compressor}"      "%{?bundled_version_django_compressor}"      django_compressor
-%install_cond "%{?bundled_enabled_django_extensions}"      "%{?bundled_version_django_extensions}"      django-extensions
-%install_cond "%{?bundled_enabled_django_gravatar2}"       "%{?bundled_version_django_gravatar2}"       django-gravatar2
-%install_cond "%{?bundled_enabled_django_haystack}"        "%{?bundled_version_django_haystack}"        django-haystack
-%install_cond "%{?bundled_enabled_django_q}"               "%{?bundled_version_django_q}"               django-q
-%install_cond "%{?bundled_enabled_django_restframework}"   "%{?bundled_version_django_restframework}"   djangorestframework
+%install_cond "%{?b_e_django}"                 "%{?b_v_django}"                 Django
+%install_cond "%{?b_e_django_allauth}"         "%{?b_v_django_allauth}"         django-allauth
+%install_cond "%{?b_e_django_appconf}"         "%{?b_v_django_appconf}"         django-appconf
+%install_cond "%{?b_e_django_compressor}"      "%{?b_v_django_compressor}"      django_compressor
+%install_cond "%{?b_e_django_extensions}"      "%{?b_v_django_extensions}"      django-extensions
+%install_cond "%{?b_e_django_gravatar2}"       "%{?b_v_django_gravatar2}"       django-gravatar2
+%install_cond "%{?b_e_django_haystack}"        "%{?b_v_django_haystack}"        django-haystack
+%install_cond "%{?b_e_django_q}"               "%{?b_v_django_q}"               django-q
+%install_cond "%{?b_e_django_rest_framework}"  "%{?b_v_django_rest_framework}"  djangorestframework
 
 # django-picklefield depends on django
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Django-%{?bundled_version_django}/build/lib
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/asgiref-%{?bundled_version_asgiref}/build/lib
+PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
-%install_cond "%{?bundled_enabled_django_picklefield}"     "%{?bundled_version_django_picklefield}"     django-picklefield
+%install_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
 ## django mailman related
-%install_cond "%{?bundled_enabled_django_mailman3}"        "%{?bundled_version_django_mailman3}"        django-mailman3
-%install_cond "%{?bundled_enabled_django_recaptcha}"       "%{?bundled_version_django_recaptcha}"       django-recaptcha
-%install_cond "%{?bundled_enabled_django_hcaptcha}"        "%{?bundled_version_django_hcaptcha}"        django-hCaptcha
-%install_cond "%{?bundled_enabled_django_friendlycaptcha}" "%{?bundled_version_django_friendlycaptcha}" django-friendly-captcha
+%install_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django-mailman3
+%install_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
+%install_cond "%{?b_e_django_hcaptcha}"        "%{?b_v_django_hcaptcha}"        django-hCaptcha
+%install_cond "%{?b_e_django_friendlycaptcha}" "%{?b_v_django_friendlycaptcha}" django-friendly-captcha
 
 # cleanup doc files of bundled packages
 %{__rm} -rf %{buildroot}%{_docdir}/*
@@ -1599,7 +1401,7 @@ done
 %endif
 
 # apply special patches
-%if 0%{?bundled_enabled_django_haystack} || 0%{?mailman3_virtualenv}
+%if 0%{?b_e_django_haystack} || 0%{?mailman3_virtualenv}
 cat %{PATCH900} | patch %{buildroot}%{sitelibdir}/haystack/backends/whoosh_backend.py
 %endif
 cat %{PATCH901} | patch %{buildroot}%{sitelibdir}/postorius/forms/list_forms.py
@@ -1752,7 +1554,7 @@ install -D -m 0644 %{SOURCE416} %{buildroot}%{_unitdir}/%{basename:%{SOURCE416}}
 
 %define pythonpath %{usersitedir}
 
-%if 0%{?bundled_enabled_gunicorn}
+%if 0%{?b_e_gunicorn}
 %else
 %define bindir_gunicorn %{_bindir}
 %endif
@@ -1769,7 +1571,8 @@ find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesd
 done
 
 
-%check
+#TODO#final#check
+# check whether it's bascially working
 PYTHONPATH=%{buildroot}%{sitelibdir}
 
 %if 0%{?mailman3_virtualenv}
@@ -2170,7 +1973,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 %attr(755,root,root)    %{_bindir}/*
 %attr(755,root,root)    %{bindir}
 
-%if 0%{?bundled_enabled_dkimpy}
+%if 0%{?b_e_dkimpy}
 %{_mandir}/*
 %endif
 
