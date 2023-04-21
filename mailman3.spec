@@ -98,6 +98,8 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_django_hcaptcha		1
 %define	b_e_django_friendlycaptcha	1
 
+%define	b_e_whoosh			1
+
 %if (0%{?rhel} == 8)
 # not available for EL == 8 -> bundle
 
@@ -138,26 +140,29 @@ BuildRequires:  python%{python3_version_num}-pip
 %endif
 
 
-%if 0%{?rhel} >= 9
-# not available for EL >= 9 -> bundle
-## build dependencies
-%define	b_e_cython			1
-%define	b_e_flit_core			1
-%define	b_e_packaging			1
-%define	b_e_pycparser			1
-
 %if 0%{?mailman3_virtualenv}
 ###  VIRTUALENV PACKAGING
 
-# EL9 has 53.0.0 but not usable via PIP even in case: --system-site-packages
-%define	b_e_setuptools			1
+## build dependencies
+%define	b_e_cython			1
+%define	b_e_packaging			1
 
+# preinstalled will not work with PIP even in case: --system-site-packages
+%define	b_e_setuptools			1
 %define	b_e_setuptools_scm		1
+%define	b_e_wheel			1
+
+%if 0%{?rhel} == 8
+%define	b_e_poetry_core			1
+%define	b_e_flit_core			1
+%endif
+
+%if 0%{?rhel} >= 9
+## build dependencies
 
 # EL9 has 2.0.1 but not usable via PIP even in case: --system-site-packages
 %define	b_e_tomli			1
 
-%define	b_e_wheel			1
 %endif
 
 %endif
@@ -187,12 +192,12 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_mistune			1
 %define	b_e_openid			1
 %define	b_e_publicsuffix2		1
+%define	b_e_pycparser			1
 %define	b_e_pygments			1
 %define	b_e_readme_renderer		1
 %define	b_e_rjsmin			1
 %define	b_e_typing_extensions		1
 %define	b_e_webencodings		1
-%define	b_e_whoosh			1
 %define	b_e_zope_configuration		1
 %define	b_e_zope_schema			1
 %define	b_e_zope_i18nmessageid		1
@@ -217,6 +222,18 @@ BuildRequires:  python%{python3_version_num}-pip
 # even while available bundle to avoid install of huge dependencies
 %define	b_e_networkx			1
 
+%if (0%{?fedora} == 37)
+# >= 3.5.2 required, 3.4.1-7.fc37 is too low
+%define	b_e_asgiref			1
+
+%if 0%{?mailman3_virtualenv}
+# available 4.4.0-2.fc37 causes problems with VIRTUALENV/importlib_resources
+%define	b_e_typing_extensions		1
+# available 3.7.1-5.fc37 causes problems with VIRTUALENV/importlib_resources
+%define	b_e_flit_core			1
+%endif
+
+%endif
 
 %if (0%{?fedora} > 40)
 # guessing that f40 will have updated versions...
@@ -260,6 +277,7 @@ Requires:	python%{python3_version_num}-%2 %3 %4 \
 ### build-only related
 %req_cond_b_o_n_v	1				rpm-macros
 
+%req_cond_b_o_n_v	0%{?b_e_flit_core}		flit-core
 %req_cond_b_o_n_v	0%{?b_e_setuptools}		setuptools
 %req_cond_b_o_n_v	0%{?b_e_setuptools_scm}		setuptools_scm
 %req_cond_b_o_n_v	0%{?b_e_wheel}			wheel
@@ -278,6 +296,7 @@ BuildRequires:	libffi-devel
 %req_cond_b_i_n_v	0%{?b_e_atpublic}		atpublic
 %req_cond_b_i_n_v	0%{?b_e_attrs}			attrs
 %req_cond_b_i_n_v	0%{?b_e_authres}		authres
+%req_cond_b_i_w_v	0%{?b_e_authheaders}		authheaders >= 0.14.0
 %req_cond_b_i_n_v	0%{?b_e_blessed}		blessed
 %req_cond_b_i_n_v	0%{?b_e_dateutil}		dateutil
 %req_cond_b_i_w_v	0%{?b_e_dkimpy}			dkimpy >= 0.7.1
@@ -308,7 +327,7 @@ BuildRequires:	libffi-devel
 %req_cond_b_i_n_v	0%{?b_e_lazr_config}		lazr-config
 %req_cond_b_i_n_v	0%{?b_e_mako}			mako
 %req_cond_b_i_n_v	0%{?b_e_mailmanclient}		mailmanclient
-%req_cond_b_i_w_v	0%{?b_e_cmarkgfm}		markgfm >= 0.8.0
+%req_cond_b_i_w_v	0%{?b_e_cmarkgfm}		cmarkgfm >= 0.8.0
 %req_cond_b_i_n_v	0%{?b_e_mistune}		mistune
 %req_cond_b_i_w_v	0%{?b_e_openid}			openid >= 3.0.8
 %req_cond_b_i_n_v	0%{?b_e_passlib}		passlib
@@ -464,8 +483,13 @@ Requires: 	publicsuffix-list
 
 %define	b_v_wcwidth			0.2.6
 %define	b_v_webencodings		0.5.1
-%define	b_v_wheel			0.40.0
+
+# 0.40.0 has issue on EL9 with flit_core
+#define	b_v_wheel			0.40.0
+%define	b_v_wheel			0.38.4
+
 #N2#define	b_v_zipp			3.15.0
+
 %define	b_v_zope_component		5.1.0
 %define	b_v_zope_event			4.6
 %define	b_v_zope_hookable		5.4
@@ -614,7 +638,6 @@ Source1024:	%{__pypi_url}a/asgiref/asgiref-%{b_v_asgiref}.tar.gz
 Source1025:	%{__pypi_url}f/flufl.bounce/flufl.bounce-%{b_v_flufl_bounce}.tar.gz
 Source1026:	%{__pypi_url}f/flufl.i18n/flufl.i18n-%{b_v_flufl_i18n}.tar.gz
 Source1027:	%{__pypi_url}W/Whoosh/Whoosh-%{b_v_whoosh}.tar.gz
-Patch1027:      mailman3-whoosh-whoosh3.patch
 
 Source1028:	%{__pypi_url}c/cmarkgfm/cmarkgfm-%{b_v_cmarkgfm}.tar.gz
 Source1029:	%{__pypi_url}c/cffi/cffi-%{b_v_cffi}.tar.gz
@@ -709,9 +732,6 @@ Patch902:	mailman3-allauth-forms.py-CAPTCHA.patch
 # conflict with non-virtualenv mailman3
 Conflicts:	mailman3
 BuildConflicts:	mailman3
-
-# conflicts with packaged gunicorn to get the startup script
-BuildConflicts:	python%{python3_version_num}-gunicorn
 
 # will be bundled, too many dependencies existing
 BuildConflicts:	python%{python3_version_num}-networkx
@@ -924,10 +944,11 @@ set -x
 
 ### ALL
 
-## build dependencies (no need to build/install)
+## build/VIRTUALENV dependencies (no need to build/install)
 %prep_cond "%{?b_e_cython}"                 2009
 %prep_cond "%{?b_e_flit_core}"              2012
 %prep_cond "%{?b_e_packaging}"              2021
+%prep_cond "%{?b_e_poetry_core}"            2024
 %prep_cond "%{?b_e_pycparser}"              2026
 %prep_cond "%{?b_e_setuptools}"             2036
 %prep_cond "%{?b_e_setuptools_scm}"         2037
@@ -1025,10 +1046,6 @@ set -x
 %else
 ### BUNDLED-AS-REQUIRED PACKAGING
 
-%if 0%{?b_e_whoosh}
-cat %{PATCH1027} | patch -p0 -d %{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Whoosh-%{b_v_whoosh}
-%endif
-
 %endif
 
 ## SELinux
@@ -1125,6 +1142,7 @@ pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-ch
 
 # search engine
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip django-haystack
+
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip Whoosh
 
 # install from local files "CAPTCHA"
@@ -1143,9 +1161,6 @@ find %{buildroot} -iname '*.exe' | xargs rm -f
 grep --include='*.py' -l -r "^from django.utils.deprecation import RemovedInDjango30Warning" %{buildroot}%{basedir}/%{virtualenvsubdir} | while read file; do
 	sed -i -e 's,^\(from django.utils.deprecation import RemovedInDjango30Warning\),#DISABLED-BY-RPMBUILD# \1,g' $file
 done
-
-# bugfix for Whoosh
-cat %{PATCH1027} | patch %{buildroot}%{sitelibdir}/whoosh/codec/whoosh3.py
 
 # remove all buildroot references
 grep '%{buildroot}' %{buildroot}/* -r -l 2>/dev/null | while read file; do
