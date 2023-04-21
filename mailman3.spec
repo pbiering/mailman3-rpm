@@ -223,8 +223,6 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_networkx			1
 
 %if (0%{?fedora} == 37)
-# >= 3.5.2 required, 3.4.1-7.fc37 is too low
-%define	b_e_asgiref			1
 
 %if 0%{?mailman3_virtualenv}
 # available 4.4.0-2.fc37 causes problems with VIRTUALENV/importlib_resources
@@ -238,6 +236,8 @@ BuildRequires:  python%{python3_version_num}-pip
 %if (0%{?fedora} > 40)
 # guessing that f40 will have updated versions...
 %else
+# >= 3.5.2 required, 3.4.1-7.fc37 / 3.4.1-8.fc38 is too low
+%define	b_e_asgiref			1
 # dependencies
 %define	b_e_aiosmtpd			1
 %define	b_e_flufl_bounce		1
