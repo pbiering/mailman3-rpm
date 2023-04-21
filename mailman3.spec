@@ -60,7 +60,7 @@
 %endif
 
 
-### dependencies
+### base dependencies
 
 %if (0%{?rhel} == 8)
 # hardwire to Python 3.9
@@ -145,9 +145,21 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_flit_core			1
 %define	b_e_packaging			1
 %define	b_e_pycparser			1
+
+%if 0%{?mailman3_virtualenv}
+###  VIRTUALENV PACKAGING
+
+# EL9 has 53.0.0 but not usable via PIP even in case: --system-site-packages
 %define	b_e_setuptools			1
+
 %define	b_e_setuptools_scm		1
+
+# EL9 has 2.0.1 but not usable via PIP even in case: --system-site-packages
+%define	b_e_tomli			1
+
 %define	b_e_wheel			1
+%endif
+
 %endif
 
 
@@ -178,10 +190,6 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_pygments			1
 %define	b_e_readme_renderer		1
 %define	b_e_rjsmin			1
-
-# available for EL9, but strange problem
-#define	b_e_tomli			1
-
 %define	b_e_typing_extensions		1
 %define	b_e_webencodings		1
 %define	b_e_whoosh			1
@@ -1084,12 +1092,21 @@ PYTHONPATH=$PYTHONPATH:%{_buildroot}%{sitelibdir}/asgiref-%{?b_v_asgiref}/build/
 export PYTHONPATH
 
 # install from local files basic support tools
+%if 0%{?b_e_setuptools_scm}
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip setuptools_scm
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip wheel
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip isort
+%endif
 
-# required to be preinstalled for flufl
-#pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip public
+%if 0%{?b_e_wheel}
+pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip wheel
+%endif
+
+%if 0%{?b_e_tomli}
+pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip tomli
+%endif
+
+%if 0%{?b_e_isort}
+pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip isort
+%endif
 
 # install from local files "base"
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip %{pypi_name}
