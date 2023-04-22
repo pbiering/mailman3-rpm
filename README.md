@@ -53,7 +53,7 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 
 ### Build RPM
 
-Recommended on a dedicated build host
+*Recommended on a dedicated build host*
 
 #### preparation
 
@@ -103,6 +103,12 @@ create Source RPM by downloading external dependencies
 rpmbuild -bs mailman3.spec --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir ."
 ```
 
+or use the included Makefile
+
+```
+make srpm
+```
+
 #### build binary RPM
 
 ##### native build using USER_SITE
@@ -111,25 +117,47 @@ rpmbuild -bs mailman3.spec --undefine=_disable_source_fetch --define "_topdir ."
 rpmbuild --rebuild ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
 ```
 
+or use the included Makefile
+
+```
+make rpm
+```
+
 ### virtualenv build
 
 ```
 rpmbuild --rebuild -D "mailman3_virtualenv 1" ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
 ```
 
-### Install RPM
-
-Transfer RPM to final destination system
+or use the included Makefile
 
 ```
-dnf localinstall mailman3-<VERSION>-<RELEASE>.<DISTa>.<ARCH>.rpm
+make rpm-virtualenv
+```
+
+
+### Install RPM
+
+Transfer RPM to final destination system and install (this will also resolve and install required dependencies)
+
+#### native build
+
+```
+dnf localinstall mailman3-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
+```
+
+#### virtualenv build
+
+```
+dnf localinstall mailman3-virtualenv-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
 ```
 
 ### Configuration
 
-- check output of RPM after installation
+- check output of RPM after installation in general
 - check main config file: `/etc/mailman.cfg`
 - check additional config files in `/etc/mailman3/`
+  - important: settings.py
 - check configuration of `postfix`
 
 General: read provided documentation on https://docs.mailman3.org/
@@ -148,7 +176,9 @@ CAPTCHA is injected in to
 ## Notes
 
 - based on https://kojipkgs.fedoraproject.org//packages/mailman3/3.3.4/6.fc36/src/mailman3-3.3.4-6.fc36.src.rpm (last native one available)
-- the SPEC file includes a toggle for activation of a native build by bundling missing packages but as described above it's impossible for EL and Fedora as of today because of final conflicts
+- the SPEC file includes also toggles for
+  - using cron files instead of systemd timers (-D "mailman3_cron 1")
+  - use same user as mailman major version 2 (-D "mailman3_like_mailman2 1") THIS BREAKS COEXISTENT installation e.g. required for smooth transitions on same system hosting mailman major version 2 and 3 in parallel
 
 ## References
 
