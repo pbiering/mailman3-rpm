@@ -287,7 +287,7 @@ Conflicts:	python%{python3_version_num}-%2 %5 %6 \
 
 
 ### build-only related
-%req_cond_b_o_n_v	1				rpm-macros
+%req_cond_b_o_n_v	0				rpm-macros
 
 %req_cond_b_o_n_v	0%{?b_e_flit_core}		flit-core
 %req_cond_b_o_n_v	0%{?b_e_setuptools}		setuptools
