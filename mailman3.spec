@@ -366,7 +366,7 @@ BuildRequires:	libffi-devel
 %req_cond_b_i_n_v	0				cryptography
 %req_cond_b_i_n_v	0				dns
 %req_cond_b_i_n_v	0				idna
-%req_cond_b_i_n_v	0				markusafe
+%req_cond_b_i_n_v	0				markupsafe
 %req_cond_b_i_n_v	0				psutil
 %req_cond_b_i_n_v	0				requests
 %req_cond_b_i_n_v	0				six
