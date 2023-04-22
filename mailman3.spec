@@ -2044,6 +2044,9 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
+* Sat 22 13 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-8
+- Further adjustments for Fedora and EL
+
 * Thu Apr 13 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-7
 - Fix native build by using USER_SITE directory for by OS+EPEL unsupported but required modules
 
