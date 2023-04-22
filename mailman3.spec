@@ -111,6 +111,7 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_cffi			1
 %define	b_e_dateutil			1
 %define	b_e_defusedxml			1
+%define	b_e_flit_core			1
 %define	b_e_flufl_lock			1
 %define	b_e_greenlet			1
 %define	b_e_isort			1
@@ -154,7 +155,6 @@ BuildRequires:  python%{python3_version_num}-pip
 
 %if 0%{?rhel} == 8
 %define	b_e_poetry_core			1
-%define	b_e_flit_core			1
 %endif
 
 %if 0%{?rhel} >= 9
@@ -297,6 +297,7 @@ Conflicts:	python%{python3_version_num}-%2 %5 %6 \
 ## Build dependencies
 %if 0%{?b_e_cffi}
 BuildRequires:	libffi-devel
+BuildRequires:	gcc
 %endif
 
 
