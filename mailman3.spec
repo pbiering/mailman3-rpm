@@ -362,16 +362,16 @@ BuildRequires:	libffi-devel
 %req_cond_b_i_n_v	0%{?b_e_zope_hookable}		zope-hookable
 
 ## ALL supported OS versions
-%req_cond_b_i_n_v	1				click
-%req_cond_b_i_n_v	1				cryptography
-%req_cond_b_i_n_v	1				dns
-%req_cond_b_i_n_v	1				idna
-%req_cond_b_i_n_v	1				markusafe
-%req_cond_b_i_n_v	1				psutil
-%req_cond_b_i_n_v	1				requests
-%req_cond_b_i_n_v	1				six
-%req_cond_b_i_n_v	1				toml
-%req_cond_b_i_n_v	1				urllib3
+%req_cond_b_i_n_v	0				click
+%req_cond_b_i_n_v	0				cryptography
+%req_cond_b_i_n_v	0				dns
+%req_cond_b_i_n_v	0				idna
+%req_cond_b_i_n_v	0				markusafe
+%req_cond_b_i_n_v	0				psutil
+%req_cond_b_i_n_v	0				requests
+%req_cond_b_i_n_v	0				six
+%req_cond_b_i_n_v	0				toml
+%req_cond_b_i_n_v	0				urllib3
 
 # extra
 BuildRequires: 	publicsuffix-list
