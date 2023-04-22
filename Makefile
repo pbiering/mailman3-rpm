@@ -6,6 +6,13 @@ rpm:
 		rpmbuild --rebuild $$srpms; \
 	done
 
+rpm-virtualenv:
+	for srpms in *.src.rpm; do \
+		echo "BUILD: create RPM from SRPM: $$srpms"; \
+		rpmbuild --rebuild $$srpms -D "mailman3_virtualenv 1"; \
+	done
+
+
 clean:
 	echo "CLEAN: *.src.rpm"
 	if ls -1 *.src.rpm >/dev/null 2>&1; then ls -1 *.src.rpm  | xargs rm; fi

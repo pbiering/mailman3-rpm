@@ -222,7 +222,7 @@ BuildRequires:  python%{python3_version_num}-pip
 # even while available bundle to avoid install of huge dependencies
 %define	b_e_networkx			1
 
-%if (0%{?fedora} == 37)
+%if (0%{?fedora} >= 37)
 
 %if 0%{?mailman3_virtualenv}
 # available 4.4.0-2.fc37 causes problems with VIRTUALENV/importlib_resources
@@ -242,6 +242,8 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_aiosmtpd			1
 %define	b_e_flufl_bounce		1
 %define	b_e_flufl_i18n			1
+
+# Fedora provides 3.0 which is too low (see below)
 %define	b_e_django_haystack		1
 %endif
 
@@ -271,6 +273,16 @@ Requires:	python%{python3_version_num}-%2 \
 %if ! %1 \
 BuildRequires:	python%{python3_version_num}-%2 %3 %4 \
 Requires:	python%{python3_version_num}-%2 %3 %4 \
+%endif
+
+# requirement conditional build+install with version and conflicts
+%define req_cond_b_i_wcv()  \
+%if ! %1 \
+BuildRequires:	python%{python3_version_num}-%2 %3 %4 \
+Requires:	python%{python3_version_num}-%2 %3 %4 \
+%else \
+BuildConflicts:	python%{python3_version_num}-%2 %5 %6 \
+Conflicts:	python%{python3_version_num}-%2 %5 %6 \
 %endif
 
 
@@ -307,7 +319,7 @@ BuildRequires:	libffi-devel
 
 # f37/f38/f39: 3.0
 # 3.0 has issue with django: cannot import name 'ungettext' from 'django.utils.translation' (BZ#2187604)
-%req_cond_b_i_w_v	0%{?b_e_django_haystack}	django-haystack >= 3.2
+%req_cond_b_i_wcv	0%{?b_e_django_haystack}	django-haystack >= 3.2 < 3.2
 
 %req_cond_b_i_n_v	0%{?b_e_django_q}		django-q
 %req_cond_b_i_n_v	0%{?b_e_django_rest_framework}	django-rest-framework
@@ -676,7 +688,7 @@ Source2019:	%{__pypi_url}n/networkx/networkx-%{b_v_networkx}.tar.gz
 Source2021:	%{__pypi_url}p/packaging/packaging-%{b_v_packaging}.tar.gz
 Source2024:	%{__pypi_url}p/poetry_core/poetry_core-%{b_v_poetry_core}.tar.gz
 Source2026:	%{__pypi_url}p/pycparser/pycparser-%{b_v_pycparser}.tar.gz
-Source2030:	#{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
+Source2030:	%{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
 #N2#Source2032:	#{__pypi_url}r/redis/redis-#{b_v_redis}.tar.gz
 Source2036:	%{__pypi_url}s/setuptools/setuptools-%{b_v_setuptools}.tar.gz
 Source2037:	%{__pypi_url}s/setuptools_scm/setuptools_scm-%{b_v_setuptools_scm}.tar.gz
@@ -720,8 +732,10 @@ Source2055:	%{__pypi_url}t/types-cryptography/types-cryptography-%{b_v_types_cry
 
 Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{b_v_mailmanclient}.tar.gz
 
-# special patches
-Patch900:	mailman3-haystack-whoosh_backend-PR1870.patch
+Patch3000:	mailman3-haystack-whoosh_backend-PR1870.patch
+Patch3001:	mailman3-whoosh-whoosh3.patch
+
+# CAPTCHA enabling patches
 Patch901:	mailman3-postorius-list_forms.py-CAPTCHA.patch
 Patch902:	mailman3-allauth-forms.py-CAPTCHA.patch
 
@@ -1432,10 +1446,20 @@ done
 
 %endif
 
-# apply special patches
-%if 0%{?b_e_django_haystack} || 0%{?mailman3_virtualenv}
-cat %{PATCH900} | patch %{buildroot}%{sitelibdir}/haystack/backends/whoosh_backend.py
+# apply comsetic patches
+%if 0%{?b_e_django_haystack}
+if [ -f %{buildroot}%{sitelibdir}/haystack/backends/whoosh_backend.py ]; then
+cat %{PATCH3000} | patch %{buildroot}%{sitelibdir}/haystack/backends/whoosh_backend.py
+fi
 %endif
+
+%if 0%{?b_e_whoosh}
+if [ -f %{buildroot}%{sitelibdir}/whoosh/codec/whoosh3.py ]; then
+cat %{PATCH3001} | patch %{buildroot}%{sitelibdir}/whoosh/codec/whoosh3.py
+fi
+%endif
+
+# CAPTCHA extension patches
 cat %{PATCH901} | patch %{buildroot}%{sitelibdir}/postorius/forms/list_forms.py
 cat %{PATCH902} | patch %{buildroot}%{sitelibdir}/allauth/account/forms.py
 
