@@ -1167,11 +1167,11 @@ pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-ch
 pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip django-friendly-captcha
 
 ## remove all python cache files
-find %{buildroot} -name '*.pyc' | xargs rm -rf
-find %{buildroot} -name '__pycache__' | xargs rm -rf
+find %{buildroot} -name '*.pyc' | xargs %{__rm} -rf
+find %{buildroot} -name '__pycache__' | xargs %{__rm} -rf
 
 # remove all exe files
-find %{buildroot} -iname '*.exe' | xargs rm -f
+find %{buildroot} -iname '*.exe' | xargs %{__rm} -f
 
 # disable RemovedInDjango30Warning
 grep --include='*.py' -l -r "^from django.utils.deprecation import RemovedInDjango30Warning" %{buildroot}%{basedir}/%{virtualenvsubdir} | while read file; do
@@ -1473,8 +1473,8 @@ done
 # replace dedicated installed file with softlink to publicsuffix-list (see also python-publicsuffix2.spec)
 find %{buildroot}%{sitelibdir} -type f -name public_suffix_list.dat | while read f; do
 	echo "replace dedicated installed files with softlink: $f"
-	rm $f
-	ln -s %{_datarootdir}/publicsuffix/public_suffix_list.dat $f
+	%{__rm} $f
+	%{__ln_s} %{_datarootdir}/publicsuffix/public_suffix_list.dat $f
 done
 
 
@@ -1493,7 +1493,7 @@ install -d -p  %{buildroot}%{dirname:%{sharedstatesitedir}}
 install -d -p %{buildroot}%{usersitedir}
 
 # create softlink to bundled modules
-ln -s %{usersitedir} %{buildroot}%{sharedstatesitedir}
+%{__ln_s} %{usersitedir} %{buildroot}%{sharedstatesitedir}
 
 # move noarch
 for f in %{buildroot}%{sitelibdir}/*; do
@@ -1512,7 +1512,7 @@ for f in %{buildroot}%{sitearchdir}/*; do
 			for s in $f/*; do
 				%{__mv} $s %{buildroot}%{usersitedir}/$entry/
 			done
-			rmdir $f
+			%{__rm} -d $f
 		else
 			echo "Cannot move into %{buildroot}%{usersitedir}: $f"
 		fi
@@ -1520,7 +1520,7 @@ for f in %{buildroot}%{sitearchdir}/*; do
 done
 
 # remove any header files installed by bundles
-rm -rf %{buildroot}%{_includedir}
+%{__rm}-rf %{buildroot}%{_includedir}
 
 %endif
 
@@ -1686,11 +1686,11 @@ fi
 set -x
 
 # remove "check" config file
-rm -f %{buildroot}%{_sysconfdir}/mailman.cfg.check
-rm -rf %{buildroot}%{etcdir}/check/
+%{__rm} -f %{buildroot}%{_sysconfdir}/mailman.cfg.check
+%{__rm} -rf %{buildroot}%{etcdir}/check/
 
 # remove created log/db files
-rm -f %{buildroot}%{logdir}/*.log %{buildroot}%{vardir}/db/*.db
+%{__rm} -f %{buildroot}%{logdir}/*.log %{buildroot}%{vardir}/db/*.db
 
 
 %pre
