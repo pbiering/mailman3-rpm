@@ -40,11 +40,10 @@ ALLOWED_HOSTS = [
 ]
 
 #: See https://docs.djangoproject.com/en/dev/ref/settings/#csrf-trusted-origins
-#: For Django <4.0 these are of the form 'lists.example.com' or
-#: '.example.com' to include subdomains and for Django >=4.0 they include
-#: the scheme as in 'https://lists.example.com' or 'https://*.example.com'.
+#: these are of the form 'https://lists.example.com' or
+#: 'https://*.example.com' to include subdomains
 CSRF_TRUSTED_ORIGINS = [
-    # "lists.your-domain.org",
+    # "https://lists.your-domain.org",
     # Add here all production domains you have.
 ]
 
