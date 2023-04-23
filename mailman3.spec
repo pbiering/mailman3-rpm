@@ -951,9 +951,9 @@ set -x
 ### BUNDLED-AS-REQUIRED PACKAGING 
 
 ## base
-%setup -T -D -a 100 -n %{builddir}
-%setup -T -D -a 101 -n %{builddir}
-%setup -T -D -a 102 -n %{builddir}
+%setup -q -T -D -a 100 -n %{builddir}
+%setup -q -T -D -a 101 -n %{builddir}
+%setup -q -T -D -a 102 -n %{builddir}
 
 %endif
 
