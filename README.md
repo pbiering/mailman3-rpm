@@ -152,6 +152,13 @@ dnf localinstall mailman3-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
 dnf localinstall mailman3-virtualenv-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
 ```
 
+#### via Fedora copr
+
+Until included by Fedora and EPEL available via copr:
+
+- https://copr.fedorainfracloud.org/coprs/pbiering/InternetServerExtensions/
+
+
 ### Configuration
 
 - check output of RPM after installation in general
