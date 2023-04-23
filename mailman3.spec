@@ -916,8 +916,8 @@ Web Interface: %{webport}
 %endif
 
 %prep
-rm -rf %{pypi_name}-%{version_mailman}
-%{__mkdir} %{pypi_name}-%{version_mailman}
+%{__rm} -rf %{builddir}
+%{__mkdir} %{builddir}
 cd %{pypi_name}-%{version_mailman}
 
 set +x
