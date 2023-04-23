@@ -918,7 +918,7 @@ Web Interface: %{webport}
 %prep
 %{__rm} -rf %{builddir}
 %{__mkdir} %{builddir}
-cd %{pypi_name}-%{version_mailman}
+cd %{builddir}
 
 set +x
 echo "*** BUILD INFORMATION ***"
