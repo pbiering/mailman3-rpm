@@ -1925,9 +1925,9 @@ echo
 
 # SELinux
 if [ $1 -eq 0 ] ; then
-    semanage port -l | grep "^mailman_.*\s*tcp\s*" | while read port; do
-        echo "SELinux delete for %{pname} port tcp/$port"
-        semanage port -d -p tcp $port
+    semanage port -l | grep "^mailman_.*\s*tcp\s*" | while read label proto port; do
+        echo "SELinux delete for %{pname} port $proto/$port ($label)"
+        semanage port -d -p $proto $port
     done
 fi
 
