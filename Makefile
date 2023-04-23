@@ -24,7 +24,3 @@ distclean: clean
 srpm:
 	echo "BUILD: create SRPM like COPR is doing"
 	make -f ./.copr/Makefile srpm outdir="." spec="mailman3.spec"
-
-srpm-el8:
-	echo "BUILD: create SRPM like COPR is doing for EL8"
-	make -f ./.copr/Makefile srpm outdir="." spec="mailman3.spec" define="-D 'rhel 8'"
