@@ -779,20 +779,20 @@ Conflicts:	mailman
 
 
 # SELinux https://fedoraproject.org/wiki/SELinux/IndependentPolicy#Creating_the_Spec_File
-Provides:  %{pname}-selinux == %{version}-%{release}
+Provides:	%{pname}-selinux == %{version}-%{release}
 %global selinux_variants mls targeted
-Requires: selinux-policy >= %{_selinux_policy_version}
-BuildRequires: pkgconfig(systemd)
-BuildRequires: selinux-policy
-BuildRequires: selinux-policy-devel
-Requires(post): selinux-policy-base >= %{_selinux_policy_version}
-Requires(post): libselinux-utils
-Requires(post): policycoreutils
+Requires:	selinux-policy >= %{_selinux_policy_version}
+BuildRequires:	pkgconfig(systemd)
+BuildRequires:	selinux-policy
+BuildRequires:	selinux-policy-devel
+Requires(post):	selinux-policy-base >= %{_selinux_policy_version}
+Requires(post):	libselinux-utils
+Requires(post):	policycoreutils
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
-Requires(post): policycoreutils-python-utils
+Requires(post):	policycoreutils-python-utils
 %else
-Requires(post): policycoreutils-python
+Requires(post):	policycoreutils-python
 %endif
 
 # SELinux https://fedoraproject.org/wiki/SELinux_Policy_Modules_Packaging_Draft
@@ -893,7 +893,7 @@ https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
 * THIS package contains scheduled tasks using: systemd.timer
 %endif
 user/group   : %{mmuser}/%{mmgroup}
-directory    : %{basedir}/%{virtualenvsubdir}
+directory    : %{vardir}
 
 it contains also
  mailman-web       : %{version_mailman_web} using 'gunicorn'
@@ -1520,7 +1520,7 @@ for f in %{buildroot}%{sitearchdir}/*; do
 done
 
 # remove any header files installed by bundles
-%{__rm}-rf %{buildroot}%{_includedir}
+%{__rm} -rf %{buildroot}%{_includedir}
 
 %endif
 
@@ -1896,15 +1896,10 @@ cat <<END
  - Access Control for django's admin portal
 END
 
-
 echo
 
 
 %preun
-## systemd/service
-%systemd_preun %{basename:%{SOURCE310}}
-%systemd_preun %{basename:%{SOURCE311}}
-
 %if 0%{?mailman3_cron}
 ## crontab -> nothing todo
 %else
@@ -1922,18 +1917,26 @@ echo
 %systemd_preun %{basename:%{SOURCE416}}
 %endif
 
+## systemd/service
+%systemd_preun %{pname}.service
+%systemd_preun %{pname}-web.service
+%systemd_preun %{basename:%{SOURCE310}}
+%systemd_preun %{basename:%{SOURCE311}}
+
+# SELinux
 if [ $1 -eq 0 ] ; then
-    for selinuxvariant in %{selinux_variants}; do
-        %selinux_modules_uninstall -s ${selinuxvariant} %{_datadir}/selinux/${selinuxvariant}/%{pname}.pp || :
+    semanage port -l | grep "^mailman_.*\s*tcp\s*" | while read port; do
+        echo "SELinux delete for %{pname} port tcp/$port"
+        semanage port -d -p tcp $port
     done
 fi
 
+for selinuxvariant in %{selinux_variants}; do
+	%selinux_modules_uninstall -s ${selinuxvariant} %{pname} || :
+done
+
 
 %postun
-## systemd/service
-%systemd_postun %{basename:%{SOURCE310}}
-%systemd_postun %{basename:%{SOURCE311}}
-
 %if 0%{?mailman3_cron}
 ## crontab -> nothing todo
 %else
@@ -1951,13 +1954,11 @@ fi
 %systemd_postun %{basename:%{SOURCE416}}
 %endif
 
-# SELinux
-if [ $1 -eq 0 ] ; then
-    semanage port -l | grep -q "^mailman_.*\s*tcp\s*" | while read port; do
-        echo "SELinux delete for %{pname} port tcp/$port"
-        semanage port -d -p tcp $port
-    done
-fi
+## systemd/service
+%systemd_postun %{basename:%{SOURCE310}}
+%systemd_postun %{basename:%{SOURCE311}}
+%systemd_postun %{basename:%{SOURCE310}}
+%systemd_postun %{basename:%{SOURCE311}}
 
 
 %posttrans
