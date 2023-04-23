@@ -312,6 +312,7 @@ BuildRequires:	gcc
 %req_cond_b_i_w_v	0%{?b_e_authheaders}		authheaders >= 0.14.0
 %req_cond_b_i_n_v	0%{?b_e_blessed}		blessed
 %req_cond_b_i_n_v	0%{?b_e_dateutil}		dateutil
+%req_cond_b_i_n_v	0%{?b_e_defusedxml}		defusedxml
 %req_cond_b_i_w_v	0%{?b_e_dkimpy}			dkimpy >= 0.7.1
 %req_cond_b_i_w_v	0%{?b_e_django}			django >= 4
 %req_cond_b_i_n_v	0%{?b_e_django_compressor}	django-compressor
