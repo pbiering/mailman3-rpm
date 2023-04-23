@@ -166,7 +166,7 @@ General: read provided documentation on https://docs.mailman3.org/
 
 ### CAPTCHA support
 
-CAPTCHA is injected in to
+CAPTCHA is injected into
 
 | Package   | File                |
 |-----------|---------------------|
