@@ -1987,7 +1987,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 %{_tmpfilesdir}
 %config(noreplace) %attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/mailman.cfg
 %{_sysconfdir}/logrotate.d/%{pname}
-%dir %attr(755,%{mmuser},mail)       %{vardir}
+%dir %attr(750,%{mmuser},mail)       %{vardir}
 %dir %attr(770,%{mmuser},%{mmgroup}) %{vardir}/db
 %dir %attr(2770,%{mmuser},mail)      %{vardir}/data
 %dir %attr(775,%{mmuser},%{mmgroup}) %{vardir}/web/static
