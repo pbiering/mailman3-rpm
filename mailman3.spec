@@ -1,4 +1,4 @@
-### ***THIS IS A SPECIAL PACKAGE for mailman3
+### *** mailman3
 ###
 ### see also:
 ###  - https://github.com/pbiering/mailman3-rpm
@@ -18,7 +18,7 @@
 ### Step 2: install required build dependencies, get list of required packages
 ### $ rpmbuild -bb mailman3.spec 2>&1 | awk '$0 ~ "is needed" { print $1 }' | xargs echo "dnf install"
 ###
-### Step 2: install required build dependencies, get list of required packages
+### Step 3: install required build dependencies, get list of required packages
 ### $ sudo dnf install ...
 ###
 ### Step 4: rebuild
