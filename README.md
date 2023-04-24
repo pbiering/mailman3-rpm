@@ -2,6 +2,10 @@
 
 RPM packaged mailman3 for Fedora and Enterprise Linux
 
+Until updated in Fedora and included by EPEL available via copr:
+
+- https://copr.fedorainfracloud.org/coprs/pbiering/InternetServerExtensions/
+
 ## Background
 
 Because of huge Python package dependencies it's impossible to build a native *mailman3* RPM without providing dependencies in USER_SITE directory. Neither EPEL nor Fedora can fulfill depencencies as of 2023-04.
@@ -154,7 +158,7 @@ dnf localinstall mailman3-virtualenv-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
 
 #### via Fedora copr
 
-Until included by Fedora and EPEL available via copr:
+Until updated in Fedora and included by EPEL available via copr:
 
 - https://copr.fedorainfracloud.org/coprs/pbiering/InternetServerExtensions/
 
