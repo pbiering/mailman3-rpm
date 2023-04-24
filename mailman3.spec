@@ -38,7 +38,7 @@
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 8
+%global release_token 9
 
 ## NAMES
 %global pypi_name mailman
@@ -2047,6 +2047,9 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
+* Mon Apr 24 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9
+- Add missing "su" config in logrotate definition
+
 * Sat Apr 22 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-8
 - Further adjustments for Fedora and EL
 

@@ -1,6 +1,7 @@
 @LOGDIR@/*.log {
     missingok
     sharedscripts
+    su @MMUSER@ @MMGROUP@
     postrotate
         systemctl -q is-active mailman3     && systemctl reload  mailman3
         systemctl -q is-active mailman3     && runuser -u @MMUSER@ @BINDIR@/mailman reopen >/dev/null
