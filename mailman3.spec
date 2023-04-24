@@ -1987,7 +1987,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 %{_tmpfilesdir}
 %config(noreplace) %attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/mailman.cfg
 %{_sysconfdir}/logrotate.d/%{pname}
-%dir %attr(750,%{mmuser},mail)       %{vardir}
+%dir %attr(755,%{mmuser},mail)       %{vardir}
 %dir %attr(770,%{mmuser},%{mmgroup}) %{vardir}/db
 %dir %attr(2770,%{mmuser},mail)      %{vardir}/data
 %dir %attr(775,%{mmuser},%{mmgroup}) %{vardir}/web/static
@@ -2049,6 +2049,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 %changelog
 * Mon Apr 24 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9
 - Add missing "su" config in logrotate definition
+- Change permission /var/lib/mailman3 to o+rx to unblock httpd access
 
 * Sat Apr 22 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-8
 - Further adjustments for Fedora and EL
