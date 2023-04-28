@@ -47,6 +47,10 @@ CSRF_TRUSTED_ORIGINS = [
     # Add here all production domains you have.
 ]
 
+#: Filter visible Mailing Lists based on the current host being used to serve.
+#:  Default: False
+# FILTER_VHOST = True
+
 #: Current Django Site being served. This is used to customize the web host
 #: being used to serve the current website. For more details about Django
 #: site, see: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
