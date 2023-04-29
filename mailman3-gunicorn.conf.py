@@ -7,5 +7,6 @@ pidfile = "@RUNDIR@/gunicorn.pid"
 accesslog = "@LOGDIR@/access.log"
 errorlog = "@LOGDIR@/error.log"
 
-# Logformat replacing REMOTE_IP by X-Forwarded-For as behind reverse proxy
-access_log_format = '%({X-Forwarded-For}i)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+# Logformat add X-Forwarded-For (useful if running behind reverse proxy)
+# https://docs.gunicorn.org/en/stable/settings.html
+access_log_format = '%(h)s %({X-Forwarded-For}i)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'

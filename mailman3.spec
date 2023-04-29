@@ -2058,7 +2058,8 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 %changelog
 * Sat Apr 29 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.2
-- Adjust gunicorn config to log X-Forward-For header instead of 127.0.0.1 from reverse proxy
+- Adjust gunicorn config to log X-Forward-For header in addition
+- Adjust Apache reverse config to discard received X-Forward-For header
 
 * Fri Apr 28 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.1
 - Enforce also SSL for /mailman3 /archives by default in httpd config
