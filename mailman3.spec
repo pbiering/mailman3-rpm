@@ -38,7 +38,7 @@
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 10
+%global release_token 9.2
 
 ## NAMES
 %global pypi_name mailman
@@ -563,6 +563,8 @@ Requires: 	publicsuffix-list
 
 ## django mailman related
 %define	b_v_django_mailman3		1.3.9
+
+## django CAPTCHA related
 %define	b_v_django_recaptcha		3.0.0
 %define	b_v_django_hcaptcha		0.2.0
 %define	b_v_django_friendlycaptcha	0.1.7
@@ -676,6 +678,8 @@ Source1110:	%{__pypi_url}d/django-picklefield/django-picklefield-%{b_v_django_pi
 
 ## django mailman related
 Source1180:	%{__pypi_url}d/django-mailman3/django-mailman3-%{b_v_django_mailman3}.tar.gz
+
+## django CAPTCHA related
 Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{b_v_django_recaptcha}.tar.gz
 Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{b_v_django_hcaptcha}.tar.gz
 Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{b_v_django_friendlycaptcha}.tar.gz
@@ -1051,6 +1055,8 @@ set -x
 
 ## django mailman related
 %prep_cond "%{?b_e_django_mailman3}"        1180
+
+## django CAPTCHA related
 %prep_cond "%{?b_e_django_recaptcha}"       1190
 %prep_cond "%{?b_e_django_hcaptcha}"        1191
 %prep_cond "%{?b_e_django_friendlycaptcha}" 1192
@@ -1321,6 +1327,8 @@ export PYTHONPATH
 
 ## django mailman related
 %build_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django-mailman3
+
+## django CAPTCHA related
 %build_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
 %build_cond "%{?b_e_django_hcaptcha}"        "%{?b_v_django_hcaptcha}"        django-hCaptcha
 %build_cond "%{?b_e_django_friendlycaptcha}" "%{?b_v_django_friendlycaptcha}" django-friendly-captcha
@@ -1423,6 +1431,8 @@ export PYTHONPATH
 
 ## django mailman related
 %install_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django-mailman3
+
+## django CAPTCHA related
 %install_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
 %install_cond "%{?b_e_django_hcaptcha}"        "%{?b_v_django_hcaptcha}"        django-hCaptcha
 %install_cond "%{?b_e_django_friendlycaptcha}" "%{?b_v_django_friendlycaptcha}" django-friendly-captcha
@@ -2047,7 +2057,10 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
-* Fri Apr 28 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-10
+* Sat Apr 29 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.2
+- Adjust gunicorn config to log X-Forward-For header instead of 127.0.0.1 from reverse proxy
+
+* Fri Apr 28 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.1
 - Enforce also SSL for /mailman3 /archives by default in httpd config
 
 * Mon Apr 24 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9
