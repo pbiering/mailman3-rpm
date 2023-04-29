@@ -17,4 +17,3 @@ srpm:	download
 		ls -vl mailman3-*.src.rpm; \
 		rpm -qlp mailman3-*.src.rpm; \
 	fi
-	rpmbuild --showrc | grep -i copr ||:
