@@ -10,10 +10,6 @@ download: rpmdev-spectool wget
 srpm:	download
 	if [ -n "$(outdir)" ]; then \
 		rpmbuild -bs $(spec) --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir $(outdir)"; \
-		ls -vl $(outdir)/mailman3-*.src.rpm; \
-		rpm -qlp $(outdir)/mailman3-*.src.rpm; \
 	else \
 		rpmbuild -bs $(spec) --undefine=_disable_source_fetch --define "_topdir ." --define "_sourcedir ." --define "_srcrpmdir ."; \
-		ls -vl mailman3-*.src.rpm; \
-		rpm -qlp mailman3-*.src.rpm; \
 	fi
