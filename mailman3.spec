@@ -1826,55 +1826,55 @@ echo "Enable timers (will only run if main services are active)"
 %systemctl_enable_if_not_active %{basename:%{SOURCE416}}
 %endif
 
-# check for required postfix extension
+## check for required postfix extension
+declare -A postfix_check
+postfix_check[transport_maps]="hash:/var/lib/mailman3/data/postfix_lmtp"
+postfix_check[local_recipient_maps]="hash:/var/lib/mailman3/data/postfix_lmtp"
+postfix_check[virtual_alias_maps]="hash:/var/lib/mailman3/data/postfix_vmap"
+postfix_check[relay_domains]="hash:/var/lib/mailman3/data/postfix_domains"
+
+declare -A postfix_result
+
+for check in ${!postfix_check[*]}; do
+	if postconf -h $check | grep -q "${postfix_check[$check]}"; then
+		postfix_result[$check]=1
+	else
+		postfix_result[$check]=0
+	fi
+done
+
 echo
-echo "## CHECK postfix configuration:"
-echo -n "# transport_maps extension CHECK: "
-postconf_transport_maps=$(postconf -h transport_maps)
-if echo "$postconf_transport_maps" | grep "hash:%{vardir}/data/postfix_lmtp"; then
-	echo "# transport_maps extension OK"
+echo "## RESULT of postfix configuration CHECK:"
+
+if [ ${postfix_result[transport_maps]} -eq 1 ]; then
+	echo "OK     : found 'transport_maps' extension: ${postfix_check[transport_maps]}"
 else
-	echo
-	echo "# transport_maps misses extension"
-	echo -n "postconf -e '"
-	echo -n "transport_maps = ${postconf_transport_maps}${postconf_transport_maps:+ }hash:%{vardir}/data/postfix_lmtp"
-	echo "'"
+	echo "WARN   : missing 'transport_maps' extension: ${postfix_check[transport_maps]}"
+fi
+
+if [ ${postfix_result[virtual_alias_maps]} -eq 1 -a ${postfix_result[local_recipient_maps]} -eq 0 ]; then
+	echo "OK     : found 'virtual_alias_maps' extension: ${postfix_check[virtual_alias_maps]}"
+elif [ ${postfix_result[virtual_alias_maps]} -eq 0 -a ${postfix_result[local_recipient_maps]} -eq 1 ]; then
+	echo "OK     : found 'local_recipient_maps' extension: ${postfix_check[local_recipient_maps]}"
+elif [ ${postfix_result[virtual_alias_maps]} -eq 0 -a ${postfix_result[local_recipient_maps]} -eq 0 ]; then
+	echo "WARN   : missing 'virtual_alias_maps' or 'local_recipient_maps extension'"
+elif [ ${postfix_result[virtual_alias_maps]} -eq 1 -a ${postfix_result[local_recipient_maps]} -eq 1 ]; then
+	echo "STRANGE: found 'virtual_alias_maps' AND 'local_recipient_maps' extension"
+fi
+
+if [ ${postfix_result[relay_domains]} -eq 1 ]; then
+	echo "OK     : found 'relay_domains' extension: ${postfix_check[relay_domains]}"
+else
+	echo "WARN   : missing 'relay_domains' extension: ${postfix_check[relay_domains]}"
+fi
+
+if postconf -h recipient_delimiter | grep -q '^\+$'; then
+	echo "OK     : found 'recipient_delimiter' containing '+'"
+else
+	echo "WARN   : missing 'recipient_delimiter' extension with '+'"
 fi	
 
-echo -n "# local_recipient_maps extension CHECK: "
-postconf_local_recipient_maps=$(postconf -h local_recipient_maps)
-if echo "$postconf_local_recipient_maps" | grep "hash:%{vardir}/data/postfix_lmtp"; then
-	echo "# local_recipient_maps extension OK"
-else
-	echo
-	echo "# local_recipient_maps misses extension"
-	echo -n "postconf -e '"
-	echo -n "local_recipient_maps = ${postconf_local_recipient_maps}${postconf_local_recipient_maps:+ }hash:%{vardir}/data/postfix_lmtp"
-	echo "'"
-fi	
-
-echo -n "# relay_domains extension CHECK: "
-postconf_relay_domains=$(postconf -h relay_domains)
-if echo "$postconf_relay_domains" | grep "hash:%{vardir}/data/postfix_domains"; then
-	echo "# relay_domains extension OK"
-else
-	echo
-	echo "# relay_domains misses extension"
-	echo -n "postconf -e '"
-	echo -n "relay_domains = ${postconf_relay_domains}${postconf_relay_domains:+ }hash:%{vardir}/data/postfix_domains"
-	echo "'"
-fi	
-
-echo -n "# recipient_delimiter CHECK: "
-postconf_recipient_delimiter=$(postconf -h recipient_delimiter)
-if echo "$postconf_recipient_delimiter" | grep '^\+$'; then
-	echo "# recipient_delimiter OK"
-else
-	echo
-	echo "# recipient_delimiter misses extension"
-	echo "postconf -e 'recipient_delimiter = +'"
-fi	
-
+## Other notifications
 cat <<END
 
 ## CHECK ALSO: %{etcdir}/settings.py 
