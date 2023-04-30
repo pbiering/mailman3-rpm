@@ -1,5 +1,5 @@
---- rpmbuild/BUILDROOT/mailman3-virtualenv-3.3.8-1.el9.x86_64/usr/lib/mailman3/venv/lib/python3.9/site-packages/allauth/account/forms.py.orig	2023-04-02 11:26:39.601273837 +0200
-+++ rpmbuild/BUILDROOT/mailman3-virtualenv-3.3.8-1.el9.x86_64/usr/lib/mailman3/venv/lib/python3.9/site-packages/allauth/account/forms.py	2023-04-02 11:27:42.892382377 +0200
+--- allauth/account/forms.py.orig	2023-04-02 11:26:39.601273837 +0200
++++ allauth/account/forms.py	2023-04-02 11:27:42.892382377 +0200
 @@ -31,6 +31,12 @@
      user_username,
  )

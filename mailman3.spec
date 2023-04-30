@@ -744,6 +744,7 @@ Patch3001:	mailman3-whoosh-whoosh3.patch
 # CAPTCHA enabling patches
 Patch901:	mailman3-postorius-list_forms.py-CAPTCHA.patch
 Patch902:	mailman3-allauth-forms.py-CAPTCHA.patch
+Patch903:	mailman3-django-admin-forms.py-CAPTCHA.patch
 
 
 %if 0%{?mailman3_virtualenv}
@@ -1472,8 +1473,9 @@ fi
 %endif
 
 # CAPTCHA extension patches
-cat %{PATCH901} | patch %{buildroot}%{sitelibdir}/postorius/forms/list_forms.py
-cat %{PATCH902} | patch %{buildroot}%{sitelibdir}/allauth/account/forms.py
+cat %{PATCH901} | patch -p 0 -d %{buildroot}%{sitelibdir}
+cat %{PATCH902} | patch -p 0 -d %{buildroot}%{sitelibdir}
+cat %{PATCH903} | patch -p 0 -d %{buildroot}%{sitelibdir}
 
 # enforce "python" to "python3"
 grep --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitelibdir} | while read file; do
@@ -2057,6 +2059,9 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
+* Sun Apr 30 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.3
+- Add CAPTCHA support to Django's admin login form
+
 * Sat Apr 29 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.2
 - Adjust gunicorn config to log X-Forward-For header in addition
 - Adjust Apache reverse config to discard received X-Forward-For header

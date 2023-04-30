@@ -1,5 +1,5 @@
---- rpmbuild/BUILDROOT/mailman3-virtualenv-3.3.8-1.el9.x86_64/usr/lib/mailman3/venv/lib/python3.9/site-packages/postorius/forms/list_forms.py.orig	2023-04-02 10:59:56.938642619 +0200
-+++ rpmbuild/BUILDROOT/mailman3-virtualenv-3.3.8-1.el9.x86_64/usr/lib/mailman3/venv/lib/python3.9/site-packages/postorius/forms/list_forms.py	2023-04-02 11:23:51.923881265 +0200
+--- postorius/forms/list_forms.py.orig	2023-04-02 10:59:56.938642619 +0200
++++ postorius/forms/list_forms.py	2023-04-02 11:23:51.923881265 +0200
 @@ -38,6 +38,12 @@
  from postorius.models import EmailTemplate, _email_template_help_text
  from postorius.utils import LANGUAGES
