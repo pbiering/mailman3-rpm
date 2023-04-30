@@ -38,7 +38,7 @@
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 9.2
+%global release_token 9.3
 
 ## NAMES
 %global pypi_name mailman
