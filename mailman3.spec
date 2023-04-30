@@ -1507,6 +1507,19 @@ install -d -p %{buildroot}%{usersitedir}
 # create softlink to bundled modules
 %{__ln_s} %{usersitedir} %{buildroot}%{sharedstatesitedir}
 
+# Add readme files
+cat <<END >%{buildroot}%{basedir}/README-USER_SITE.txt
+Bundled Python modules are located in
+ %{usersitedir}
+END
+
+cat <<END >%{buildroot}%{vardir}/README-USER_SITE.txt
+Bundled Python modules are located in
+ %{usersitedir}
+which is softliked to
+ %{sharedstatesitedir}
+END
+
 # move noarch
 for f in %{buildroot}%{sitelibdir}/*; do
 	%{__mv} $f %{buildroot}%{usersitedir}/
@@ -2037,6 +2050,8 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 %else
 ### BUNDLED-AS-REQUIRED PACKAGING
+%{basedir}/README-USER_SITE.txt
+%{vardir}/README-USER_SITE.txt
 %{usersitedir}
 %{sharedstatesitedir}
 %dir %attr(700,%{mmuser},%{mmgroup}) %{vardir}/.local
