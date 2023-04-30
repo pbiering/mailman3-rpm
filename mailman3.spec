@@ -1190,13 +1190,6 @@ grep '%{buildroot}' %{buildroot}/* -r -l 2>/dev/null | while read file; do
 	sed -i -e 's,%{buildroot},,g' $file
 done
 
-# compile all python modules
-%if (%{python3_pkgversion} >= 30) && (%{python3_pkgversion} < 39)
-# < 3.9 is not supporting -s)
-%else
-python%{python3_version} -m compileall -q -s %{buildroot} %{buildroot}%{basedir}/%{virtualenvsubdir}
-%endif
-
 # "mailman-web compilemessages" is prevented to run later because of read-only file/dir in package
 set +x
 echo "BEGIN: msgfmt/po->mo"
@@ -1481,6 +1474,13 @@ cat %{PATCH903} | patch -p 0 -d %{buildroot}%{sitelibdir}
 grep --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitelibdir} | while read file; do
 	sed -i -e 's,env python$,env python3,g' $file
 done
+
+# compile all python modules
+%if (%{python3_pkgversion} >= 30) && (%{python3_pkgversion} < 39)
+# < 3.9 is not supporting -s)
+%else
+python%{python3_version} -m compileall -q -s %{buildroot} %{buildroot}%{sitelibdir}
+%endif
 
 # replace dedicated installed file with softlink to publicsuffix-list (see also python-publicsuffix2.spec)
 find %{buildroot}%{sitelibdir} -type f -name public_suffix_list.dat | while read f; do
