@@ -5,7 +5,7 @@ wget:
 	if rpm -q wget; then echo "RPM wget is already installed"; else echo "RPM wget need to be installed first"; dnf install -y wget; fi
 
 download: rpmdev-spectool wget
-	rpmdev-spectool $(spec) | awk '$$1 ~ /^Source/ && $$2 ~ /^http/ { print $$2 }' | while read url; do echo "Download source: $$url"; wget -nv -c $$url; done
+	rpmdev-spectool $(spec) | awk '$$1 ~ /^Source/ && $$2 ~ /^http/ { print $$2 }' | while read url; do echo "Download source if missing: $$url"; wget -nv -c $$url; done
 
 srpm:	download
 	if [ -n "$(outdir)" ]; then \
