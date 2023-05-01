@@ -2117,6 +2117,7 @@ systemctl condrestart %{pname}.service
 %changelog
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.6
 - Conditional restart after update
+- Fix hcaptcha support for Django's admin login form
 
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.5
 - logrotate config: replace reload+reopen by restart (as currently not supported)
