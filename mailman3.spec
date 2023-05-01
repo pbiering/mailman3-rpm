@@ -2091,6 +2091,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.5
 - Logrotate: add delaycompress
 - preun/postun: bugfix
+- systemd unit files: rework ExecStartPost scripts
 
 * Sun Apr 30 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.4
 - Add CAPTCHA support to Django's admin login form

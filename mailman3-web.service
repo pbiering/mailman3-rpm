@@ -11,9 +11,23 @@ ExecStart=@BINDIR_GUNICORN@/gunicorn -c @ETCDIR@/gunicorn.conf.py mailman_web.ws
 KillSignal=SIGINT
 
 # wait until listening port is up
-ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 Web UI daemon started, waiting for port listen: WEB(tcp/@WEBPORT@)"
-ExecStartPost=/usr/bin/timeout 60 sh -c 'while ! /usr/sbin/ss -H -t -l -n sport = :@WEBPORT@ | grep -q "^LISTEN.*:@WEBPORT@"; do sleep 1; done'
-ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 Web UI daemon started, port listen: WEB(tcp/@WEBPORT@)"
+ExecStartPost=/usr/bin/sh -c ' \
+i=0; web=0; timeout=60; \
+echo "GNU Mailing List Manager 3 Web UI daemon started, waiting $timeout sec for port listen: WEB(tcp/@WEBPORT@)"; \
+while [ $i -lt $timeout -a $web -eq 0 ]; do \
+  if [ $web -eq 0 ]; then \
+    if /usr/sbin/ss -H -t -l -n sport = :@WEBPORT@ | grep -q "^LISTEN.*:@WEBPORT@"; then \
+      echo "GNU Mailing List Manager 3 Web UI daemon started, port listen after $i sec: WEB(tcp/@WEBPORT@)"; \
+      web=1; \
+    fi; \
+  fi; \
+  sleep 1; i=$[ i + 1 ]; \
+done ; \
+if [ $web -eq 0 ]; then \
+  echo "GNU Mailing List Manager 3 Web UI daemon started, missing port listen after $timeout sec: WEB(tcp/@WEBPORT@)"; \
+fi; \
+if [ $web -eq 0 ]; then exit 1; fi; \
+'
 
 [Install]
 WantedBy=multi-user.target

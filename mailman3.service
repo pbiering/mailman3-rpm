@@ -18,11 +18,32 @@ ExecReload=@BINDIR@/mailman restart
 ExecStop=@BINDIR@/mailman stop
 
 # wait until listening ports are up
-ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 daemon started, waiting for port listen: LMTP(tcp/@LMTPPORT@) and RESTAPI(tcp/@RESTAPIPORT@)"
-ExecStartPost=/usr/bin/timeout 60 sh  -c 'while ! /usr/sbin/ss -H -t -l -n sport = :@LMTPPORT@ | grep -q "^LISTEN.*:@LMTPPORT@"; do sleep 1; done'
-ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 daemon started, port listen: LMTP(tcp/@LMTPPORT@)"
-ExecStartPost=/usr/bin/timeout 60 sh -c 'while ! /usr/sbin/ss -H -t -l -n sport = :@RESTAPIPORT@ | grep -q "^LISTEN.*:@RESTAPIPORT@"; do sleep 1; done'
-ExecStartPost=/usr/bin/echo "GNU Mailing List Manager 3 daemon started, port listen: RESTAPI(tcp/@RESTAPIPORT@)"
+ExecStartPost=/usr/bin/sh -c ' \
+i=0; lmtp=0; restapi=0; timeout=60; \
+echo "GNU Mailing List Manager 3 daemon started, waiting $timeout sec for port listen: LMTP(tcp/@LMTPPORT@) and RESTAPI(tcp/@RESTAPIPORT@)"; \
+while [ $i -lt $timeout -a $[ $lmtp + $restapi ] -lt 2 ]; do \
+  if [ $lmtp -eq 0 ]; then \
+    if /usr/sbin/ss -H -t -l -n sport = :@LMTPPORT@ | grep -q "^LISTEN.*:@LMTPPORT@"; then \
+      echo "GNU Mailing List Manager 3 daemon started, port listen after $i sec: LMTP(tcp/@LMTPPORT@)"; \
+      lmtp=1; \
+    fi; \
+  fi; \
+  if [ $restapi -eq 0 ]; then \
+    if /usr/sbin/ss -H -t -l -n sport = :@RESTAPIPORT@ | grep -q "^LISTEN.*:@RESTAPIPORT@"; then \
+      echo "GNU Mailing List Manager 3 daemon started, port listen after $i sec: RESTAPI(tcp/@RESTAPIPORT@)"; \
+      restapi=1; \
+    fi; \
+  fi; \
+  sleep 1; i=$[ i + 1 ]; \
+done ; \
+if [ $lmtp -eq 0 ]; then \
+  echo "GNU Mailing List Manager 3 daemon started, missing port listen after $timeout sec: LMTP(tcp/@LMTPPORT@)"; \
+fi; \
+if [ $restapi -eq 0 ]; then \
+  echo "GNU Mailing List Manager 3 daemon started, missing port listen after $timeout sec: RESTAPI(tcp/@RESTAPIPORT@)"; \
+fi; \
+if [ $lmtp -eq 0 -o $restapi -eq 0 ]; then exit 1; fi; \
+'
 
 [Install]
 WantedBy=multi-user.target
