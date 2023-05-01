@@ -32,8 +32,8 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 ### Feature of the RPM
 
 - SELinux policy
-- CAPTCHA support already prepared (only site+secret key is required to be configured) for
-  - reCaptcha
+- CAPTCHA support already prepared
+  - Google's reCaptcha
   - hCaptcha
   - FriendlyCaptcha
 - database: SQLite
@@ -184,6 +184,17 @@ CAPTCHA is injected into
 | postorius | forms/list_forms.py |
 | allauth   | account/forms.py    |
 | django    | contrib/admin/forms.py<br/>contrib/admin/templates/admin/login.html |
+
+#### CAPTCHA configuration per service
+CAPTCHA can be configured by editing options in  file `/etc/mailman3/settings.py`
+
+ - Google's recaptcha: `RECAPTCHA_PUBLIC_KEY` + `RECAPTCHA_PRIVATE_KEY`
+ - hCaptcha: `HCAPTCHA_SITEKEY` + `HCAPTCHA_SECRET`
+ - FriendlyCaptcha: `FRC_CAPTCHA_SITE_KEY` + `FRC_CAPTCHA_SECRET`
+
+Selection of configured service:
+
+`CAPTCHA_SERVICE=recaptcha|hcaptcha|friendlycaptcha`
 
 ## Notes
 
