@@ -179,10 +179,11 @@ General: read provided documentation on https://docs.mailman3.org/
 
 CAPTCHA is injected into
 
-| Package   | File                |
+| Package   | File(s)             |
 |-----------|---------------------|
 | postorius | forms/list_forms.py |
 | allauth   | account/forms.py    |
+| django    | contrib/admin/forms.py<br/>contrib/admin/templates/admin/login.html |
 
 ## Notes
 
