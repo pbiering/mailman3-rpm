@@ -2040,6 +2040,11 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web collectstatic --noinput"
 echo "Run as %{mmuser}: %{bindir}/mailman-web compress"
 su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
+## systemd/service condrestart will also autorestart dependent timers
+systemctl daemon-reload
+systemctl condrestart %{pname}-web.service
+systemctl condrestart %{pname}.service
+
 
 %files
 
@@ -2110,6 +2115,9 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
+* Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.6
+- Conditional restart after update
+
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.5
 - logrotate config: replace reload+reopen by restart (as currently not supported)
 - preun/postun: bugfix
