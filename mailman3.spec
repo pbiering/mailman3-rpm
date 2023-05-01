@@ -2089,7 +2089,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 %changelog
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.5
-- Logrotate: add delaycompress
+- logrotate config: replace reload+reopen by restart (as currently not supported)
 - preun/postun: bugfix
 - systemd unit files: rework ExecStartPost scripts
 

@@ -1,11 +1,14 @@
 @LOGDIR@/*.log {
     missingok
     sharedscripts
-    delaycompress
     su @MMUSER@ @MMGROUP@
     postrotate
-        systemctl -q is-active mailman3     && systemctl reload  mailman3
-        systemctl -q is-active mailman3     && runuser -u @MMUSER@ @BINDIR@/mailman reopen >/dev/null
+        # mailman3 reload+reopen is not working in 3.3.8 -> restart instead
+        #systemctl -q is-active mailman3     && systemctl reload  mailman3
+        #systemctl -q is-active mailman3     && runuser -u @MMUSER@ @BINDIR@/mailman reopen >/dev/null
+        systemctl -q is-active mailman3     && systemctl restart mailman3
+
+        # mailman3-web is not supporting reopen -> restart
         systemctl -q is-active mailman3-web && systemctl restart mailman3-web
     endscript
 }
