@@ -203,17 +203,27 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_zope_i18nmessageid		1
 
 ## django dependencies
-%define	b_e_django			1
-%define	b_e_django_q			1
-%define	b_e_django_compressor		1
-%define	b_e_django_extensions		1
 %define	b_e_django_gravatar2		1
-%define	b_e_django_rest_framework	1
-%define	b_e_django_appconf		1
-%define	b_e_django_picklefield		1
 
 # end of rhel>=8
 %endif
+
+
+# package Django unconditionally to apply CAPTCHA support
+%define	b_e_django			1
+
+# django-appconf has strong dependency to python-django
+%define	b_e_django_appconf		1
+
+%define	b_e_django_compressor		1
+%define	b_e_django_extensions		1
+
+# django-picklefield has strong dependency to python-django
+%define	b_e_django_picklefield		1
+
+%define	b_e_django_q			1
+%define	b_e_django_rest_framework	1
+
 
 %if (0%{?fedora} >= 37) || (0%{?rhel} >= 8)
 ## common for Fedora & EL
@@ -285,6 +295,15 @@ BuildConflicts:	python%{python3_version_num}-%2 %5 %6 \
 Conflicts:	python%{python3_version_num}-%2 %5 %6 \
 %endif
 
+# requirement conditional build+install with version and build conflicts
+%define req_cond_b_i_wbv()  \
+%if ! %1 \
+BuildRequires:	python%{python3_version_num}-%2 %3 %4 \
+Requires:	python%{python3_version_num}-%2 %3 %4 \
+%else \
+BuildConflicts:	python%{python3_version_num}-%2 \
+%endif
+
 
 ### build-only related
 %req_cond_b_o_n_v	0				rpm-macros
@@ -305,6 +324,7 @@ BuildRequires:	gcc
 
 %req_cond_b_i_w_v	0%{?b_e_aiosmtpd}		aiosmtpd >= 1.4.3
 %req_cond_b_i_n_v	0%{?b_e_alembic}		alembic
+%req_cond_b_i_w_v	0%{?b_e_arrow}			arrow < 2.0.0 >= 1.1.0
 %req_cond_b_i_w_v	0%{?b_e_asgiref}		asgiref >= 3.5.2
 %req_cond_b_i_n_v	0%{?b_e_atpublic}		atpublic
 %req_cond_b_i_n_v	0%{?b_e_attrs}			attrs
@@ -314,10 +334,11 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_dateutil}		dateutil
 %req_cond_b_i_n_v	0%{?b_e_defusedxml}		defusedxml
 %req_cond_b_i_w_v	0%{?b_e_dkimpy}			dkimpy >= 0.7.1
-%req_cond_b_i_w_v	0%{?b_e_django}			django >= 4
+%req_cond_b_i_wbv	0%{?b_e_django}			django >= 4
 %req_cond_b_i_n_v	0%{?b_e_django_compressor}	django-compressor
 %req_cond_b_i_w_v	0%{?b_e_django_extensions}	django-extensions >= 1.3.7
 %req_cond_b_i_w_v	0%{?b_e_django_gravatar2}	django-gravatar2 >= 1.0.6
+%req_cond_b_i_n_v	0%{?b_e_django_picklefield}	django-picklefield >= 3.0.1 < 4.0.0
 
 # f37/f38/f39: 3.0
 # 3.0 has issue with django: cannot import name 'ungettext' from 'django.utils.translation' (BZ#2187604)
@@ -350,6 +371,7 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_rcssmin}		rcssmin
 %req_cond_b_i_n_v	0%{?b_e_readme_renderer}	readme-renderer
 %req_cond_b_i_w_v	0%{?b_e_requests_oauthlib}	requests-oauthlib >= 0.3.0
+%req_cond_b_i_w_v	0%{?b_e_rjsmin}			rjsmin = 1.2.1
 %req_cond_b_i_n_v	0%{?b_e_robot_detection}	robot-detection
 %req_cond_b_i_n_v	0%{?b_e_sqlalchemy}		sqlalchemy
 %req_cond_b_i_n_v	0%{?b_e_sqlparse}		sqlparse
@@ -2092,6 +2114,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 - logrotate config: replace reload+reopen by restart (as currently not supported)
 - preun/postun: bugfix
 - systemd unit files: rework ExecStartPost scripts
+- Fedora: bundle also django to enable CAPTCHA support
 
 * Sun Apr 30 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.4
 - Add CAPTCHA support to Django's admin login form
