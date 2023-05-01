@@ -21,7 +21,7 @@
 +    if captcha_service == 'recaptcha':
 +        captcha = ReCaptchaField()
 +    elif captcha_service == 'hcaptcha':
-+        hcaptcha = hCaptchaField()
++        captcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
 +
