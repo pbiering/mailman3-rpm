@@ -1960,10 +1960,8 @@ echo
 %endif
 
 ## systemd/service
-%systemd_preun %{pname}.service
 %systemd_preun %{pname}-web.service
-%systemd_preun %{basename:%{SOURCE310}}
-%systemd_preun %{basename:%{SOURCE311}}
+%systemd_preun %{pname}.service
 
 # SELinux
 if [ $1 -eq 0 ] ; then
@@ -1997,10 +1995,8 @@ done
 %endif
 
 ## systemd/service
-%systemd_postun %{basename:%{SOURCE310}}
-%systemd_postun %{basename:%{SOURCE311}}
-%systemd_postun %{basename:%{SOURCE310}}
-%systemd_postun %{basename:%{SOURCE311}}
+%systemd_postun %{pname}-web.service
+%systemd_postun %{pname}.service
 
 
 %posttrans
@@ -2094,6 +2090,7 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 %changelog
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.5
 - Logrotate: add delaycompress
+- preun/postun: bugfix
 
 * Sun Apr 30 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.4
 - Add CAPTCHA support to Django's admin login form
