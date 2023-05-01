@@ -38,7 +38,7 @@
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 9.3
+%global release_token 9.5
 
 ## NAMES
 %global pypi_name mailman
@@ -1434,25 +1434,42 @@ export PYTHONPATH
 # cleanup doc files of bundled packages
 %{__rm} -rf %{buildroot}%{_docdir}/*
 
-# move scripts away from _bindir to avoid conflicts and create a wrapper scripts
+# move scripts away from _bindir to avoid conflicts
 install -d -p %{buildroot}%{bindir}
 %{__mv} %{buildroot}%{_bindir}/* %{buildroot}%{bindir}
 
-for wrapper in mailman mailman-web; do
-	cat > %{buildroot}%{_bindir}/$wrapper << EOF
-#!/bin/sh
-if [ "\$(whoami)" != "%{mmuser}" ]; then
-    echo "This command must be run under the mailman user (%{mmuser})."
-    exit 1
-fi
-%{bindir}/$wrapper \$@
-EOF
-
-done
-
 %endif
 
-# apply comsetic patches
+# create a wrapper scripts
+install -d -p %{buildroot}%{_bindir}
+
+cat <<'EOF' >%{buildroot}%{_bindir}/mailman3
+#!/bin/sh
+if [ "$USER" == "root" ]; then
+    echo "This command will run under the mailman3 user (mailman3)."
+    su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman $@"
+elif [ "$USER" != "%{mmuser}" ]; then
+    echo "This command must be run under the mailman 3 user (%{mmuser})."
+    exit 1
+else
+    %{bindir}/mailman $@
+fi
+EOF
+
+cat <<'EOF' >%{buildroot}%{_bindir}/mailman3-web
+#!/bin/sh
+if [ "$USER" == "root" ]; then
+    echo "This command will run under the mailman3 user (mailman3)."
+    su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web $@"
+elif [ "$USER" != "%{mmuser}" ]; then
+    echo "This command must be run under the mailman3 user (%{mmuser})."
+    exit 1
+else
+    %{bindir}/mailman-web $@
+fi
+EOF
+
+# apply cosmetic patches
 %if 0%{?b_e_django_haystack}
 if [ -f %{buildroot}%{sitelibdir}/haystack/backends/whoosh_backend.py ]; then
 cat %{PATCH3000} | patch %{buildroot}%{sitelibdir}/haystack/backends/whoosh_backend.py
@@ -2041,6 +2058,8 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 # SELinux
 %{_datadir}/selinux/*/%{pname}.pp
 
+# Wrapper scripts
+%attr(755,root,root)    %{_bindir}/*
 
 %if 0%{?mailman3_virtualenv}
 ### VIRTUALENV PACKAGING
@@ -2056,7 +2075,6 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 %{sharedstatesitedir}
 %dir %attr(700,%{mmuser},%{mmgroup}) %{vardir}/.local
 
-%attr(755,root,root)    %{_bindir}/*
 %attr(755,root,root)    %{bindir}
 
 %if 0%{?b_e_dkimpy}
@@ -2074,8 +2092,12 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
 
 %changelog
-* Sun Apr 30 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.3
+* Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.5
+- Logrotate: add delaycompress
+
+* Sun Apr 30 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.4
 - Add CAPTCHA support to Django's admin login form
+- Rename wrapper scripts to mailman3 and mailman3-web to avoid confusion with mailman2
 
 * Sat Apr 29 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.2
 - Adjust gunicorn config to log X-Forward-For header in addition

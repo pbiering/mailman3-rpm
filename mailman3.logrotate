@@ -1,6 +1,7 @@
 @LOGDIR@/*.log {
     missingok
     sharedscripts
+    delaycompress
     su @MMUSER@ @MMGROUP@
     postrotate
         systemctl -q is-active mailman3     && systemctl reload  mailman3
