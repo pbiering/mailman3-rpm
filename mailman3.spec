@@ -38,7 +38,7 @@
 %global version_mailman_web			0.0.6
 %global version_mailman_hyperkitty		1.2.1
 
-%global release_token 9.6
+%global release_token 10
 
 ## NAMES
 %global pypi_name mailman
@@ -572,7 +572,7 @@ Requires: 	publicsuffix-list
 %define	b_v_importlib_resources		4.1.1
 
 ## django dependencies
-%define	b_v_django			4.1.7
+%define	b_v_django			4.1.9
 %define	b_v_django_allauth		0.54.0
 %define	b_v_django_appconf		1.0.5
 %define	b_v_django_compressor		4.3.1
@@ -2115,6 +2115,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-10
+- Update dependency to django 4.1.9 (CVE-2023-31047)
+
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-9.6
 - Conditional restart after update
 - Fix hcaptcha support for Django's admin login form
