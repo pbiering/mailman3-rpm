@@ -10,11 +10,6 @@
 ###   known required overloading see below defined: b_e_* / b_v_* (*b*undle_*e*nabled / *b*undle_*v*ersion))
 ###   $ rpmbuild -bp --undefine=_disable_source_fetch mailman3.spec
 ###
-###  VIRTUALENV PACKAGING
-###   according to https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
-###   download main packages and dependencies and store to ~/rpmbuild/SOURCES
-###   $ rpmbuild -bp --undefine=_disable_source_fetch -D "mailman3_virtualenv 1" mailman3.spec
-###
 ### Step 2: install required build dependencies, get list of required packages
 ### $ rpmbuild -bb mailman3.spec 2>&1 | awk '$0 ~ "is needed" { print $1 }' | xargs echo "dnf install"
 ###
@@ -27,7 +22,6 @@
 ### Build toggles
 ###  mailman3_like_mailman2 (default: 0): create package conflicting with mailman major version 2
 ###  mailman3_cron          (default: 0): package cron-jobs instead of systemd-timers
-###  mailman3_virtualenv    (default: 0): virtualenv instead of native package
 
 # do not create debug packages
 %define debug_package %{nil}
@@ -49,7 +43,7 @@
 %define	b_v_django_mailman3		1.3.9
 
 
-%global release_token 10
+%global release_token 20
 
 ## NAMES
 %global pypi_name mailman
@@ -90,13 +84,7 @@ Requires:       python3 >= 3.9
 %endif
 
 
-%if 0%{?mailman3_virtualenv}
-###  VIRTUALENV PACKAGING 
-BuildRequires:  python%{python3_version_num}-pip
-%endif
-
-
-## VIRTUALENV + BUNDLED-AS-REQUIRED by EL+EPEL supported  requirements
+## BUNDLED-AS-REQUIRED by EL+EPEL supported requirements
 
 # mandatory packages for mailman
 %define	b_e_django_mailman3		1
@@ -149,33 +137,6 @@ BuildRequires:  python%{python3_version_num}-pip
 %define	b_e_zope_interface		1
 
 # end of rhel==8
-%endif
-
-
-%if 0%{?mailman3_virtualenv}
-###  VIRTUALENV PACKAGING
-
-## build dependencies
-%define	b_e_cython			1
-%define	b_e_packaging			1
-
-# preinstalled will not work with PIP even in case: --system-site-packages
-%define	b_e_setuptools			1
-%define	b_e_setuptools_scm		1
-%define	b_e_wheel			1
-
-%if 0%{?rhel} == 8
-%define	b_e_poetry_core			1
-%endif
-
-%if 0%{?rhel} >= 9
-## build dependencies
-
-# EL9 has 2.0.1 but not usable via PIP even in case: --system-site-packages
-%define	b_e_tomli			1
-
-%endif
-
 %endif
 
 
@@ -243,16 +204,6 @@ BuildRequires:  python%{python3_version_num}-pip
 # even while available bundle to avoid install of huge dependencies
 %define	b_e_networkx			1
 
-%if (0%{?fedora} >= 37)
-
-%if 0%{?mailman3_virtualenv}
-# available 4.4.0-2.fc37 causes problems with VIRTUALENV/importlib_resources
-%define	b_e_typing_extensions		1
-# available 3.7.1-5.fc37 causes problems with VIRTUALENV/importlib_resources
-%define	b_e_flit_core			1
-%endif
-
-%endif
 
 %if (0%{?fedora} > 40)
 # guessing that f40 will have updated versions...
@@ -413,7 +364,7 @@ BuildRequires: 	publicsuffix-list
 Requires: 	publicsuffix-list
 
 
-## VIRTUALENV+BUNDLED-AS-REQUIRED by EL+EPEL destination directories
+## destination directories
 %global basedir         /usr/lib/%{pname}
 %global logdir          %{_localstatedir}/log/%{pname}
 %global rundir          %{_rundir}/%{pname}
@@ -425,20 +376,12 @@ Requires: 	publicsuffix-list
 
 %global builddir	%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING 
-%global virtualenvsubdir venv
-%global bindir		%{basedir}/%{virtualenvsubdir}/bin
-%global sitelibdir	%{basedir}/%{virtualenvsubdir}/lib64/python%{python3_version}/site-packages
-%else
-### BUNDLED-AS-REQUIRED PACKAGING 
 %global bindir		   %{_libexecdir}/%{pname}
 %global sitelibdir	   %{python3_sitelib}
 %global sitearchdir	   %{python3_sitearch}
 %define sitedirsub         /.local/lib/python%{python3_version}/site-packages
 %global usersitedir	   %{basedir}%{sitedirsub}
 %global sharedstatesitedir %{vardir}%{sitedirsub}
-%endif
 
 %global lmtpport        8024
 # 8025 is default for aiosmtpd
@@ -476,7 +419,6 @@ Requires: 	publicsuffix-list
 %define	b_v_certifi			2022.12.7
 %define	b_v_charset_normalizer		3.1.0
 %define	b_v_click			8.1.3
-%define	b_v_cython			0.29.34
 %define	b_v_cryptography		40.0.1
 %define	b_v_dateutil			2.8.2
 %define	b_v_defusedxml			0.7.1
@@ -494,10 +436,8 @@ Requires: 	publicsuffix-list
 %define	b_v_networkx			3.0
 %define	b_v_oauthlib			3.2.2
 %define	b_v_openid			3.2.0
-%define	b_v_packaging			23.0
 %define	b_v_passlib			1.7.4
 %define	b_v_pdm_pep517			1.1.3
-%define	b_v_poetry_core			1.5.2
 %define	b_v_psutil			5.9.4
 %define	b_v_pycparser			2.21
 
@@ -542,6 +482,7 @@ Requires: 	publicsuffix-list
 %define	b_v_zope_hookable		5.4
 %define	b_v_zope_interface		6.0
 
+## BUNDLED VERSIONS
 # dependencies
 %define	b_v_aiosmtpd			1.4.4.post2
 %define	b_v_arrow			1.2.3
@@ -594,15 +535,8 @@ Requires: 	publicsuffix-list
 
 
 ### HEADER
-%if 0%{?mailman3_virtualenv}
-###  VIRTUALENV PACKAGING 
-Name:           %{pname}-virtualenv
-Summary:        The GNU mailing list manager 3 (virtualenv edition)
-%else
-###  BUNDLED-AS-REQUIRED PACKAGING
 Name:           %{pname}
 Summary:        The GNU mailing list manager 3
-%endif
 Version:        %{version_mailman}%{?prerelease:~%{prerelease}}
 Release:        %{release_token}%{?dist}
 
@@ -707,15 +641,8 @@ Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{b_v_django_recapt
 Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{b_v_django_hcaptcha}.tar.gz
 Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{b_v_django_friendlycaptcha}.tar.gz
 
-### VIRTUALENV PACKAGING
-Source2009:	%{__pypi_url}C/Cython/Cython-%{b_v_cython}.tar.gz
-Source2012:	%{__pypi_url}f/flit_core/flit_core-%{b_v_flit_core}.tar.gz
-
 # networkx has too many dependencies if installed via RPM -> bundle
 Source2019:	%{__pypi_url}n/networkx/networkx-%{b_v_networkx}.tar.gz
-
-Source2021:	%{__pypi_url}p/packaging/packaging-%{b_v_packaging}.tar.gz
-Source2024:	%{__pypi_url}p/poetry_core/poetry_core-%{b_v_poetry_core}.tar.gz
 Source2026:	%{__pypi_url}p/pycparser/pycparser-%{b_v_pycparser}.tar.gz
 Source2030:	%{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
 #N2#Source2032:	#{__pypi_url}r/redis/redis-#{b_v_redis}.tar.gz
@@ -738,6 +665,7 @@ Source2004:	%{__pypi_url}b/blessed/blessed-%{b_v_blessed}.tar.gz
 Source2005:	%{__pypi_url}c/certifi/certifi-%{b_v_certifi}.tar.gz
 Source2006:	%{__pypi_url}c/charset-normalizer/charset-normalizer-%{b_v_charset_normalizer}.tar.gz
 Source2010:	%{__pypi_url}d/defusedxml/defusedxml-%{b_v_defusedxml}.tar.gz
+Source2012:	%{__pypi_url}f/flit_core/flit_core-%{b_v_flit_core}.tar.gz
 Source2013:	%{__pypi_url}f/flufl.lock/flufl.lock-%{b_v_flufl_lock}.tar.gz
 Source2014:	%{__pypi_url}g/greenlet/greenlet-%{b_v_greenlet}.tar.gz
 Source2016:	%{__pypi_url}i/isort/isort-%{b_v_isort}.tar.gz
@@ -770,19 +698,6 @@ Patch902:	mailman3-allauth-forms.py-CAPTCHA.patch
 Patch903:	mailman3-django-admin-forms.py-CAPTCHA.patch
 
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING 
-
-# conflict with non-virtualenv mailman3
-Conflicts:	mailman3
-BuildConflicts:	mailman3
-
-# will be bundled, too many dependencies existing
-BuildConflicts:	python%{python3_version_num}-networkx
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING 
-
 ## Arch adjustments
 %define noarch 1
  
@@ -798,7 +713,6 @@ BuildConflicts:	python%{python3_version_num}-networkx
 # conflict with virtualenv mailman3
 Conflicts:	mailman3-virtualenv
 
-%endif
 
 # conflict with mailman version 2 as long as sharing the same user
 %if (0%{mailman3_separated} == 0)
@@ -874,11 +788,7 @@ Requires:	/usr/bin/timeout
 %define prep_cond() (\
 echo "SETUP_COND: %1 %2"; \
 if [ "%1" = "1" ]; then \
-%if 0%{?mailman3_virtualenv} \
-%{__cp} %{get_source -n %2} %{builddir}/pip \
-%else \
 %setup -q -T -a %2 -D -n %{builddir} \
-%endif \
 fi)
 
 %define build_cond() (\
@@ -903,13 +813,8 @@ This is GNU Mailman, a mailing list management system distributed under the
 terms of the GNU General Public License (GPL) version 3 or later.  The name of
 this software is spelled 'Mailman' with a leading capital 'M' but with a lower
 case second `m'.  Any other spelling is incorrect.
-%if 0%{?mailman3_virtualenv}
-* THIS IS A ALL-IN-ONE package containing Mailman 3 in Python "virtualenv" *
-https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
-%else
 * THIS package contains Mailman 3 and all required but by OS not supported modules
  USER_SITE: %{usersitedir}
-%endif
 %if 0%{mailman3_separated}
 * THIS package can coexist with Mailman 2
 %else
@@ -939,9 +844,7 @@ preconfigured ports (required for SELinux)
 LMTP         : %{lmtpport}
 REST-API     : %{restapiport}
 Web Interface: %{webport}
-%if 0%{?mailman3_virtualenv}
-%else
-%endif
+
 
 %prep
 %{__rm} -rf %{builddir}
@@ -949,12 +852,6 @@ Web Interface: %{webport}
 cd %{builddir}
 
 set +x
-echo "*** BUILD INFORMATION ***"
-%if 0%{?mailman3_virtualenv}
-echo "** Packaging: VIRTUALENV"
-%else
-echo "** Packaging: BUNDLED-AS-REQUIRED"
-%endif
 %if 0%{mailman3_separated}
 echo "** RPM: separate Mailman 3 from Mailman 2"
 %else
@@ -967,36 +864,12 @@ echo "** Scheduled tasks: packaged using systemd.timer"
 %endif
 set -x
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING 
-%{__mkdir} pip
-
-# extract
-%{__cp} %{SOURCE100} pip/
-%{__cp} %{SOURCE101} pip/
-%{__cp} %{SOURCE102} pip/
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING 
 
 ## base
 %setup -q -T -D -a 100 -n %{builddir}
 %setup -q -T -D -a 101 -n %{builddir}
 %setup -q -T -D -a 102 -n %{builddir}
 
-%endif
-
-### ALL
-
-## build/VIRTUALENV dependencies (no need to build/install)
-%prep_cond "%{?b_e_cython}"                 2009
-%prep_cond "%{?b_e_flit_core}"              2012
-%prep_cond "%{?b_e_packaging}"              2021
-%prep_cond "%{?b_e_poetry_core}"            2024
-%prep_cond "%{?b_e_pycparser}"              2026
-%prep_cond "%{?b_e_setuptools}"             2036
-%prep_cond "%{?b_e_setuptools_scm}"         2037
-%prep_cond "%{?b_e_wheel}"                  2048
 
 ## bundled packages
 %prep_cond "%{?b_e_postorius}"              1000
@@ -1086,14 +959,6 @@ set -x
 %prep_cond "%{?b_e_django_friendlycaptcha}" 1192
 
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
-
-%endif
-
 ## SELinux
 %{__mkdir} SELinux
 
@@ -1104,16 +969,6 @@ sed -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},
 
 
 %build
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING 
-cd %{builddir}
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
-
-# will be all done in install section because of dependencies
-%endif
-
 cd SELinux
 for selinuxvariant in %{selinux_variants}; do
   make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
@@ -1138,98 +993,6 @@ install -d -p %{buildroot}%{vardir}/data
 # database directory (sqlite)
 install -d -p %{buildroot}%{vardir}/db
 
-
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING 
-## according to https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
-cd %{builddir}
-
-# create virtual environment
-python%{python3_version} -m venv --system-site-packages %{buildroot}%{basedir}/%{virtualenvsubdir}
-
-# activate virtual environment
-source %{buildroot}%{bindir}/activate
-
-PYTHONPATH=$PYTHONPATH:%{_buildroot}%{sitelibdir}/Django-%{?b_v_django}/build/lib
-PYTHONPATH=$PYTHONPATH:%{_buildroot}%{sitelibdir}/asgiref-%{?b_v_asgiref}/build/lib
-export PYTHONPATH
-
-# install from local files basic support tools
-%if 0%{?b_e_setuptools_scm}
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip setuptools_scm
-%endif
-
-%if 0%{?b_e_wheel}
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip wheel
-%endif
-
-%if 0%{?b_e_tomli}
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip tomli
-%endif
-
-%if 0%{?b_e_isort}
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip isort
-%endif
-
-# install from local files "base"
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip %{pypi_name}
-
-# install from local files "webinterface"
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip %{pypi_name}-hyperkitty
-
-# prerequisite (to avoid depencency issue during build of django-picklefield)
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip django
-
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip gunicorn
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip sqlparse
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip networkx
-
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip %{pypi_name}-web
-
-# search engine
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip django-haystack
-
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip Whoosh
-
-# install from local files "CAPTCHA"
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip django-recaptcha
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip django-hcaptcha
-pip%{python3_version} install --no-index --no-cache-dir --disable-pip-version-check --find-links %{builddir}/pip django-friendly-captcha
-
-## remove all python cache files
-find %{buildroot} -name '*.pyc' | xargs %{__rm} -rf
-find %{buildroot} -name '__pycache__' | xargs %{__rm} -rf
-
-# remove all exe files
-find %{buildroot} -iname '*.exe' | xargs %{__rm} -f
-
-# disable RemovedInDjango30Warning
-grep --include='*.py' -l -r "^from django.utils.deprecation import RemovedInDjango30Warning" %{buildroot}%{basedir}/%{virtualenvsubdir} | while read file; do
-	sed -i -e 's,^\(from django.utils.deprecation import RemovedInDjango30Warning\),#DISABLED-BY-RPMBUILD# \1,g' $file
-done
-
-# remove all buildroot references
-grep '%{buildroot}' %{buildroot}/* -r -l 2>/dev/null | while read file; do
-	sed -i -e 's,%{buildroot},,g' $file
-done
-
-# "mailman-web compilemessages" is prevented to run later because of read-only file/dir in package
-set +x
-echo "BEGIN: msgfmt/po->mo"
-find %{buildroot}%{basedir} -type f -name '*.po' | while read pofile; do
-	mofile="${pofile/.po/.mo}"
-	if [ ! -f $mofile -o $pofile -nt $mofile ]; then
-		msgfmt $pofile -o $mofile
-	fi
-done
-echo "END  : msgfmt/po->mo"
-set -x
-
-# enable virtualenv by default for user
-echo 'source %{bindir}/activate' >> %{buildroot}%{vardir}/.bash_profile
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
 
 ## precondition (build+install)
 %build_cond   "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
@@ -1461,7 +1224,6 @@ export PYTHONPATH
 install -d -p %{buildroot}%{bindir}
 %{__mv} %{buildroot}%{_bindir}/* %{buildroot}%{bindir}
 
-%endif
 
 # create a wrapper scripts
 install -d -p %{buildroot}%{_bindir}
@@ -1530,12 +1292,6 @@ find %{buildroot}%{sitelibdir} -type f -name public_suffix_list.dat | while read
 done
 
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING 
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
-
 ## move installed site-package to USER_SITE
 
 # create USER_SITE directory
@@ -1586,8 +1342,6 @@ done
 
 # remove any header files installed by bundles
 %{__rm} -rf %{buildroot}%{_includedir}
-
-%endif
 
 
 # basic config files
@@ -1667,21 +1421,11 @@ install -D -m 0644 %{SOURCE416} %{buildroot}%{_unitdir}/%{basename:%{SOURCE416}}
 ## substitute all placeholders
 %define bindir_gunicorn %{bindir}
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING
-
-%define pythonpath %{sitelibdir}
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
-
 %define pythonpath %{usersitedir}
 
 %if 0%{?b_e_gunicorn}
 %else
 %define bindir_gunicorn %{_bindir}
-%endif
-
 %endif
 
 find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesdir} -type f | while read file; do
@@ -1698,12 +1442,7 @@ done
 # check whether it's bascially working
 PYTHONPATH=%{buildroot}%{sitelibdir}
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
 PYTHONPATH=$PYTHONPATH:%{buildroot}%{usersitedir}
-%endif
 
 export PYTHONPATH
 
@@ -2085,14 +1824,6 @@ systemctl condrestart %{pname}.service
 # Wrapper scripts
 %attr(755,root,root)    %{_bindir}/*
 
-%if 0%{?mailman3_virtualenv}
-### VIRTUALENV PACKAGING
-%{basedir}
-%attr(770,%{mmuser},%{mmgroup}) %{vardir}/.bash_profile
-
-
-%else
-### BUNDLED-AS-REQUIRED PACKAGING
 %{basedir}/README-USER_SITE.txt
 %{vardir}/README-USER_SITE.txt
 %{usersitedir}
@@ -2103,7 +1834,6 @@ systemctl condrestart %{pname}.service
 
 %if 0%{?b_e_dkimpy}
 %{_mandir}/*
-%endif
 
 %if %{noarch}
 %else
@@ -2116,6 +1846,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Sat Jun 17 2023 Peter Bieringer <pb@bieringer.de>
+- drop virtualenv support incl. no longer used dependency bundles
+
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-10
 - Update dependency to django 4.1.9 (CVE-2023-31047)
 
