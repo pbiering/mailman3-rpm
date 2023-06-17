@@ -447,9 +447,7 @@ Requires: 	publicsuffix-list
 %define	b_v_pytz			2023.3
 %define	b_v_rcssmin			1.1.1
 %define	b_v_requests_oauthlib		1.3.1
-#N2#define	b_v_redis			3.5.3
 %define	b_v_robot_detection		0.4
-#N2#define	b_v_semantic_version	2.10.0 
 %define	b_v_setuptools			67.6.1
 %define	b_v_setuptools_scm		7.1.0
 
@@ -474,8 +472,6 @@ Requires: 	publicsuffix-list
 # 0.40.0 has issue on EL9 with flit_core
 #define	b_v_wheel			0.40.0
 %define	b_v_wheel			0.38.4
-
-#N2#define	b_v_zipp			3.15.0
 
 %define	b_v_zope_component		5.1.0
 %define	b_v_zope_event			4.6
@@ -645,16 +641,13 @@ Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{b_v
 Source2019:	%{__pypi_url}n/networkx/networkx-%{b_v_networkx}.tar.gz
 Source2026:	%{__pypi_url}p/pycparser/pycparser-%{b_v_pycparser}.tar.gz
 Source2030:	%{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
-#N2#Source2032:	#{__pypi_url}r/redis/redis-#{b_v_redis}.tar.gz
 Source2036:	%{__pypi_url}s/setuptools/setuptools-%{b_v_setuptools}.tar.gz
 Source2037:	%{__pypi_url}s/setuptools_scm/setuptools_scm-%{b_v_setuptools_scm}.tar.gz
-#N2#Source2039:	#{__pypi_url}s/semantic_version/semantic_version-#{b_v_semantic_version}.tar.gz
 Source2041:	%{__pypi_url}s/sqlparse/sqlparse-%{b_v_sqlparse}.tar.gz
 Source2043:	%{__pypi_url}t/typing_extensions/typing_extensions-%{b_v_typing_extensions}.tar.gz
 Source2046:	%{__pypi_url}w/wcwidth/wcwidth-%{b_v_wcwidth}.tar.gz
 Source2047:	%{__pypi_url}w/webencodings/webencodings-%{b_v_webencodings}.tar.gz
 Source2048:	%{__pypi_url}w/wheel/wheel-%{b_v_wheel}.tar.gz
-#N2#Source2053:	#{__pypi_url}z/zipp/zipp-#{b_v_zipp}.tar.gz
 
 # EL8
 Source2000:	%{__pypi_url}a/alembic/alembic-%{b_v_alembic}.tar.gz
