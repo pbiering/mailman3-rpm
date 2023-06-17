@@ -34,9 +34,20 @@
 
 
 ## MAIN VERSIONS+RELEASE
-%global version_mailman 			3.3.8
-%global version_mailman_web			0.0.6
-%global version_mailman_hyperkitty		1.2.1
+%global version_mailman 		3.3.8
+%global version_mailman_web		0.0.6
+%global version_mailman_hyperkitty	1.2.1
+
+
+## BUNDLED VERSIONS
+# base
+%define	b_v_postorius			1.3.8
+%define	b_v_hyperkitty			1.3.7
+%define	b_v_mailmanclient		3.3.5
+
+## django mailman related
+%define	b_v_django_mailman3		1.3.9
+
 
 %global release_token 10
 
@@ -531,13 +542,6 @@ Requires: 	publicsuffix-list
 %define	b_v_zope_hookable		5.4
 %define	b_v_zope_interface		6.0
 
-%define	b_v_mailmanclient		3.3.5
-
-## BUNDLED VERSIONS
-# base
-%define	b_v_postorius			1.3.8
-%define	b_v_hyperkitty			1.3.7
-
 # dependencies
 %define	b_v_aiosmtpd			1.4.4.post2
 %define	b_v_arrow			1.2.3
@@ -582,9 +586,6 @@ Requires: 	publicsuffix-list
 %define	b_v_django_picklefield		3.1
 %define	b_v_django_rest_framework	3.14.0
 %define	b_v_django_q			1.3.9
-
-## django mailman related
-%define	b_v_django_mailman3		1.3.9
 
 ## django CAPTCHA related
 %define	b_v_django_recaptcha		3.0.0
