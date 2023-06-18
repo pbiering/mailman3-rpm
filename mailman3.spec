@@ -43,7 +43,7 @@
 %define	b_v_django_mailman3		1.3.9
 
 
-%global release_token 20
+%global release_token 12
 
 ## NAMES
 %global pypi_name mailman
@@ -198,12 +198,8 @@ Requires:       python3 >= 3.9
 
 
 %if (0%{?fedora} >= 37) || (0%{?rhel} >= 8)
-## common for Fedora & EL
-%define	b_e_importlib_resources		1
-
 # even while available bundle to avoid install of huge dependencies
 %define	b_e_networkx			1
-
 
 %if (0%{?fedora} > 40)
 # guessing that f40 will have updated versions...
@@ -212,8 +208,12 @@ Requires:       python3 >= 3.9
 %define	b_e_asgiref			1
 # dependencies
 %define	b_e_aiosmtpd			1
+
+%if 0%{?rhel} >= 8
+# version downgrade in setup.py (see below) supports fedora >=37
 %define	b_e_flufl_bounce		1
 %define	b_e_flufl_i18n			1
+%endif
 
 # Fedora provides 3.0 which is too low (see below)
 %define	b_e_django_haystack		1
@@ -310,11 +310,13 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_django_rest_framework}	django-rest-framework
 %req_cond_b_i_w_v	0%{?b_e_falcon}			falcon >= 3.0.0
 
-# f37/f38/f39: 3.0
-%req_cond_b_i_w_v	0%{?b_e_flufl_bounce}		bounce >= 4.0
+# f37/f38/f39: 3.0 (requirement downgrade via patch below)
+#req_cond_b_i_w_v	0#{?b_e_flufl_bounce}		flufl-bounce >= 4.0
+%req_cond_b_i_w_v	0%{?b_e_flufl_bounce}		flufl-bounce >= 3.0
 
-# f37/f38/f39: 2.0.2
-%req_cond_b_i_w_v	0%{?b_e_flufl_i18n}		flufl-i18n >= 3.2
+# f37/f38/f39: 2.0.2 (requirement downgrade via patch below)
+#req_cond_b_i_w_v	0#{?b_e_flufl_i18n}		flufl-i18n >= 3.2
+%req_cond_b_i_w_v	0%{?b_e_flufl_i18n}		flufl-i18n >= 2.0
 
 %req_cond_b_i_n_v	0%{?b_e_flufl_lock}		flufl-lock
 %req_cond_b_i_n_v	0%{?b_e_gunicorn}		gunicorn
@@ -509,9 +511,6 @@ Requires: 	publicsuffix-list
 #define	b_v_flufl_i18n			4.1.1 # 4.x has no setup.py
 %define	b_v_flufl_i18n			3.2
 
-#define	b_v_importlib_resources		5.2.0 # 5.x has no setup.py
-%define	b_v_importlib_resources		4.1.1
-
 ## django dependencies
 %define	b_v_django			4.1.9
 %define	b_v_django_allauth		0.54.0
@@ -548,6 +547,11 @@ Source8:        %{pname}-django-settings.py
 Source9:        %{pname}-web.service
 Source11:       %{pname}-httpd.conf
 Source13:       %{pname}-hyperkitty.cfg
+
+# <https://gitlab.com/mailman/mailman/merge_requests/721>
+Patch11:        %{name}-subject-prefix.patch
+# <https://gitlab.com/mailman/mailman/merge_requests/722>
+Patch12:        %{name}-use-either-importlib_resources-or-directly-importlib.patch
 
 # SELinux
 Source90:	%{pname}.fc
@@ -610,7 +614,6 @@ Source1027:	%{__pypi_url}W/Whoosh/Whoosh-%{b_v_whoosh}.tar.gz
 
 Source1028:	%{__pypi_url}c/cmarkgfm/cmarkgfm-%{b_v_cmarkgfm}.tar.gz
 Source1029:	%{__pypi_url}c/cffi/cffi-%{b_v_cffi}.tar.gz
-Source1030:	%{__pypi_url}i/importlib_resources/importlib_resources-%{b_v_importlib_resources}.tar.gz
 Source1031:	%{__pypi_url}g/gunicorn/gunicorn-%{b_v_gunicorn}.tar.gz
 
 Source1040:	%{__pypi_url}z/zope.configuration/zope.configuration-%{b_v_zope_configuration}.tar.gz
@@ -863,6 +866,19 @@ set -x
 %setup -q -T -D -a 101 -n %{builddir}
 %setup -q -T -D -a 102 -n %{builddir}
 
+## apply patches to mailman
+pushd mailman-%{version_mailman}
+
+%patch -P 11 -p 1
+%patch -P 12 -p 1
+
+# Downgrade a few dependencies to satisfiable compatible versions (https://src.fedoraproject.org/rpms/mailman3/blob/rawhide/f/mailman3.spec)
+sed -e "s/flufl.bounce>=4.0/flufl.bounce>=3.0/" \
+    -e "s/flufl.i18n>=3.2/flufl.i18n>=2.0/" \
+    -e "s/flufl.lock>=5.1/flufl.lock>=3.1/" \
+    -i setup.py
+
+popd
 
 ## bundled packages
 %prep_cond "%{?b_e_postorius}"              1000
@@ -890,7 +906,6 @@ set -x
 
 %prep_cond "%{?b_e_cmarkgfm}"               1028
 %prep_cond "%{?b_e_cffi}"                   1029
-%prep_cond "%{?b_e_importlib_resources}"    1030
 %prep_cond "%{?b_e_gunicorn}"               1031
 
 %prep_cond "%{?b_e_zope_configuration}"     1040
@@ -1046,7 +1061,6 @@ popd
 %build_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock
 %build_cond "%{?b_e_greenlet}"               "%{?b_v_greenlet}"               greenlet
 %build_cond "%{?b_e_gunicorn}"               "%{?b_v_gunicorn}"               gunicorn
-%build_cond "%{?b_e_importlib_resources}"    "%{?b_v_importlib_resources}"    importlib_resources
 %build_cond "%{?b_e_jwt}"                    "%{?b_v_jwt}"                    PyJWT
 %build_cond "%{?b_e_lazr_config}"            "%{?b_v_lazr_config}"            lazr.config
 %build_cond "%{?b_e_lazr_delegates}"         "%{?b_v_lazr_delegates}"         lazr.delegates
@@ -1150,7 +1164,6 @@ popd
 %install_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock
 %install_cond "%{?b_e_gunicorn}"               "%{?b_v_gunicorn}"               gunicorn
 %install_cond "%{?b_e_greenlet}"               "%{?b_v_greenlet}"               greenlet
-%install_cond "%{?b_e_importlib_resources}"    "%{?b_v_importlib_resources}"    importlib_resources
 %install_cond "%{?b_e_jwt}"                    "%{?b_v_jwt}"                    PyJWT
 %install_cond "%{?b_e_lazr_config}"            "%{?b_v_lazr_config}"            lazr.config
 %install_cond "%{?b_e_lazr_delegates}"         "%{?b_v_lazr_delegates}"         lazr.delegates
@@ -1841,6 +1854,9 @@ systemctl condrestart %{pname}.service
 %changelog
 * Sat Jun 17 2023 Peter Bieringer <pb@bieringer.de>
 - drop virtualenv support incl. no longer used dependency bundles
+- apply mailman3-use-either-importlib_resources-or-directly-importlib.patch from Fedora, remove related build dependencies (https://gitlab.com/mailman/mailman/merge_requests/722)
+- apply mailman3-subject-prefix.patch  from Fedora (https://gitlab.com/mailman/mailman/-/merge_requests/721)
+- downgrade flufl requirements (https://src.fedoraproject.org/rpms/mailman3/blob/rawhide/f/mailman3.spec)
 
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-10
 - Update dependency to django 4.1.9 (CVE-2023-31047)
