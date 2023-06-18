@@ -1,0 +1,192 @@
+From d54000d8223e6f1567f669f72cb09970491fdbb2 Mon Sep 17 00:00:00 2001
+From: Neal Gompa <neal@gompa.dev>
+Date: Sat, 13 May 2023 07:27:41 -0400
+Subject: [PATCH] Cover subject prefix cases for empty subjects and non-ascii
+ charsets
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The subject_prefix handler has several bugs around empty subjects
+and lacked coverage for lists with a non-ascii charset.
+
+Co-authored-by: Aurélien Bompard <aurelien@bompard.org>
+Signed-off-by: Neal Gompa <neal@gompa.dev>
+---
+ src/mailman/handlers/subject_prefix.py        |  6 +-
+ .../handlers/tests/test_subject_prefix.py     | 82 +++++++++++++++++--
+ 2 files changed, 78 insertions(+), 10 deletions(-)
+
+diff --git a/src/mailman/handlers/subject_prefix.py b/src/mailman/handlers/subject_prefix.py
+index 577149cee..a20b45115 100644
+--- a/src/mailman/handlers/subject_prefix.py
++++ b/src/mailman/handlers/subject_prefix.py
+@@ -39,12 +39,11 @@ def ascii_header(mlist, msgdata, subject, prefix, prefix_pattern, ws):
+         if charset not in ASCII_CHARSETS:
+             return None
+     subject_text = EMPTYSTRING.join(str(subject).splitlines())
++    subject_text = re.sub(prefix_pattern, '', subject_text)
+     # Replace empty subject.
+     if subject_text.strip() == '':
+         with _.using(mlist.preferred_language.code):
+             subject_text = _('(no subject)')
+-    else:
+-        subject_text = re.sub(prefix_pattern, '', subject_text)
+     msgdata['stripped_subject'] = subject_text
+     rematch = re.match(RE_PATTERN, subject_text, re.I)
+     if rematch:
+@@ -85,12 +84,11 @@ def all_same_charset(mlist, msgdata, subject, prefix, prefix_pattern, ws):
+             except UnicodeEncodeError:
+                 return None
+     subject_text = EMPTYSTRING.join(chunks)
++    subject_text = re.sub(prefix_pattern, '', subject_text)
+     # Replace empty subject.
+     if subject_text.strip() == '':
+         with _.using(mlist.preferred_language.code):
+             subject_text = _('(no subject)')
+-    else:
+-        subject_text = re.sub(prefix_pattern, '', subject_text)
+     msgdata['stripped_subject'] = subject_text
+     rematch = re.match(RE_PATTERN, subject_text, re.I)
+     if rematch:
+diff --git a/src/mailman/handlers/tests/test_subject_prefix.py b/src/mailman/handlers/tests/test_subject_prefix.py
+index 0b13f5068..960afa49a 100644
+--- a/src/mailman/handlers/tests/test_subject_prefix.py
++++ b/src/mailman/handlers/tests/test_subject_prefix.py
+@@ -34,6 +34,13 @@ class TestSubjectPrefix(unittest.TestCase):
+     def setUp(self):
+         self._mlist = create_list('test@example.com')
+         self._process = config.handlers['subject-prefix'].process
++        language_manager = getUtility(ILanguageManager)
++        if 'xx' not in language_manager:
++            language_manager.add('xx', 'utf-8', 'Freedonia')
++
++    def tearDown(self):
++        # The LanguageManager may need a 'remove' method.
++        del getUtility(ILanguageManager)._languages['xx']
+ 
+     def test_isdigest(self):
+         # If the message is destined for the digest, the Subject header does
+@@ -115,6 +122,15 @@ class TestSubjectPrefix(unittest.TestCase):
+         self._process(self._mlist, msg, {})
+         self.assertEqual(str(msg['subject']), '[Test]  A test message')
+ 
++    def test_multiline_subject_non_ascii_list(self):
++        # The subject appears on multiple lines on a non-ascii list.
++        self._mlist.preferred_language = 'xx'
++        self._mlist.preferred_language.charset = 'utf-8'
++        msg = Message()
++        msg['Subject'] = '\n A test message'
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test]  A test message')
++
+     def test_i18n_prefix(self):
+         # The Subject header is encoded, but the prefix is still added.
+         msg = Message()
+@@ -131,7 +147,7 @@ class TestSubjectPrefix(unittest.TestCase):
+         msg['Subject'] = '[Test] '
+         self._process(self._mlist, msg, {})
+         subject = msg['subject']
+-        self.assertEqual(str(subject), '[Test] ')
++        self.assertEqual(str(subject), '[Test] (no subject)')
+ 
+     def test_prefix_only_all_same(self):
+         # Incoming subject is only the prefix.
+@@ -142,7 +158,7 @@ class TestSubjectPrefix(unittest.TestCase):
+         self._process(self._mlist, msg, {})
+         self._mlist.preferred_language.charset = old_charset
+         subject = msg['subject']
+-        self.assertEqual(str(subject), '[Test] ')
++        self.assertEqual(str(subject), '[Test] (no subject)')
+ 
+     def test_prefix_only_mixed(self):
+         # Incoming subject is only the prefix.
+@@ -150,7 +166,7 @@ class TestSubjectPrefix(unittest.TestCase):
+         msg['Subject'] = '=?utf-8?Q?[Test]_?='
+         self._process(self._mlist, msg, {})
+         subject = msg['subject']
+-        self.assertEqual(str(subject), '[Test] ')
++        self.assertEqual(str(subject), '[Test] (no subject)')
+ 
+     def test_re_only(self):
+         # Incoming subject is only Re:.
+@@ -226,15 +242,13 @@ class TestSubjectPrefix(unittest.TestCase):
+     def test_decode_header_returns_string(self):
+         # Under some circumstances, email.header.decode_header() returns a
+         # string value.  Ensure we can handle that.
+-        manager = getUtility(ILanguageManager)
+-        manager.add('xx', 'iso-8859-1', 'Xlandia')
+         self._mlist.preferred_language = 'xx'
+         msg = Message()
+         msg['Subject'] = 'Plain text'
+         self._process(self._mlist, msg, {})
+         subject = msg['subject']
+         self.assertEqual(subject.encode(),
+-                         '=?iso-8859-1?q?=5BTest=5D_Plain_text?=')
++                         '=?utf-8?q?=5BTest=5D_Plain_text?=')
+ 
+     def test_unknown_encoded_subject(self):
+         msg = Message()
+@@ -280,3 +294,59 @@ class TestSubjectPrefix(unittest.TestCase):
+         self._process(self._mlist, msg, {})
+         self.assertEqual(str(msg['subject']),
+                          '[Test] This is a folded subject header.')
++
++    def test_non_ascii_list(self):
++        # The mailing list has a non-ascii language
++        self._mlist.preferred_language = 'xx'
++        msg = Message()
++        msg['Subject'] = 'A test message'
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test] A test message')
++
++    def test_no_subject(self):
++        # The email has no subject
++        msg = Message()
++        msg['Subject'] = ''
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test] (no subject)')
++
++    def test_no_subject_non_ascii_list(self):
++        # The email has no subject on a non-ascii list
++        self._mlist.preferred_language = 'xx'
++        msg = Message()
++        msg['Subject'] = ''
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test] (no subject)')
++
++    def test_no_real_subject(self):
++        # The email has no subject
++        msg = Message()
++        msg['Subject'] = '[Test] '
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test] (no subject)')
++
++    def test_no_real_subject_non_ascii_list(self):
++        # The email has no subject on a non-ascii list
++        self._mlist.preferred_language = 'xx'
++        msg = Message()
++        msg['Subject'] = '[Test] '
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test] (no subject)')
++
++    def test_non_ascii_subject_and_list(self):
++        # The mailing list has a non-ascii language and the subject is
++        # non-ascii with the same encoding.
++        self._mlist.preferred_language = 'xx'
++        msg = Message()
++        msg['Subject'] = '=?utf-8?q?d=C3=A9sirable?='
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test] d\xe9sirable')
++
++    def test_non_ascii_empty_subject_and_non_ascii_list(self):
++        # The mailing list has a non-ascii language and the subject is
++        # non-ascii with the same encoding, but actually empty.
++        self._mlist.preferred_language = 'xx'
++        msg = Message()
++        msg['Subject'] = '=?utf-8?q?[Test]_?='
++        self._process(self._mlist, msg, {})
++        self.assertEqual(str(msg['subject']), '[Test] (no subject)')
+-- 
+2.40.0
+
