@@ -1,14 +1,16 @@
 # mailman3-rpm
 
-RPM packaged mailman3 for Fedora and Enterprise Linux
+RPM packaged mailman3 "enhanced" for Fedora and Enterprise Linux
 
-Until updated in Fedora and included by EPEL available via copr:
+Until included by EPEL and potentially adjustments are overtaken in Fedora available via copr:
 
 - https://copr.fedorainfracloud.org/coprs/pbiering/InternetServerExtensions/
 
 ## Background
 
-Because of huge Python package dependencies it's impossible to build a native *mailman3* RPM without providing dependencies in USER_SITE directory. Neither EPEL nor Fedora can fulfill depencencies as of 2023-04.
+Because of huge Python package dependencies it's impossible to build a native *mailman3* RPM without providing dependencies in USER_SITE directory.
+EPEL cannot fulfill dependencies as of 2023-06
+Fedora has only a standard version packaged as of 2023-06 missing some important enhancements.
 
 ### Drivers
 
@@ -21,15 +23,9 @@ Because of huge Python package dependencies it's impossible to build a native *m
 
 ## Solution
 
-### native build using USER_SITE
+Package *mailman3* by storing all not fulfillable dependencies in USER_SITE.
 
-Package a native *mailman3* package, storing all dependencies in USER_SITE
-
-### virtualenv build
-
-Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install into a RPM.
-
-### Feature of the RPM
+### Feature of this RPM
 
 - SELinux policy
 - CAPTCHA support already prepared
@@ -45,13 +41,13 @@ Package a *virtualenv* setup of *mailman3* as described in https://docs.mailman3
 
 ### Supported OS
 
-| OS  | Method            |
-|-----|-------------------|
-| EL8 | native+virtualenv |
-| EL9 | native+virtualenv |
-| F37 | native+virtualenv |
-| F38 | native+virtualenv |
-| F39 | native+virtualenv |
+| OS  | Status |
+|-----|--------|
+| EL8 | ok     |
+| EL9 | ok     |
+| F37 | ok     |
+| F38 | ok     |
+| F39 | ok     |
 
 ## Usage
 
@@ -115,8 +111,6 @@ make srpm
 
 #### build binary RPM
 
-##### native build using USER_SITE
-
 ```
 rpmbuild --rebuild ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
 ```
@@ -127,33 +121,13 @@ or use the included Makefile
 make rpm
 ```
 
-### virtualenv build
-
-```
-rpmbuild --rebuild -D "mailman3_virtualenv 1" ./mailman3-<VERSION>-<RELEASE>.<DIST>.src.rpm
-```
-
-or use the included Makefile
-
-```
-make rpm-virtualenv
-```
-
 
 ### Install RPM
 
 Transfer RPM to final destination system and install (this will also resolve and install required dependencies)
 
-#### native build
-
 ```
-dnf localinstall mailman3-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
-```
-
-#### virtualenv build
-
-```
-dnf localinstall mailman3-virtualenv-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
+dnf localinstall mailman3-enhanced-<VERSION>-<RELEASE>.<DIST>.<ARCH>.rpm
 ```
 
 #### via Fedora copr
@@ -162,6 +136,9 @@ Until updated in Fedora and included by EPEL available via copr:
 
 - https://copr.fedorainfracloud.org/coprs/pbiering/InternetServerExtensions/
 
+```
+dnf install mailman3-enhanced
+```
 
 ### Configuration
 
@@ -198,7 +175,7 @@ Selection of configured service:
 
 ## Notes
 
-- based on https://kojipkgs.fedoraproject.org//packages/mailman3/3.3.4/6.fc36/src/mailman3-3.3.4-6.fc36.src.rpm (last native one available)
+- based on https://src.fedoraproject.org/rpms/mailman3/tree/rawhide
 - the SPEC file includes also toggles for
   - using cron files instead of systemd timers (-D "mailman3_cron 1")
   - use same user as mailman major version 2 (-D "mailman3_like_mailman2 1") THIS BREAKS COEXISTENT installation e.g. required for smooth transitions on same system hosting mailman major version 2 and 3 in parallel
@@ -208,4 +185,5 @@ Selection of configured service:
 - https://koji.fedoraproject.org/koji/packageinfo?packageID=27808
 - https://bugzilla.redhat.com/show_bug.cgi?id=2001801
 - https://bugzilla.redhat.com/show_bug.cgi?id=2113503
-- https://docs.mailman3.org/en/latest/install/virtualenv.html#virtualenv-install
+- https://src.fedoraproject.org/rpms/mailman3/tree/rawhide
+- https://src.fedoraproject.org/rpms/mailman3

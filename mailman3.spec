@@ -43,7 +43,7 @@
 %define	b_v_django_mailman3		1.3.9
 
 
-%global release_token 12
+%global release_token 14
 
 ## NAMES
 %global pypi_name mailman
@@ -530,8 +530,8 @@ Requires: 	publicsuffix-list
 
 
 ### HEADER
-Name:           %{pname}
-Summary:        The GNU mailing list manager 3
+Name:           %{pname}-enhanced
+Summary:        The GNU mailing list manager 3 "enhanced"
 Version:        %{version_mailman}%{?prerelease:~%{prerelease}}
 Release:        %{release_token}%{?dist}
 
@@ -549,9 +549,9 @@ Source11:       %{pname}-httpd.conf
 Source13:       %{pname}-hyperkitty.cfg
 
 # <https://gitlab.com/mailman/mailman/merge_requests/721>
-Patch11:        %{name}-subject-prefix.patch
+Patch11:        %{pname}-subject-prefix.patch
 # <https://gitlab.com/mailman/mailman/merge_requests/722>
-Patch12:        %{name}-use-either-importlib_resources-or-directly-importlib.patch
+Patch12:        %{pname}-use-either-importlib_resources-or-directly-importlib.patch
 
 # SELinux
 Source90:	%{pname}.fc
@@ -708,6 +708,9 @@ Patch903:	mailman3-django-admin-forms.py-CAPTCHA.patch
 
 # conflict with virtualenv mailman3
 Conflicts:	mailman3-virtualenv
+
+# conflict with mailman3 (from Upstream)
+Conflicts:	mailman3
 
 
 # conflict with mailman version 2 as long as sharing the same user
@@ -1326,6 +1329,7 @@ END
 for f in %{buildroot}%{sitelibdir}/*; do
 	%{__mv} $f %{buildroot}%{usersitedir}/
 done
+%{__rm} -d %{buildroot}%{sitelibdir}
 
 # move arch dependent
 for f in %{buildroot}%{sitearchdir}/*; do
@@ -1840,18 +1844,13 @@ systemctl condrestart %{pname}.service
 
 %if 0%{?b_e_dkimpy}
 %{_mandir}/*
-
-%if %{noarch}
-%else
-# package binary libs
-%{_libdir}/*
-%endif
-
-
 %endif
 
 
 %changelog
+* Sun Jun 18 2023 Peter Bieringer <pb@bieringer.de>
+- rename package to mailman3-enhanced to avoid conflicts with Fedora upstream
+
 * Sat Jun 17 2023 Peter Bieringer <pb@bieringer.de>
 - drop virtualenv support incl. no longer used dependency bundles
 - apply mailman3-use-either-importlib_resources-or-directly-importlib.patch from Fedora, remove related build dependencies (https://gitlab.com/mailman/mailman/merge_requests/722)
