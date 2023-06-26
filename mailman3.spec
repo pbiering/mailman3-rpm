@@ -19,8 +19,8 @@
 ### Step 4: rebuild
 ### $ rpmbuild -bb mailman3.spec
 ###
-### Build toggles
-###  mailman3_like_mailman2 (default: 0): create package conflicting with mailman major version 2
+### Build toggles (default)
+###  mailman3_like_mailman2 (Fedora=>37, EL>=9: 1): create package conflicting with mailman major version 2
 ###  mailman3_cron          (default: 0): package cron-jobs instead of systemd-timers
 
 # do not create debug packages
@@ -43,7 +43,7 @@
 %define	b_v_django_mailman3		1.3.9
 
 
-%global release_token 14
+%global release_token 15
 
 ## NAMES
 %global pypi_name mailman
@@ -51,6 +51,10 @@
 
 
 # toggle to create a with mailman version 2 non-conflicting package
+%if (0%{?rhel} >= 8) || 0%{?fedora} >= 37)
+%global mailman3_separated 0
+%endif
+
 %if 0%{?mailman3_like_mailman2}
 %global mailman3_separated 0
 %else
@@ -1848,6 +1852,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Sun Jun 25 2023 Peter Bieringer <pb@bieringer.de>
+- predefine mailman3_like_mailman2 for Fedora >= 37 and EL >= 9 where mailman version 2 is not provided anymore
+
 * Sun Jun 18 2023 Peter Bieringer <pb@bieringer.de>
 - rename package to mailman3-enhanced to avoid conflicts with Fedora upstream
 
