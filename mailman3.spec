@@ -297,6 +297,7 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_attrs}			attrs
 %req_cond_b_i_n_v	0%{?b_e_authres}		authres
 %req_cond_b_i_w_v	0%{?b_e_authheaders}		authheaders >= 0.14.0
+%req_cond_b_i_w_v	0%{?b_e_cmarkgfm}		cmarkgfm >= 0.8.0
 %req_cond_b_i_n_v	0%{?b_e_blessed}		blessed
 %req_cond_b_i_n_v	0%{?b_e_dateutil}		dateutil
 %req_cond_b_i_n_v	0%{?b_e_defusedxml}		defusedxml
@@ -331,7 +332,7 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_lazr_config}		lazr-config
 %req_cond_b_i_n_v	0%{?b_e_mako}			mako
 %req_cond_b_i_n_v	0%{?b_e_mailmanclient}		mailmanclient
-%req_cond_b_i_w_v	0%{?b_e_cmarkgfm}		cmarkgfm >= 0.8.0
+%req_cond_b_i_w_v	0%{?b_e_networkx}		networkx >= 2.0
 %req_cond_b_i_n_v	0%{?b_e_mistune}		mistune
 %req_cond_b_i_w_v	0%{?b_e_openid}			openid >= 3.0.8
 %req_cond_b_i_n_v	0%{?b_e_passlib}		passlib
