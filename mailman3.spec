@@ -18,10 +18,6 @@
 ###
 ### Step 4: rebuild
 ### $ rpmbuild -bb mailman3.spec
-###
-### Build toggles (default)
-###  mailman3_like_mailman2 (Fedora=>37, EL>=9: 1): create package conflicting with mailman major version 2
-###  mailman3_cron          (default: 0): package cron-jobs instead of systemd-timers
 
 # do not create debug packages
 %define debug_package %{nil}
@@ -43,7 +39,7 @@
 %define	b_v_django_mailman3		1.3.9
 
 
-%global release_token 16
+%global release_token 17
 
 ## NAMES
 %global pypi_name mailman
@@ -53,19 +49,6 @@
 # toggle to create a with mailman version 2 non-conflicting package
 %if (0%{?rhel} >= 8) || (0%{?fedora} >= 37)
 %global mailman3_separated 0
-%endif
-
-%if 0%{?mailman3_like_mailman2}
-%global mailman3_separated 0
-%else
-%global mailman3_separated 1
-%endif
-
-# toggle to cron files instead of systemd/service+timer
-%if 0%{?mailman3_cron}
-%global mailman3_cron 1
-%else
-%global mailman3_cron 0
 %endif
 
 
@@ -570,10 +553,6 @@ Source100:      %{__pypi_url}m/%{pypi_name}/%{pypi_name}-%{version_mailman}%{?pr
 Source101:	%{__pypi_url}m/%{pypi_name}-web/%{pypi_name}-web-%{version_mailman_web}.tar.gz
 Source102:	%{__pypi_url}m/%{pypi_name}-hyperkitty/%{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}.tar.gz
 
-# cron jobs
-Source200:	%{pname}.cron
-Source201:	%{pname}-web.cron
-
 # converted from mailman3.cron
 Source300:	%{pname}-notify.service
 Source301:	%{pname}-digests.service
@@ -827,11 +806,7 @@ case second `m'.  Any other spelling is incorrect.
 %else
 * THIS package conflicts with Mailman 2
 %endif
-%if 0%{?mailman3_cron}
-* THIS package contains scheduled tasks using: cron
-%else
 * THIS package contains scheduled tasks using: systemd.timer
-%endif
 user/group   : %{mmuser}/%{mmgroup}
 directory    : %{vardir}
 
@@ -1290,7 +1265,7 @@ cat %{PATCH902} | patch -p 0 -d %{buildroot}%{sitelibdir}
 cat %{PATCH903} | patch -p 0 -d %{buildroot}%{sitelibdir}
 
 # enforce "python" to "python3"
-grep --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitelibdir} | while read file; do
+%{__grep} --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitelibdir} | while read file; do
 	sed -i -e 's,env python$,env python3,g' $file
 done
 
@@ -1564,7 +1539,7 @@ portlabel[%{lmtpport}]="mailman_lmtp_port_t"
 portlabel[%{webport}]="mailman_web_port_t"
 
 for port in ${!portlabel[@]}; do
-    if semanage port -l | grep -q "^${portlabel[$port]}\s*tcp\s*$port$"; then
+    if semanage port -l | %{__grep} -q "^${portlabel[$port]}\s*tcp\s*$port$"; then
         echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]}) already done"
     else
         echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]})"
@@ -1579,13 +1554,13 @@ for dir in %{basedir} %{vardir} %{logdir} %{lockdir} %{rundir} %{etcdir}; do
 done
 
 # Owner
-find %{spooldir} %{vardir} %{logdir} %{lockdir} %{rundir} %{_sysconfdir}/mailman.cfg ! -user %{mmuser} | while read entry; do
+find %{spooldir} %{vardir} %{logdir} %{lockdir} %{rundir} %{_sysconfdir}/mailman.cfg ! -name README-USER_SITE.txt -a ! -name site-packages -a ! -user %{mmuser} | while read entry; do
 	echo "Adjust user to %{mmuser} of entry: $entry"
 	chown %{mmuser} "$entry"
 done
 
 # Group
-find %{spooldir} %{vardir} %{logdir} %{lockdir} %{rundir} %{_sysconfdir}/mailman.cfg ! -group %{mmgroup} -a ! -group mail | while read entry; do
+find %{spooldir} %{vardir} %{logdir} %{lockdir} %{rundir} %{_sysconfdir}/mailman.cfg ! -name README-USER_SITE.txt -a ! -name site-packages -a ! -group %{mmgroup} -a ! -group mail | while read entry; do
 	echo "Adjust group to %{mmgroup} of entry: $entry"
 	chgrp %{mmgroup} "$entry"
 done
@@ -1648,7 +1623,7 @@ postfix_check[relay_domains]="hash:/var/lib/mailman3/data/postfix_domains"
 declare -A postfix_result
 
 for check in ${!postfix_check[*]}; do
-	if postconf -h $check | grep -q "${postfix_check[$check]}"; then
+	if postconf -h $check | %{__grep} -q "${postfix_check[$check]}"; then
 		postfix_result[$check]=1
 	else
 		postfix_result[$check]=0
@@ -1680,7 +1655,7 @@ else
 	echo "WARN   : missing 'relay_domains' extension: ${postfix_check[relay_domains]}"
 fi
 
-if postconf -h recipient_delimiter | grep -q '^\+$'; then
+if postconf -h recipient_delimiter | %{__grep} -q '^+$'; then
 	echo "OK     : found 'recipient_delimiter' containing '+'"
 else
 	echo "WARN   : missing 'recipient_delimiter' extension with '+'"
@@ -1701,7 +1676,7 @@ cat <<END
 Current:
 END
 
-grep -E '^(DEFAULT_FROM_EMAIL|SERVER_EMAIL)' %{etcdir}/settings.py
+%{__grep} -E '^(DEFAULT_FROM_EMAIL|SERVER_EMAIL)' %{etcdir}/settings.py
 
 cat <<END
 
@@ -1710,7 +1685,7 @@ cat <<END
 Current:
 END
 
-grep -E '^(site_owner)' %{_sysconfdir}/mailman.cfg
+%{__grep} -E '^(site_owner)' %{_sysconfdir}/mailman.cfg
 
 cat <<END
 
@@ -1745,7 +1720,7 @@ echo
 
 # SELinux
 if [ $1 -eq 0 ] ; then
-    semanage port -l | grep "^mailman_.*\s*tcp\s*" | while read label proto port; do
+    semanage port -l | %{__grep} "^mailman_.*\s*tcp\s*" | while read label proto port; do
         echo "SELinux delete for %{pname} port $proto/$port ($label)"
         semanage port -d -p $proto $port
     done
@@ -1856,6 +1831,10 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Fri Jun 30 2023 Peter Bieringer <pb@bieringer.de>
+- remove support for optional build option using 'cron' files instead of systemd.timers
+- remove support for optional build option mailman3_like_mailman2
+
 * Mon Jun 26 2023 Peter Bieringer <pb@bieringer.de>
 - replace bundled 'networkx' by requirement for EL >= 9 and Fedora
 

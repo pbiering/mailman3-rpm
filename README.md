@@ -176,9 +176,6 @@ Selection of configured service:
 ## Notes
 
 - based on https://src.fedoraproject.org/rpms/mailman3/tree/rawhide
-- the SPEC file includes also toggles for
-  - using cron files instead of systemd timers (-D "mailman3_cron 1")
-  - use same user as mailman major version 2 (-D "mailman3_like_mailman2 1") THIS BREAKS COEXISTENT installation e.g. required for smooth transitions on same system hosting mailman major version 2 and 3 in parallel
 
 ## References
 
