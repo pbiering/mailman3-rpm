@@ -43,7 +43,7 @@
 %define	b_v_django_mailman3		1.3.9
 
 
-%global release_token 15
+%global release_token 16
 
 ## NAMES
 %global pypi_name mailman
@@ -140,6 +140,9 @@ Requires:       python3 >= 3.9
 %define	b_e_zope_hookable		1
 %define	b_e_zope_interface		1
 
+# EL8 provides only 1.1
+%define	b_e_networkx			1
+
 # end of rhel==8
 %endif
 
@@ -202,8 +205,6 @@ Requires:       python3 >= 3.9
 
 
 %if (0%{?fedora} >= 37) || (0%{?rhel} >= 8)
-# even while available bundle to avoid install of huge dependencies
-%define	b_e_networkx			1
 
 %if (0%{?fedora} > 40)
 # guessing that f40 will have updated versions...
@@ -439,7 +440,10 @@ Requires: 	publicsuffix-list
 %define	b_v_isort			5.12.0
 %define	b_v_mako			1.2.4
 %define	b_v_MarkupSafe			2.1.2
-%define	b_v_networkx			3.0
+
+# version from EL 9
+%define	b_v_networkx			2.6.2
+
 %define	b_v_oauthlib			3.2.2
 %define	b_v_openid			3.2.0
 %define	b_v_passlib			1.7.4
@@ -644,7 +648,6 @@ Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{b_v_django_recapt
 Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{b_v_django_hcaptcha}.tar.gz
 Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{b_v_django_friendlycaptcha}.tar.gz
 
-# networkx has too many dependencies if installed via RPM -> bundle
 Source2019:	%{__pypi_url}n/networkx/networkx-%{b_v_networkx}.tar.gz
 Source2026:	%{__pypi_url}p/pycparser/pycparser-%{b_v_pycparser}.tar.gz
 Source2030:	%{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
@@ -1852,6 +1855,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Mon Jun 26 2023 Peter Bieringer <pb@bieringer.de>
+- replace bundled 'networkx' by requirement for EL >= 9 and Fedora
+
 * Sun Jun 25 2023 Peter Bieringer <pb@bieringer.de>
 - predefine mailman3_like_mailman2 for Fedora >= 37 and EL >= 9 where mailman version 2 is not provided anymore
 
