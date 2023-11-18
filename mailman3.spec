@@ -92,36 +92,55 @@ Requires:       python3 >= 3.9
 %define	b_e_alembic			1
 %define	b_e_atpublic			1
 %define	b_e_attrs			1
+%define	b_e_authheaders			1
 %define	b_e_authres			1
+%define	b_e_bleach			1
 %define	b_e_blessed			1
 %define	b_e_cffi			1
 %define	b_e_dateutil			1
 %define	b_e_defusedxml			1
+%define	b_e_dkimpy			1
+%define	b_e_docutils			1
+%define	b_e_falcon			1
 %define	b_e_flit_core			1
 %define	b_e_flufl_lock			1
 %define	b_e_greenlet			1
+%define	b_e_gunicorn			1
 %define	b_e_isort			1
 %define	b_e_jwt				1
+%define	b_e_lazr_config			1
+%define	b_e_lazr_delegates		1
 %define	b_e_mailmanclient		1
 %define	b_e_mako			1
+%define	b_e_mistune			1
 %define	b_e_oauthlib			1
 %define	b_e_passlib			1
+%define	b_e_publicsuffix2		1
+%define	b_e_pygments			1
 %define	b_e_pytz			1
 %define	b_e_rcssmin			1
 %define	b_e_requests_oauthlib		1
+%define	b_e_rjsmin			1
 %define	b_e_robot_detection		1
 %define	b_e_sqlparse			1
 %define	b_e_sqlalchemy			1
 %define	b_e_tomli			1
+%define	b_e_typing_extensions		1
 %define	b_e_types_cryptography		1
 %define	b_e_wcwidth			1
+%define	b_e_webencodings		1
 %define	b_e_zope_configuration		1
 %define	b_e_zope_schema			1
 %define	b_e_zope_i18nmessageid		1
 %define	b_e_zope_component		1
+%define	b_e_zope_configuration		1
 %define	b_e_zope_event			1
 %define	b_e_zope_hookable		1
 %define	b_e_zope_interface		1
+%define	b_e_zope_schema			1
+
+## django dependencies
+%define	b_e_django_gravatar2		1
 
 # EL8 provides only 1.1
 %define	b_e_networkx			1
@@ -134,38 +153,16 @@ Requires:       python3 >= 3.9
 # not available for EL >= 8 -> bundle
 
 %define	b_e_arrow			1
-%define	b_e_authheaders			1
 
 # >= 3.5.2 required, 3.4.1-3.el9 is too low
 %define	b_e_asgiref			1
-
-%define	b_e_bleach			1
 
 # superseed EL9 appstream
 %define	b_e_cffi			1
 
 %define	b_e_cmarkgfm			1
-%define	b_e_dkimpy			1
-%define	b_e_docutils			1
-%define	b_e_falcon			1
-%define	b_e_gunicorn			1
-%define	b_e_lazr_config			1
-%define	b_e_lazr_delegates		1
-%define	b_e_mistune			1
 %define	b_e_openid			1
-%define	b_e_publicsuffix2		1
-%define	b_e_pycparser			1
-%define	b_e_pygments			1
 %define	b_e_readme_renderer		1
-%define	b_e_rjsmin			1
-%define	b_e_typing_extensions		1
-%define	b_e_webencodings		1
-%define	b_e_zope_configuration		1
-%define	b_e_zope_schema			1
-%define	b_e_zope_i18nmessageid		1
-
-## django dependencies
-%define	b_e_django_gravatar2		1
 
 # end of rhel>=8
 %endif
