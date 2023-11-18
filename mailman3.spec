@@ -1823,6 +1823,17 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Sat Nov 18 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-18
+- update mailman 3.3.8 -> 3.3.9
+- remove obsolete mailman3-subject-prefix.patch  from Fedora (https://gitlab.com/mailman/mailman/-/merge_requests/721)
+- remove obsolete mailman3-use-either-importlib_resources-or-directly-importlib.patch
+- update mailman-web 0.0.6 -> 0.0.8
+- update postorius 1.3.8 -> 1.3.10
+- update to HyperKitty 1.3.7 -> 1.3.8
+- update to Django-Mailman 1.3.9 -> 1.3.11
+- debundle for EL9 (now available via EPEL): authheaders bleach dkimpy docutils falcon gunicorn lazr-config lazr-delegates mistune publicsuffix2 pygments rjsmin typing-extensions webencodings zope_configuration zope_schema django_gravatar2
+- EL8: allow parallel install with mailman version 2
+
 * Fri Jun 30 2023 Peter Bieringer <pb@bieringer.de>
 - remove support for optional build option using 'cron' files instead of systemd.timers
 - remove support for optional build option mailman3_like_mailman2
