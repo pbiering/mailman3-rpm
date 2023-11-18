@@ -6,22 +6,48 @@ curl:
 
 download: rpmdev-spectool curl
 	rpmdev-spectool $(spec) | awk '$$1 ~ /^Source/ && $$2 ~ /^http/ { print $$2 }' | while read url; do \
-		echo "Download source if missing: $$url"; \
+		echo "INFO  : Download source if missing or checksum not equal: $$url"; \
 		file=$$(basename $$url); \
-		if [ -e $$file ]; then \
-			echo "Download source if missing: $$url (CHECK-FOR-NEWER)"; \
-			curl -s -o $$file -z $$file $$url; \
-			r=$$?; \
+		package=$$(echo $$file | sed 's/-[0-9].*//g'); \
+		urlIndex="https://pypi.org/simple/$$package/"; \
+		echo "INFO  : Download index for $$package: $$urlIndex"; \
+		indexEntry=$$(curl -L -s $$urlIndex | grep ">$$file<"); \
+		checksumEntry=$$(echo "$$indexEntry" | sed 's/.*sha256=\([0-9a-f]*\)".*/\1/g'); \
+		urlEntry=$$(echo "$$indexEntry" | sed 's/.*href="\(.*\)#.*/\1/g'); \
+		if [ -n "$$indexEntry" -a -n "$$checksumEntry" -a -n "$$urlEntry" ]; then \
+			echo "INFO  : Download index for $$package: $$urlIndex (SUCCESSFUL)"; \
 		else \
-			echo "Download source if missing: $$url (MISSING)"; \
-			curl -s -o $$file $$url; \
-			r=$$?; \
-		fi; \
-		if [ $$r -eq 0 ]; then \
-			echo "Download source if missing: $$url (SUCCESS)"; \
-		else \
-			echo "Download source if missing: $$url (ERROR)"; \
+			echo "ERROR : Download index for $$package: $$urlIndex (NOT-SUCCESSFUL)"; \
+			echo "ERROR : Download index for $$package: indexEntry=$$indexEntry"; \
+			echo "ERROR : Download index for $$package: checksumEntry=$$checksumEntry"; \
+			echo "ERROR : Download index for $$package: urlEntry=$$urlEntry"; \
 			exit 1; \
+		fi; \
+		if [ -e $$file ]; then \
+			echo "INFO  : index entry for $$file has checksum: $$checksumEntry"; \
+			checksumExisting=$$(sha256sum $$file | awk '{ print $$1 }'); \
+			echo "INFO  : local $$file has checksum: $$checksumExisting"; \
+			if [ "$$checksumEntry" = "$$checksumExisting" ]; then \
+				echo "INFO  : Analyse checksum for $$file (CHECKSUM-MATCH)"; \
+				continue; \
+			else \
+				echo "NOTICE: Analyse checksum for $$file (CHECKSUM-MISMATCH)"; \
+				download=1; \
+			fi; \
+		else  \
+			echo "NOTICE: Download source: $$urlEntry (MISSING)"; \
+			download=1; \
+		fi; \
+		if [ $$download -eq 1 ]; then \
+			echo "INFO  : Download source: $$urlEntry to file $$file"; \
+			curl -s -o $$file $$urlEntry; \
+			r=$$?; \
+			if [ $$r -eq 0 ]; then \
+				echo "INFO  : Download source: $$urlEntry (SUCCESS)"; \
+			else \
+				echo "ERROR : Download source: $$urlEntry (ERROR)"; \
+				exit 1; \
+			fi; \
 		fi; \
 	done
 
