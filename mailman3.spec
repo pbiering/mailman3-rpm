@@ -1508,7 +1508,7 @@ if getent passwd %{mmuser} >/dev/null; then
 	echo "system user for %{pname} already exists: %{mmuser}"
 	homedir=$(getent passwd %{mmuser} | awk -F: '{ print $6 }')
 	if [ "$homedir" != "%{vardir}" ]; then
-		echo "system user for %{pname} already exists: %{mmuser} bu has not required home directory: %{vardir} (current: $homedir)"
+		echo "system user for %{pname} already exists: %{mmuser} but has not required home directory: %{vardir} (current: $homedir)"
 		exit 1
 	fi
 else
@@ -1847,7 +1847,7 @@ systemctl condrestart %{pname}.service
 * Sat Jun 17 2023 Peter Bieringer <pb@bieringer.de>
 - drop virtualenv support incl. no longer used dependency bundles
 - apply mailman3-use-either-importlib_resources-or-directly-importlib.patch from Fedora, remove related build dependencies (https://gitlab.com/mailman/mailman/merge_requests/722)
-- apply mailman3-subject-prefix.patch  from Fedora (https://gitlab.com/mailman/mailman/-/merge_requests/721)
+- apply mailman3-subject-prefix.patch from Fedora (https://gitlab.com/mailman/mailman/-/merge_requests/721)
 - downgrade flufl requirements (https://src.fedoraproject.org/rpms/mailman3/blob/rawhide/f/mailman3.spec)
 
 * Mon May 01 2023 Peter Bieringer <pb@bieringer.de> - 3.3.8-10
