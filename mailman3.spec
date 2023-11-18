@@ -540,11 +540,6 @@ Source9:        %{pname}-web.service
 Source11:       %{pname}-httpd.conf
 Source13:       %{pname}-hyperkitty.cfg
 
-# <https://gitlab.com/mailman/mailman/merge_requests/721>
-Patch11:        %{pname}-subject-prefix.patch
-# <https://gitlab.com/mailman/mailman/merge_requests/722>
-Patch12:        %{pname}-use-either-importlib_resources-or-directly-importlib.patch
-
 # SELinux
 Source90:	%{pname}.fc
 Source91:	%{pname}.te
@@ -854,9 +849,6 @@ set -x
 
 ## apply patches to mailman
 pushd mailman-%{version_mailman}
-
-%patch -P 11 -p 1
-%patch -P 12 -p 1
 
 # Downgrade a few dependencies to satisfiable compatible versions (https://src.fedoraproject.org/rpms/mailman3/blob/rawhide/f/mailman3.spec)
 sed -e "s/flufl.bounce>=4.0/flufl.bounce>=3.0/" \
