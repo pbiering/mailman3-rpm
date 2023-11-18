@@ -24,22 +24,22 @@
 
 
 ## MAIN VERSIONS+RELEASE
-%global version_mailman 		3.3.8
-%global version_mailman_web		0.0.6
+%global version_mailman 		3.3.9
+%global version_mailman_web		0.0.8
 %global version_mailman_hyperkitty	1.2.1
 
 
 ## BUNDLED VERSIONS
 # base
-%define	b_v_postorius			1.3.8
-%define	b_v_hyperkitty			1.3.7
+%define	b_v_postorius			1.3.10
+%define	b_v_hyperkitty			1.3.8
 %define	b_v_mailmanclient		3.3.5
 
 ## django mailman related
-%define	b_v_django_mailman3		1.3.9
+%define	b_v_django_mailman3		1.3.11
 
 
-%global release_token 17
+%global release_token 18
 
 ## NAMES
 %global pypi_name mailman
@@ -509,7 +509,7 @@ Requires: 	publicsuffix-list
 
 ## django dependencies
 %define	b_v_django			4.1.9
-%define	b_v_django_allauth		0.54.0
+%define	b_v_django_allauth		0.56.1
 %define	b_v_django_appconf		1.0.5
 %define	b_v_django_compressor		4.3.1
 %define	b_v_django_extensions		3.2.1
