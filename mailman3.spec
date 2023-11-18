@@ -433,7 +433,6 @@ Requires: 	publicsuffix-list
 %define	b_v_passlib			1.7.4
 %define	b_v_pdm_pep517			1.1.3
 %define	b_v_psutil			5.9.4
-%define	b_v_pycparser			2.21
 
 #define	b_v_jwt				2.6.0 # conflicts on EL with python39-cryptography==3.3.1
 %define	b_v_jwt				2.5.0
@@ -624,7 +623,6 @@ Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{b_v_django_hcaptcha
 Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{b_v_django_friendlycaptcha}.tar.gz
 
 Source2019:	%{__pypi_url}n/networkx/networkx-%{b_v_networkx}.tar.gz
-Source2026:	%{__pypi_url}p/pycparser/pycparser-%{b_v_pycparser}.tar.gz
 Source2030:	%{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
 Source2036:	%{__pypi_url}s/setuptools/setuptools-%{b_v_setuptools}.tar.gz
 Source2037:	%{__pypi_url}s/setuptools_scm/setuptools_scm-%{b_v_setuptools_scm}.tar.gz
