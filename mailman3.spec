@@ -281,6 +281,7 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_authres}		authres
 %req_cond_b_i_w_v	0%{?b_e_authheaders}		authheaders >= 0.14.0
 %req_cond_b_i_w_v	0%{?b_e_cmarkgfm}		cmarkgfm >= 0.8.0
+%req_cond_b_i_n_v	0%{?b_e_bleach}			bleach
 %req_cond_b_i_n_v	0%{?b_e_blessed}		blessed
 %req_cond_b_i_n_v	0%{?b_e_dateutil}		dateutil
 %req_cond_b_i_n_v	0%{?b_e_defusedxml}		defusedxml
@@ -313,6 +314,7 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_isort}			isort
 %req_cond_b_i_w_v	0%{?b_e_jwt}			jwt >= 1.7
 %req_cond_b_i_n_v	0%{?b_e_lazr_config}		lazr-config
+%req_cond_b_i_n_v	0%{?b_e_lazr_delegates}		lazr-delegates
 %req_cond_b_i_n_v	0%{?b_e_mako}			mako
 %req_cond_b_i_n_v	0%{?b_e_mailmanclient}		mailmanclient
 %req_cond_b_i_w_v	0%{?b_e_networkx}		networkx >= 2.0
@@ -320,6 +322,7 @@ BuildRequires:	gcc
 %req_cond_b_i_w_v	0%{?b_e_openid}			openid >= 3.0.8
 %req_cond_b_i_n_v	0%{?b_e_passlib}		passlib
 %req_cond_b_i_n_v	0%{?b_e_publicsuffix2}		publicsuffix2
+%req_cond_b_i_n_v	0%{?b_e_pygments}		pygments
 %req_cond_b_i_n_v	0%{?b_e_pytz}			pytz
 %req_cond_b_i_n_v	0%{?b_e_rcssmin}		rcssmin
 %req_cond_b_i_n_v	0%{?b_e_readme_renderer}	readme-renderer
@@ -335,8 +338,10 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_zope_component}		zope-component
 %req_cond_b_i_n_v	0%{?b_e_zope_configuration}	zope-configuration
 %req_cond_b_i_n_v	0%{?b_e_zope_event}		zope-event
-%req_cond_b_i_n_v	0%{?b_e_zope_interface}		zope-interface
 %req_cond_b_i_n_v	0%{?b_e_zope_hookable}		zope-hookable
+%req_cond_b_i_n_v	0%{?b_e_zope_i18nmessageid}	zope-i18nmessageid
+%req_cond_b_i_n_v	0%{?b_e_zope_interface}		zope-interface
+%req_cond_b_i_n_v	0%{?b_e_zope_schema}		zope-schema
 
 ## ALL supported OS versions
 %req_cond_b_i_n_v	0				click
