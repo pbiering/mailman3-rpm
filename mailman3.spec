@@ -47,7 +47,7 @@
 
 
 # toggle to create a with mailman version 2 non-conflicting package
-%if (0%{?rhel} >= 8) || (0%{?fedora} >= 37)
+%if (0%{?rhel} >= 9) || (0%{?fedora} >= 37)
 %global mailman3_separated 0
 %endif
 
