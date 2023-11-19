@@ -39,7 +39,7 @@
 %define	b_v_django_mailman3		1.3.11
 
 
-%global release_token 18
+%global release_token 19
 
 ## NAMES
 %global pypi_name mailman
@@ -1825,6 +1825,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Sun Nov 19 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-19
+- mailman3-httpd.conf: add missing ProxyPass for postorius and hyperkitty, combine several Location entries into LocationMatch
+
 * Sat Nov 18 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-18
 - update mailman 3.3.8 -> 3.3.9
 - remove obsolete mailman3-subject-prefix.patch  from Fedora (https://gitlab.com/mailman/mailman/-/merge_requests/721)
