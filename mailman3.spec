@@ -39,7 +39,7 @@
 %define	b_v_django_mailman3		1.3.11
 
 
-%global release_token 19
+%global release_token 20
 
 ## NAMES
 %global pypi_name mailman
@@ -147,13 +147,12 @@ Requires:       python3 >= 3.9
 # EL8 provides only 1.1
 %define	b_e_networkx			1
 
-# end of rhel==8
 %endif
+# end of rhel==8
 
 
 %if 0%{?rhel} >= 8
 # not available for EL >= 8 -> bundle
-
 %define	b_e_arrow			1
 
 # >= 3.5.2 required, 3.4.1-3.el9 is too low
@@ -166,8 +165,12 @@ Requires:       python3 >= 3.9
 %define	b_e_openid			1
 %define	b_e_readme_renderer		1
 
-# end of rhel>=8
+# version downgrade in setup.py (see below) supports fedora >=37
+%define	b_e_flufl_bounce		1
+%define	b_e_flufl_i18n			1
+
 %endif
+# end of rhel>=8
 
 
 # package Django unconditionally to apply CAPTCHA support
@@ -185,28 +188,29 @@ Requires:       python3 >= 3.9
 %define	b_e_django_q			1
 %define	b_e_django_rest_framework	1
 
+%if (0%{?fedora} == 39)
+# f39 has 2.1-24.fc39 which is causing: AttributeError: 'RawConfigParser' object has no attribute 'readfp'
+%define	b_e_lazr_config			1
+%endif
 
-%if (0%{?fedora} >= 37) || (0%{?rhel} >= 8)
-
-%if (0%{?fedora} > 40)
-# guessing that f40 will have updated versions...
+%if (0%{?fedora} >= 39)
+# asgiref 3.6.0-4.fc39
 %else
 # >= 3.5.2 required, 3.4.1-7.fc37 / 3.4.1-8.fc38 is too low
 %define	b_e_asgiref			1
-# dependencies
+%endif
+
+%if (0%{?fedora} >= 37) || (0%{?rhel} >= 9)
+# aiosmtpd: >= 1.4.4
+%else
 %define	b_e_aiosmtpd			1
-
-%if 0%{?rhel} >= 8
-# version downgrade in setup.py (see below) supports fedora >=37
-%define	b_e_flufl_bounce		1
-%define	b_e_flufl_i18n			1
 %endif
 
-# Fedora provides 3.0 which is too low (see below)
+%if (0%{?fedora} >= 37) || (0%{?rhel} >= 9)
+# django-haystack: solved BZ#2187604
+%else
+# EL8 is not providing for python3.9
 %define	b_e_django_haystack		1
-%endif
-
-# end of fedora>=37 && rhel>=8
 %endif
 
 
@@ -286,14 +290,12 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_defusedxml}		defusedxml
 %req_cond_b_i_w_v	0%{?b_e_dkimpy}			dkimpy >= 0.7.1
 %req_cond_b_i_w_v	0%{?b_e_docutils}		docutils >= 0.13.1
-%req_cond_b_i_wbv	0%{?b_e_django}			django >= 4
+%req_cond_b_i_w_v	0%{?b_e_django}			django >= 4
 %req_cond_b_i_n_v	0%{?b_e_django_compressor}	django-compressor
 %req_cond_b_i_w_v	0%{?b_e_django_extensions}	django-extensions >= 1.3.7
 %req_cond_b_i_w_v	0%{?b_e_django_gravatar2}	django-gravatar2 >= 1.0.6
 %req_cond_b_i_n_v	0%{?b_e_django_picklefield}	django-picklefield >= 3.0.1 < 4.0.0
 
-# f37/f38/f39: 3.0
-# 3.0 has issue with django: cannot import name 'ungettext' from 'django.utils.translation' (BZ#2187604)
 %req_cond_b_i_wcv	0%{?b_e_django_haystack}	django-haystack >= 3.2 < 3.2
 
 %req_cond_b_i_n_v	0%{?b_e_django_q}		django-q
@@ -1826,6 +1828,10 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Sun Nov 19 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-20
+- rebundle for F39: lazr-config
+- debundle for F37+/EL9: django-haystack (solved BZ#2187604) aiosmtpd
+
 * Sun Nov 19 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-19
 - mailman3-httpd.conf: add missing ProxyPass for postorius and hyperkitty, combine several Location entries into LocationMatch
 
