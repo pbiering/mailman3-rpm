@@ -23,7 +23,7 @@ Fedora has only a standard version packaged as of 2023-11 missing some important
 
 ## Solution
 
-Package *mailman3-enhanced* by storing all not fulfillable dependencies in USER_SITE.
+Package *mailman3-enhanced* by storing all not fulfillable dependencies in USER_SITE and implant all extensions.
 
 ### Feature of this RPM
 
