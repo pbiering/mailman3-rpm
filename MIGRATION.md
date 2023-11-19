@@ -177,10 +177,14 @@ $ /usr/lib/mailman/bin/list_owners <LISTNAME>
    - enable option `soft_bounce = yes` in `/etc/postfix/main.cf`
    - reload postfix `systemctl reload postfix`
  - disable catch of to-be-migrated list by
-   - commenting related lines in `/etc/mailman/aliases`
-   - recreate database `postalias /etc/mailman/aliases`
-   - commenting related lines in `/etc/mailman/virtual-mailman`
-   - recreate database `postmap /etc/mailman/virtual-mailman`
+   - commenting related lines in
+     - `/etc/mailman/aliases`
+     - `/etc/mailman/virtual-mailman`
+   - recreate databases
+```
+# postalias /etc/mailman/aliases
+# postmap /etc/mailman/virtual-mailman
+```
 
 ### Create list
 
