@@ -161,6 +161,8 @@ $ echo "member@otherdomain.example" | mailman3 addmembers - testlist@domain.exam
 
 ## Migration per list
 
+Note: this works only for low-volume lists. For high-volume lists explicit temporary rejects must be configured in postfix during switchover otherwise there is a gap between creation of list (which turns active receiving on) and import of members.
+
 ### Retrieve owner of current list
 
 ```
