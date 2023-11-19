@@ -270,7 +270,7 @@ Example for *private* archive (otherwise use "public" instead of "private"
 Attention: the passed tests from above will block import of older messages unless option `--since ...` is used, best is to delete the test message via WebUI in advance of mass import.
 
 ```
-$ mailman3-web hyperkitty_import -l <LISTNAME>@<DOMAIN> /var/lib/mailman/archive/private/<LISTNAME>.mbox/<LISTNAME>.mbox
+$ mailman3-web hyperkitty_import -l <LISTNAME>@<DOMAIN> /var/lib/mailman/archives/private/<LISTNAME>.mbox/<LISTNAME>.mbox
 Importing from mbox file /var/lib/mailman/archive/private/<LISTNAME>.mbox/<LISTNAME>.mbox to <LISTNAME>@<DOMAIN>
 Computing thread structure
 Synchronizing properties with Mailman
