@@ -293,3 +293,12 @@ To disable but not trash a list instantly in "mailman2" best way is to move the 
 $ mkdir /var/lib/mailman/migrated3
 $ mv /var/lib/mailman/lists/<LISTNAME> /var/lib/mailman/migrated3
 ```
+
+### Disable postfix returining only temporary errors
+ - disable of enforce postfix to return only temporary errors
+   - disable option `soft_bounce = no` in `/etc/postfix/main.cf`
+
+Reload postfix
+```
+systemctl reload postfix
+```

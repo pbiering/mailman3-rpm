@@ -176,6 +176,7 @@ Selection of configured service:
 ## Notes
 
 - based on https://src.fedoraproject.org/rpms/mailman3/tree/rawhide
+- for migration 2->3 see https://github.com/pbiering/mailman3-rpm/blob/main/MIGRATION.md
 
 ## References
 
