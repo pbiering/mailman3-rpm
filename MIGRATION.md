@@ -70,8 +70,10 @@ Superuser created successfully.
 #### File: /etc/postfix/main.cf
 
  - Check: recipient_delimiter
- - Extend: transport_maps
+ - Extend: transport_maps: `hash:/var/lib/mailman3/data/postfix_lmtp`
  - Extend: local_recipient_maps or virtual_alias_maps (depending on local setup)
+   - local: <TODO>
+   - virtual: `hash:/var/lib/mailman3/data/postfix_vmap`
 
 Reload postfix
 ```
@@ -107,6 +109,49 @@ Note: can be revoked after migration
 
 ## Pre-Migration
 
+### For migration on same system as "mailman" is running, special alias subdomain is required to be configured
+
+See also: https://docs.mailman3.org/projects/mailman/en/latest/src/mailman/docs/mta.html
+
+*ATTENTION, THIS WILL DELETE ALREADY CONFIGURED LISTS*
+
+```
+# su - -s /bin/bash mailman3
+$ mailman3 shell
+
+from mailman.interfaces.domain import IDomainManager
+from zope.component import getUtility
+manager = getUtility(IDomainManager)
+from operator import attrgetter
+
+def show_domains(*, with_owners=False):
+     if len(manager) == 0:
+         print('no domains')
+         return
+     for domain in sorted(manager, key=attrgetter('mail_host')):
+        print(domain)
+     owners = sorted(owner.addresses[0].email
+                     for owner in domain.owners)
+     for owner in owners:
+         print('- owner:', owner)
+
+
+show_domains()
+<Domain <DOMAIN>>
+
+manager.remove('<DOMAIN>')
+manager.add('<DOMAIN>', alias_domain='x.<DOMAIN>')
+
+show_domains()
+<Domain <DOMAIN>, alias: x.<DOMAIN>
+
+## end session with CTRL-D
+
+$ mailman3 aliases
+```
+
+### Test with a "testlist"
+
 It would be very helpful to create a new testlist and check e-mail delivery setup before starting migration
 
 ```
@@ -138,6 +183,7 @@ $ /usr/lib/mailman/bin/list_owners <LISTNAME>
 ### Create list
 
 ```
+# su - -s /bin/bash mailman3
 $ mailman3 create --language <LANG> -n -o <OWNER-EMAIL> <LISTNAME>@<DOMAIN>
 ```
 
