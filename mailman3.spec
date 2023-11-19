@@ -39,7 +39,7 @@
 %define	b_v_django_mailman3		1.3.11
 
 
-%global release_token 20
+%global release_token 21
 
 ## NAMES
 %global pypi_name mailman
@@ -282,7 +282,7 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_atpublic}		atpublic
 %req_cond_b_i_n_v	0%{?b_e_attrs}			attrs
 %req_cond_b_i_n_v	0%{?b_e_authres}		authres
-%req_cond_b_i_w_v	0%{?b_e_authheaders}		authheaders >= 0.14.0
+%req_cond_b_i_w_v	0%{?b_e_authheaders}		authheaders >= 0.15.2
 %req_cond_b_i_w_v	0%{?b_e_cmarkgfm}		cmarkgfm >= 0.8.0
 %req_cond_b_i_n_v	0%{?b_e_bleach}			bleach
 %req_cond_b_i_n_v	0%{?b_e_blessed}		blessed
@@ -1828,6 +1828,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Sun Nov 19 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-21
+- require now authheaders>=0.15.2 (mailman 3.3.9)
+
 * Sun Nov 19 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-20
 - rebundle for F39: lazr-config
 - debundle for F37+/EL9: django-haystack (solved BZ#2187604) aiosmtpd
