@@ -54,6 +54,7 @@ CSRF_TRUSTED_ORIGINS = [
 #: Current Django Site being served. This is used to customize the web host
 #: being used to serve the current website. For more details about Django
 #: site, see: https://docs.djangoproject.com/en/dev/ref/contrib/sites/
+#: in case of "FILTER_VHOST = True" consider "SITE_ID = 0" for having related site autoselected
 SITE_ID = 1
 
 # Set this to a new secret value.
