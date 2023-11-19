@@ -1487,13 +1487,13 @@ set -x
 %pre
 # User & Group
 if getent group %{mmgroup} >/dev/null; then
-	echo "system group for %{pname} already exists: %{mmgroup}"
+	echo "system group  for %{pname} already exists: %{mmgroup}"
 else
 	if [ -n "%{mmgroupid}" ]; then
-		echo "system group for %{pname} needs to be created: %{mmgroup}/%{mmgroupid}"
+		echo "system group  for %{pname} needs to be created: %{mmgroup}/%{mmgroupid}"
 		groupadd -r -g %{mmgroupid} %{mmgroup} >/dev/null
 	else
-		echo "system group for %{pname} needs to be created: %{mmgroup}"
+		echo "system group  for %{pname} needs to be created: %{mmgroup}"
 		groupadd -r %{mmgroup} >/dev/null
 	fi
 fi
