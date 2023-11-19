@@ -8,9 +8,9 @@ Until included by EPEL and potentially adjustments are overtaken in Fedora avail
 
 ## Background
 
-Because of huge Python package dependencies it's impossible to build a native *mailman3* RPM without providing dependencies in USER_SITE directory.
-EPEL cannot fulfill dependencies as of 2023-06
-Fedora has only a standard version packaged as of 2023-06 missing some important enhancements.
+Native *mailman3* RPM has a lot of dependencies to Python packages.
+EPEL cannot fulfill dependencies as of 2023-11 at least for EL8 and still not complete for EL9.
+Fedora has only a standard version packaged as of 2023-11 missing some important enhancements.
 
 ### Drivers
 
@@ -23,7 +23,7 @@ Fedora has only a standard version packaged as of 2023-06 missing some important
 
 ## Solution
 
-Package *mailman3* by storing all not fulfillable dependencies in USER_SITE.
+Package *mailman3-enhanced* by storing all not fulfillable dependencies in USER_SITE.
 
 ### Feature of this RPM
 
