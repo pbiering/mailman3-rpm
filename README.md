@@ -84,7 +84,11 @@ cd mailman3-rpm-<VERSION>-<RELEASE>
 Extract dependencies
 
 ```
+# from spec file
 rpmbuild -bb mailman3.spec 2>&1 | awk '$0 ~ "is needed" { print $1 }' | xargs echo "dnf install"
+
+# from source RPM
+rpmbuild --rebuild /path/to/mailman3-enhanced-<VERSION>.src.rpm 2>&1 | awk '$0 ~ "is needed" { print $1 }' | xargs echo "dnf install"
 ```
 
 ##### as system user
