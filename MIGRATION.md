@@ -19,8 +19,8 @@
  - Check: DEFAULT_FROM_EMAIL
  - Check: SERVER_EMAIL
  - Check: CAPTCHA_SERVICE
-  - Check: CAPTCHA_SITE_KEY
-  - Check: CAPTCHA_SECRET
+ - Check: CAPTCHA_SITE_KEY
+ - Check: CAPTCHA_SECRET
 
 ### Start mailman3
 
@@ -67,7 +67,7 @@ Superuser created successfully.
 
 ### Postfix (after mailman3 initial start)
 
-#### File_ /etc/postfix/main.cf
+#### File: /etc/postfix/main.cf
 
  - Check: recipient_delimiter
  - Extend: transport_maps
@@ -90,12 +90,14 @@ $ /usr/lib/mailman/bin/list_lists
 ### Show lists of mailman3
 ```
 # su -s -s /bin/bash mailman3
-$ mailman lists -n
+$ mailman3 lists -n
 ```
 
 ### Grant mailman3 access to mailman2
 
-Note: usually, directory permissions prevent mailman3 reading files of mailman2
+Notes:
+  - only required in case of migration on same system
+  - usually, directory permissions prevent mailman3 reading files of mailman2
 
 ```
 # usermod -G mailman -a mailman3
@@ -108,37 +110,120 @@ Note: can be revoked after migration
 It would be very helpful to create a new testlist and check e-mail delivery setup before starting migration
 
 ```
-$ mailman create -o admin@domain.example testlist@domain.example
+$ mailman3 create -o admin@domain.example testlist@domain.example
+$ echo "member@otherdomain.example" | mailman3 addmembers - testlist@domain.example
 ```
 
 ## Migration per list
 
+### Retrieve owner of current list
+
+```
+# su - -s /bin/bash mailman
+$ /usr/lib/mailman/bin/list_owners <LISTNAME>
+<OWNER-EMAIL>
+```
+
+### Stopping delivery to mailman2 lists
+
+ - enforce postfix to return only temporary errors
+   - enable option `soft_bounce = yes` in `/etc/postfix/main.cf`
+   - reload postfix `systemctl reload postfix`
+ - disable catch of to-be-migrated list by
+   - commenting related lines in `/etc/mailman/aliases`
+   - recreate database `postalias /etc/mailman/aliases`
+   - commenting related lines in `/etc/mailman/virtual-mailman`
+   - recreate database `postmap /etc/mailman/virtual-mailman`
+
 ### Create list
 
 ```
-$ mailman create -o admin@domain.example list@domain.example
-$ echo "member@otherdomain.example" | mailman addmembers - testlist@domain.example
+$ mailman3 create --language <LANG> -n -o <OWNER-EMAIL> <LISTNAME>@<DOMAIN>
 ```
+
+New list appears now
+```
+$ mailman3 lists -n
+...
+<LISTNAME>@<DOMAIN>
+...
+```
+
+Note: short description can be set via WebUI now or later.
+
+Following file should reflect new <LISTNAME>: /var/lib/mailman3/data/postfix_lmtp
+
+
+### Add a test member to check delivery
+
+```
+$ echo "<TESTUSER>@<TESTDOMAIN>" | mailman3 addmembers - <LISTNAME>@<DOMAIN>
+```
+
+New member is listed now
+
+```
+$ mailman3 members <LISTNAME>@<DOMAIN>
+<TESTUSER>@<TESTDOMAIN>
+```
+
+*Assure that delivery via "mailman2" is disabled, otherwise this test is distributed accross*
+
+Send now e-mail to new list and check whether test will be distributed
+ - From: <TESTUSER>@<TESTDOMAIN>
+ - To: <LISTNAME>@<DOMAIN>
+
+Send now e-mail to new list and check whether test will be held
+ - From: <OTHERUSER>@<TESTDOMAIN>
+ - To: <LISTNAME>@<DOMAIN>
+
+In case all is working fine, remove test user
+
+```
+$ mailman3 delmembers -l <LISTNAME>@<DOMAIN> -m <TESTUSER>@<TESTDOMAIN>
+```
+
+List has no members anymore
+
+```
+$ mailman3 members <LISTNAME>@<DOMAIN>
+<TESTUSER>@<TESTDOMAIN> has no members
+```
+
 
 ### Import settings
 
+Import settings from "mailman2"
+
 ``` 
-$ %mailman import21 list@domain.example /var/lib/mailman/lists/list/config.pck
-mporting members     [####################################]  100%
+$ mailman3 import21 <LISTNAME>@<DOMAIN> /var/lib/mailman/lists/<LISTNAME>/config.pck
+importing members     [####################################]  100%
 Importing owners      [####################################]  100%
 Importing moderators  [####################################]  100%
 Importing defers      [####################################]  100%
 Importing holds       [####################################]  100%
 Importing rejects     [####################################]  100%
 Importing discards    [####################################]  100%
+```
 
+List members
+
+```
+$ mailman3 members <LISTNAME>@<DOMAIN>
+...
 ```
 
 ### Import archive
 
+#### Import archive from "mailman"
+
+Example for *private* archive (otherwise use "public" instead of "private"
+
+Attention: the passed tests from above will block import of older messages unless option `--since ...` is used, best is to delete the test message via WebUI in advance of mass import.
+
 ```
-mailman-web hyperkitty_import -l list@domain.example /var/lib/mailman/archive/public/list.mbox/list.mbox
-Importing from mbox file /var/lib/mailman/archive/public/list.mbox/list.mbox to list@domain.example
+$ mailman3-web hyperkitty_import -l <LISTNAME>@<DOMAIN> /var/lib/mailman/archive/private/<LISTNAME>.mbox/<LISTNAME>.mbox
+Importing from mbox file /var/lib/mailman/archive/private/<LISTNAME>.mbox/<LISTNAME>.mbox to <LISTNAME>@<DOMAIN>
 Computing thread structure
 Synchronizing properties with Mailman
 25 emails left to refresh, checked 0
@@ -146,9 +231,19 @@ Warming up cache
 The full-text search index is not updated for this list. It will not be updated by the 'minutely' incremental update job. To update the index for this list, run the Django admin command with arguments 'update_index_one_list list@domain.example'.
 ```
 
-### Update index on archive
+#### Update index on archive
 
 ```
-$ mailman-web update_index_one_list list@domain.example
+$ mailman3-web update_index_one_list <LISTNAME>@<DOMAIN>
 Indexing 12345 emails
+```
+
+### Disable list in "mailman2"
+
+To disable but not trash a list instantly in "mailman2" best way is to move the related config directory away
+
+```
+# su - -s /bin/bash mailman
+$ mkdir /var/lib/mailman/migrated3
+$ mv /var/lib/mailman/lists/<LISTNAME> /var/lib/mailman/migrated3
 ```
