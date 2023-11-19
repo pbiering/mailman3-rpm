@@ -218,12 +218,12 @@ $ mailman3 members <LISTNAME>@<DOMAIN>
 *Assure that delivery via "mailman2" is disabled, otherwise this test is distributed accross*
 
 Send now e-mail to new list and check whether test will be distributed
- - From: <TESTUSER>@<TESTDOMAIN>
- - To: <LISTNAME>@<DOMAIN>
+ - `From: <TESTUSER>@<TESTDOMAIN>`
+ - `To: <LISTNAME>@<DOMAIN>`
 
 Send now e-mail to new list and check whether test will be held
- - From: <OTHERUSER>@<TESTDOMAIN>
- - To: <LISTNAME>@<DOMAIN>
+ - `From: <OTHERUSER>@<TESTDOMAIN>`
+ - `To: <LISTNAME>@<DOMAIN>`
 
 In case all is working fine, remove test user
 
