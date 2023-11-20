@@ -182,8 +182,8 @@ $ /usr/lib/mailman/bin/list_owners <LISTNAME>
      - `/etc/mailman/virtual-mailman`
    - recreate databases
 ```
-# postalias /etc/mailman/aliases
-# postmap /etc/mailman/virtual-mailman
+$ postalias /etc/mailman/aliases
+$ postmap /etc/mailman/virtual-mailman
 ```
 
 ### Create list
@@ -269,9 +269,8 @@ $ mailman3 members <LISTNAME>@<DOMAIN>
 
 #### Import archive from "mailman"
 
-Example for *private* archive (otherwise use "public" instead of "private"
-
-Attention: the passed tests from above will block import of older messages unless option `--since ...` is used, best is to delete the test message via WebUI in advance of mass import.
+- Attention: the passed tests from above will block import of older messages unless option `--since ...` is used, best is to delete the test message via WebUI in advance of mass import.
+- Note: mbox files are even for public lists in "private" folder
 
 ```
 $ mailman3-web hyperkitty_import -l <LISTNAME>@<DOMAIN> /var/lib/mailman/archives/private/<LISTNAME>.mbox/<LISTNAME>.mbox
