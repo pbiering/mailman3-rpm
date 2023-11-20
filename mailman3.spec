@@ -39,7 +39,7 @@
 %define	b_v_django_mailman3		1.3.11
 
 
-%global release_token 21
+%global release_token 22
 
 ## NAMES
 %global pypi_name mailman
@@ -1828,6 +1828,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Mon Nov 20 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-22
+- mailman3.cfg: disable webservice/show_tracebacks for preventing disclosure reasons
+
 * Sun Nov 19 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-21
 - require now authheaders>=0.15.2 (mailman 3.3.9)
 
