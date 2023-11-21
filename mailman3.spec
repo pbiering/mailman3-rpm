@@ -85,6 +85,7 @@ Requires:       python3 >= 3.9
 %define	b_e_django_recaptcha		1
 %define	b_e_django_hcaptcha		1
 %define	b_e_django_friendlycaptcha	1
+%define	b_e_django_turnstile		1
 
 %define	b_e_whoosh			1
 
@@ -525,6 +526,7 @@ Requires: 	publicsuffix-list
 %define	b_v_django_recaptcha		3.0.0
 %define	b_v_django_hcaptcha		0.2.0
 %define	b_v_django_friendlycaptcha	0.1.7
+%define	b_v_django_turnstile		0.1.0
 
 
 ### HEADER
@@ -628,6 +630,7 @@ Source1180:	%{__pypi_url}d/django-mailman3/django-mailman3-%{b_v_django_mailman3
 Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{b_v_django_recaptcha}.tar.gz
 Source1191:	%{__pypi_url}d/django-hCaptcha/django-hCaptcha-%{b_v_django_hcaptcha}.tar.gz
 Source1192:	%{__pypi_url}d/django-friendly-captcha/django-friendly-captcha-%{b_v_django_friendlycaptcha}.tar.gz
+Source1193:	%{__pypi_url}d/django-turnstile/django-turnstile-%{b_v_django_turnstile}.tar.gz
 
 Source2019:	%{__pypi_url}n/networkx/networkx-%{b_v_networkx}.tar.gz
 Source2030:	%{__pypi_url}P/PyJWT/PyJWT-%{b_v_jwt}.tar.gz
@@ -815,7 +818,7 @@ it contains also
  mailman-hyperkitty: %{version_mailman_hyperkitty}
 
 important forms are extended with CAPTCHA protection
- recaptcha hcaptcha friendlycaptcha
+ recaptcha hcaptcha friendlycaptcha turnstile
 
 default configuration
  database: sqlite3
@@ -948,6 +951,7 @@ popd
 %prep_cond "%{?b_e_django_recaptcha}"       1190
 %prep_cond "%{?b_e_django_hcaptcha}"        1191
 %prep_cond "%{?b_e_django_friendlycaptcha}" 1192
+%prep_cond "%{?b_e_django_turnstile}"       1193
 
 
 ## SELinux
@@ -1102,6 +1106,7 @@ export PYTHONPATH
 %build_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
 %build_cond "%{?b_e_django_hcaptcha}"        "%{?b_v_django_hcaptcha}"        django-hCaptcha
 %build_cond "%{?b_e_django_friendlycaptcha}" "%{?b_v_django_friendlycaptcha}" django-friendly-captcha
+%build_cond "%{?b_e_django_turnstile}"       "%{?b_v_django_turnstile}"       django-turnstile
 
 
 PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
@@ -1205,6 +1210,7 @@ export PYTHONPATH
 %install_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
 %install_cond "%{?b_e_django_hcaptcha}"        "%{?b_v_django_hcaptcha}"        django-hCaptcha
 %install_cond "%{?b_e_django_friendlycaptcha}" "%{?b_v_django_friendlycaptcha}" django-friendly-captcha
+%install_cond "%{?b_e_django_turnstile}"       "%{?b_v_django_turnstile}"       django-turnstile
 
 # cleanup doc files of bundled packages
 %{__rm} -rf %{buildroot}%{_docdir}/*
@@ -1828,6 +1834,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Tue Nov 21 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-23
+- extend CAPTCHA support with Cloudflare's Turnstile
+
 * Mon Nov 20 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-22
 - mailman3.cfg: disable webservice/show_tracebacks for preventing disclosure reasons
 

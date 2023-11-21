@@ -1,6 +1,6 @@
 --- django/contrib/admin/forms.py.orig	2023-04-28 23:46:22.384173775 +0200
 +++ django/contrib/admin/forms.py	2023-04-30 07:58:37.273713612 +0200
-@@ -2,12 +2,27 @@
+@@ -2,12 +2,30 @@
  from django.core.exceptions import ValidationError
  from django.utils.translation import gettext_lazy as _
  
@@ -9,6 +9,7 @@
 +from captcha.fields import ReCaptchaField
 +from hcaptcha.fields import hCaptchaField
 +from friendly_captcha.fields import FrcCaptchaField
++from turnstile.fields import TurnstileField
 +
  
  class AdminAuthenticationForm(AuthenticationForm):
@@ -24,6 +25,8 @@
 +        captcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
++    elif captcha_service == 'turnstile':
++        captcha = TurnstileField()
 +
      error_messages = {
          **AuthenticationForm.error_messages,

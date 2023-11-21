@@ -1,6 +1,6 @@
 --- postorius/forms/list_forms.py.orig	2023-04-02 10:59:56.938642619 +0200
 +++ postorius/forms/list_forms.py	2023-04-02 11:23:51.923881265 +0200
-@@ -38,6 +38,12 @@
+@@ -38,6 +38,13 @@
  from postorius.models import EmailTemplate, _email_template_help_text
  from postorius.utils import LANGUAGES
  
@@ -9,11 +9,12 @@
 +from captcha.fields import ReCaptchaField
 +from hcaptcha.fields import hCaptchaField
 +from friendly_captcha.fields import FrcCaptchaField
++from turnstile.fields import TurnstileField
 +
  
  DIGEST_FREQUENCY_CHOICES = (
      ('daily', _('Daily')),
-@@ -185,6 +202,15 @@
+@@ -185,6 +202,17 @@
          label=_('Your name (optional)'), required=False
      )
  
@@ -25,11 +26,13 @@
 +        hcaptcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
++    elif captcha_service == 'turnstile':
++        captcha = TurnstileField()
 +
      delivery_mode = delivery_mode_field(default='regular')
      delivery_status = delivery_status_field(
          choices=DELIVERY_STATUS_CHOICES, widget=forms.RadioSelect
-@@ -216,6 +243,15 @@
+@@ -216,6 +243,17 @@
          label=_('Your name (optional)'), required=False
      )
  
@@ -41,6 +44,8 @@
 +        hcaptcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
++    elif captcha_service == 'turnstile':
++        captcha = TurnstileField()
 +
  
  class ListSettingsForm(forms.Form):

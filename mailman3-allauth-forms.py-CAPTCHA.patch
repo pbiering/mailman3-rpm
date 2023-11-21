@@ -1,6 +1,6 @@
 --- allauth/account/forms.py.orig	2023-04-02 11:26:39.601273837 +0200
 +++ allauth/account/forms.py	2023-04-02 11:27:42.892382377 +0200
-@@ -31,6 +31,12 @@
+@@ -31,6 +31,13 @@
      user_username,
  )
  
@@ -9,11 +9,12 @@
 +from captcha.fields import ReCaptchaField
 +from hcaptcha.fields import hCaptchaField
 +from friendly_captcha.fields import FrcCaptchaField
++from turnstile.fields import TurnstileField
 +
  
  class EmailAwarePasswordResetTokenGenerator(PasswordResetTokenGenerator):
      def _make_hash_value(self, user, timestamp):
-@@ -87,8 +103,17 @@
+@@ -87,8 +103,19 @@
  class LoginForm(forms.Form):
  
      password = PasswordField(label=_("Password"), autocomplete="current-password")
@@ -27,11 +28,13 @@
 +        hcaptcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
++    elif captcha_service == 'turnstile':
++        captcha = TurnstileField()
 +
      user = None
      error_messages = {
          "account_inactive": _("This account is currently inactive."),
-@@ -282,6 +309,15 @@
+@@ -282,6 +309,17 @@
          )
      )
  
@@ -43,11 +46,13 @@
 +        hcaptcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
++    elif captcha_service == 'turnstile':
++        captcha = TurnstileField()
 +
      def __init__(self, *args, **kwargs):
          email_required = kwargs.pop("email_required", app_settings.EMAIL_REQUIRED)
          self.username_required = kwargs.pop(
-@@ -522,6 +559,15 @@
+@@ -522,6 +559,17 @@
      password1 = SetPasswordField(label=_("New Password"))
      password2 = PasswordField(label=_("New Password (again)"))
  
@@ -59,11 +64,13 @@
 +        hcaptcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
++    elif captcha_service == 'turnstile':
++        captcha = TurnstileField()
 +
      def __init__(self, *args, **kwargs):
          super(ChangePasswordForm, self).__init__(*args, **kwargs)
          self.fields["password1"].user = self.user
-@@ -562,6 +609,15 @@
+@@ -562,6 +609,17 @@
          ),
      )
  
@@ -75,6 +82,8 @@
 +        hcaptcha = hCaptchaField()
 +    elif captcha_service == 'friendlycaptcha':
 +        captcha = FrcCaptchaField()
++    elif captcha_service == 'turnstile':
++        captcha = TurnstileField()
 +
      def clean_email(self):
          email = self.cleaned_data["email"]

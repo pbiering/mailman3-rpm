@@ -32,6 +32,7 @@ Package *mailman3-enhanced* by storing all not fulfillable dependencies in USER_
   - Google's reCaptcha
   - hCaptcha
   - FriendlyCaptcha
+  - Cloudflare's Turnstile
 - database: SQLite
 - systemd service & timer files for
   - mailman
@@ -172,10 +173,11 @@ CAPTCHA can be configured by editing options in  file `/etc/mailman3/settings.py
  - Google's recaptcha: `RECAPTCHA_PUBLIC_KEY` + `RECAPTCHA_PRIVATE_KEY`
  - hCaptcha: `HCAPTCHA_SITEKEY` + `HCAPTCHA_SECRET`
  - FriendlyCaptcha: `FRC_CAPTCHA_SITE_KEY` + `FRC_CAPTCHA_SECRET`
+ - Cloudflare's Turnstile: `TURNSTILE_SITEKEY` + `TURNSTILE_SECRET`
 
 Selection of configured service:
 
-`CAPTCHA_SERVICE=recaptcha|hcaptcha|friendlycaptcha`
+`CAPTCHA_SERVICE=recaptcha|hcaptcha|friendlycaptcha|turnstile`
 
 ## Notes
 

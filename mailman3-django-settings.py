@@ -126,10 +126,19 @@ FRC_CAPTCHA_SITE_KEY         = '<your sitekey>'
 FRC_CAPTCHA_SECRET           = '<your secret key>'
 FRC_CAPTCHA_VERIFICATION_URL = 'https://api.friendlycaptcha.com/api/v1/siteverify'
 
+## Cloudflare's Turnstile
+# service   : https://developers.cloudflare.com/turnstile
+# django-app: https://pypi.org/project/django-turnstile/
+INSTALLED_APPS.append('turnstile')
+TURNSTILE_SITEKEY = '<your sitekey>'
+TURNSTILE_SECRET = '<your secret key>'
+# TURNSTILE_PROXIES = {'http': 'http://127.0.0.1:3128', 'https': 'https://127.0.0.1:3128'} # optional
+
 ## CAPTCHA selector
 # CAPTCHA_SERVICE = 'recaptcha'
 # CAPTCHA_SERVICE = 'hcaptcha'
 # CAPTCHA_SERVICE = 'friendlycaptcha'
+# CAPTCHA_SERVICE = 'turnstile'
 
 
 # Disable gravatar by default
