@@ -1490,30 +1490,30 @@ set -x
 %pre
 # User & Group
 if getent group %{mmgroup} >/dev/null; then
-	echo "system group  for %{pname} already exists: %{mmgroup}"
+	echo "system group for %{pname} already exists: %{mmgroup}"
 else
 	if [ -n "%{mmgroupid}" ]; then
-		echo "system group  for %{pname} needs to be created: %{mmgroup}/%{mmgroupid}"
+		echo "system group for %{pname} needs to be created: %{mmgroup}/%{mmgroupid}"
 		groupadd -r -g %{mmgroupid} %{mmgroup} >/dev/null
 	else
-		echo "system group  for %{pname} needs to be created: %{mmgroup}"
+		echo "system group for %{pname} needs to be created: %{mmgroup}"
 		groupadd -r %{mmgroup} >/dev/null
 	fi
 fi
 
 if getent passwd %{mmuser} >/dev/null; then
-	echo "system user for %{pname} already exists: %{mmuser}"
+	echo "system user  for %{pname} already exists: %{mmuser}"
 	homedir=$(getent passwd %{mmuser} | awk -F: '{ print $6 }')
 	if [ "$homedir" != "%{vardir}" ]; then
-		echo "system user for %{pname} already exists: %{mmuser} but has not required home directory: %{vardir} (current: $homedir)"
+		echo "system user  for %{pname} already exists: %{mmuser} but has not required home directory: %{vardir} (current: $homedir)"
 		exit 1
 	fi
 else
 	if [ -n "%{mmuserid}" ]; then
-		echo "system user for %{pname} needs to be created: %{mmuser}/%{mmuserid}"
+		echo "system user  for %{pname} needs to be created: %{mmuser}/%{mmuserid}"
     		useradd -r -u %{mmuserid} -g %{mmgroup} -d %{vardir} -s /sbin/nologin -c "Mailman3, the mailing-list manager" %{mmuser} >/dev/null
 	else
-		echo "system user for %{pname} needs to be created: %{mmuser}"
+		echo "system user  for %{pname} needs to be created: %{mmuser}"
     		useradd -r -g %{mmgroup} -d %{vardir} -s /sbin/nologin -c "Mailman3, the mailing-list manager" %{mmuser} >/dev/null
 	fi
 fi
