@@ -39,7 +39,7 @@
 %define	b_v_django_mailman3		1.3.11
 
 
-%global release_token 22
+%global release_token 23
 
 ## NAMES
 %global pypi_name mailman
