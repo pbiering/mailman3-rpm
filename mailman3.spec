@@ -39,7 +39,7 @@
 %define	b_v_django_mailman3		1.3.11
 
 
-%global release_token 23
+%global release_token 24
 
 ## NAMES
 %global pypi_name mailman
@@ -1834,6 +1834,9 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Wed Nov 22 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-24
+- mailman3.service: start after postfix.service for dependency reasons (avoid crash on reboot)
+
 * Tue Nov 21 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-23
 - extend CAPTCHA support with Cloudflare's Turnstile
 
