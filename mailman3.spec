@@ -22,6 +22,8 @@
 # do not create debug packages
 %define debug_package %{nil}
 
+# release
+%global release_token 25
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.9
@@ -37,9 +39,6 @@
 
 ## django mailman related
 %define	b_v_django_mailman3		1.3.11
-
-
-%global release_token 24
 
 ## NAMES
 %global pypi_name mailman
@@ -511,11 +510,11 @@ Requires: 	publicsuffix-list
 %define	b_v_flufl_i18n			3.2
 
 ## django dependencies
-%define	b_v_django			4.1.9
-%define	b_v_django_allauth		0.56.1
-%define	b_v_django_appconf		1.0.5
-%define	b_v_django_compressor		4.3.1
-%define	b_v_django_extensions		3.2.1
+%define	b_v_django			4.1.13
+%define	b_v_django_allauth		0.58.2
+%define	b_v_django_appconf		1.0.6
+%define	b_v_django_compressor		4.4
+%define	b_v_django_extensions		3.2.3
 %define	b_v_django_gravatar2		1.4.4
 %define	b_v_django_haystack		3.2.1
 %define	b_v_django_picklefield		3.1
@@ -523,9 +522,9 @@ Requires: 	publicsuffix-list
 %define	b_v_django_q			1.3.9
 
 ## django CAPTCHA related
-%define	b_v_django_recaptcha		3.0.0
+%define	b_v_django_recaptcha		4.0.0
 %define	b_v_django_hcaptcha		0.2.0
-%define	b_v_django_friendlycaptcha	0.1.7
+%define	b_v_django_friendlycaptcha	0.1.8
 %define	b_v_django_turnstile		0.1.0
 
 
@@ -1662,7 +1661,13 @@ if postconf -h recipient_delimiter | %{__grep} -q '^+$'; then
 	echo "OK     : found 'recipient_delimiter' containing '+'"
 else
 	echo "WARN   : missing 'recipient_delimiter' extension with '+'"
-fi	
+fi
+
+# autoadjust settings.py related to recaptcha 3.0.0 -> 4.0.0
+if grep -q -F "INSTALLED_APPS.append('captcha')" %{etcdir}/settings.py; then
+	echo "NOTICE: autoadjust required for file related to recaptcha 3.0.0 -> 4.0.0: %{etcdir}/settings.py"
+	perl -pi.pre_recaptcha_4.0.0 -e "s/INSTALLED_APPS.append('captcha')/INSTALLED_APPS.append('django_recaptcha')/" %{etcdir}/settings.py
+fi
 
 ## Other notifications
 cat <<END
@@ -1834,6 +1839,19 @@ systemctl condrestart %{pname}.service
 
 
 %changelog
+* Thu Dec 07 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-25
+- postinstall: autoadjust settings.py related to recaptcha 3.0.0 -> 4.0.0
+
+* Wed Dec 06 2023 Peter Bieringer <pb@bieringer.de>
+- update django 4.1.9 -> 4.1.13
+- update django-allauth 0.56.1 -> 0.58.2
+- update django-appconf 1.0.5 -> 1.0.6
+- update django-compressor 4.3.1 -> 4.4
+- update django-extensions 3.2.1 -> 3.2.3
+- update django-recaptcha 3.0.0 -> 4.0.0
+- update django-friendly-captcha 0.1.7 -> 0.1.8
+- adjust CAPTCHA support related to recaptcha 3.0.0 -> 4.0.0
+
 * Wed Nov 22 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-24
 - mailman3.service: start after postfix.service for dependency reasons (avoid crash on reboot)
 

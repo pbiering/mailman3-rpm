@@ -104,7 +104,7 @@ POSTORIUS_TEMPLATE_BASE_URL = 'http://localhost:@WEBPORT@'
 ## Google
 # service   : https://developers.google.com/recaptcha
 # django-app: https://pypi.org/project/django-recaptcha/
-INSTALLED_APPS.append('captcha')
+INSTALLED_APPS.append('django_recaptcha')
 RECAPTCHA_PUBLIC_KEY  = '<your sitekey>'
 RECAPTCHA_PRIVATE_KEY = '<your secret key>'
 RECAPTCHA_DOMAIN      = 'www.recaptcha.net'

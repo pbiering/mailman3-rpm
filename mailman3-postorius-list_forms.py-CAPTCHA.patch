@@ -6,7 +6,7 @@
  
 +# CAPTCHA support
 +from django.conf import settings
-+from captcha.fields import ReCaptchaField
++from django_recaptcha.fields import ReCaptchaField
 +from hcaptcha.fields import hCaptchaField
 +from friendly_captcha.fields import FrcCaptchaField
 +from turnstile.fields import TurnstileField
