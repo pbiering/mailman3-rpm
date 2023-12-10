@@ -858,7 +858,7 @@ set -x
 pushd mailman-%{version_mailman}
 
 # Downgrade a few dependencies to satisfiable compatible versions (https://src.fedoraproject.org/rpms/mailman3/blob/rawhide/f/mailman3.spec)
-sed -e "s/flufl.bounce>=4.0/flufl.bounce>=3.0/" \
+%{__sed} -e "s/flufl.bounce>=4.0/flufl.bounce>=3.0/" \
     -e "s/flufl.i18n>=3.2/flufl.i18n>=2.0/" \
     -e "s/flufl.lock>=5.1/flufl.lock>=3.1/" \
     -i setup.py
@@ -957,7 +957,7 @@ popd
 %{__mkdir} SELinux
 
 %{__cp} %{SOURCE90} SELinux/%{pname}.fc
-sed -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g' SELinux/%{pname}.fc
+%{__sed} -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g' SELinux/%{pname}.fc
 
 %{__cp} %{SOURCE91} SELinux/%{pname}.te
 
@@ -1268,7 +1268,7 @@ cat %{PATCH903} | patch -p 0 -d %{buildroot}%{sitelibdir}
 
 # enforce "python" to "python3"
 %{__grep} --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitelibdir} | while read file; do
-	sed -i -e 's,env python$,env python3,g' $file
+	%{__sed} -i -e 's,env python$,env python3,g' $file
 done
 
 # compile all python modules
@@ -1425,11 +1425,11 @@ install -D -m 0644 %{SOURCE416} %{buildroot}%{_unitdir}/%{basename:%{SOURCE416}}
 
 find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesdir} -type f | while read file; do
 	# replace directories
-	sed -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g;s,@SYSCONFDIR@,%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' $file
+	%{__sed} -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g;s,@SYSCONFDIR@,%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' $file
 	# replace ports
-	sed -i -e 's,@WEBPORT@,%{webport},g;s,@LMTPPORT@,%{lmtpport},g;s,@RESTAPIPORT@,%{restapiport},g' $file
+	%{__sed} -i -e 's,@WEBPORT@,%{webport},g;s,@LMTPPORT@,%{lmtpport},g;s,@RESTAPIPORT@,%{restapiport},g' $file
 
-	sed -i -e 's,@BINDIR_GUNICORN@,%{bindir_gunicorn},g;s,@PYTHONPATH@,%{pythonpath},g' $file
+	%{__sed} -i -e 's,@BINDIR_GUNICORN@,%{bindir_gunicorn},g;s,@PYTHONPATH@,%{pythonpath},g' $file
 done
 
 
@@ -1444,7 +1444,7 @@ export PYTHONPATH
 ## mailman
 # prepare "check" config file
 install -D -m 0640 %{SOURCE1} %{buildroot}%{_sysconfdir}/mailman.cfg.check
-sed -i -e 's,@LOGDIR@,%{buildroot}%{logdir},g;s,@BINDIR@,%{buildroot}%{bindir},g;s,@BASEDIR@,%{buildroot}%{basedir},g;s,@RUNDIR@,%{buildroot}%{rundir},g;s,@VARDIR@,%{buildroot}%{vardir},g;s,@SPOOLDIR@,%{buildroot}%{spooldir},g;s,@ETCDIR@,%{buildroot}%{etcdir},g;s,@LOCKDIR@,%{buildroot}%{lockdir},g;s,@SYSCONFDIR@,%{buildroot}%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' %{buildroot}%{_sysconfdir}/mailman.cfg.check
+%{__sed} -i -e 's,@LOGDIR@,%{buildroot}%{logdir},g;s,@BINDIR@,%{buildroot}%{bindir},g;s,@BASEDIR@,%{buildroot}%{basedir},g;s,@RUNDIR@,%{buildroot}%{rundir},g;s,@VARDIR@,%{buildroot}%{vardir},g;s,@SPOOLDIR@,%{buildroot}%{spooldir},g;s,@ETCDIR@,%{buildroot}%{etcdir},g;s,@LOCKDIR@,%{buildroot}%{lockdir},g;s,@SYSCONFDIR@,%{buildroot}%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' %{buildroot}%{_sysconfdir}/mailman.cfg.check
 
 # check whether online help is working
 echo "Check whether 'mailman' is at least able to display online help"
@@ -1459,7 +1459,7 @@ fi
 # prepare "check" config file
 install -d %{buildroot}%{etcdir}/check/
 install -D -m 0644 %{SOURCE8} %{buildroot}%{etcdir}/check/settings.py
-sed -i -e 's,@LOGDIR@,%{buildroot}%{logdir},g;s,@BINDIR@,%{buildroot}%{bindir},g;s,@BASEDIR@,%{buildroot}%{basedir},g;s,@RUNDIR@,%{buildroot}%{rundir},g;s,@VARDIR@,%{buildroot}%{vardir},g;s,@SPOOLDIR@,%{buildroot}%{spooldir},g;s,@ETCDIR@,%{buildroot}%{etcdir},g;s,@LOCKDIR@,%{buildroot}%{lockdir},g;s,@SYSCONFDIR@,%{buildroot}%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' %{buildroot}%{etcdir}/check/settings.py
+%{__sed} -i -e 's,@LOGDIR@,%{buildroot}%{logdir},g;s,@BINDIR@,%{buildroot}%{bindir},g;s,@BASEDIR@,%{buildroot}%{basedir},g;s,@RUNDIR@,%{buildroot}%{rundir},g;s,@VARDIR@,%{buildroot}%{vardir},g;s,@SPOOLDIR@,%{buildroot}%{spooldir},g;s,@ETCDIR@,%{buildroot}%{etcdir},g;s,@LOCKDIR@,%{buildroot}%{lockdir},g;s,@SYSCONFDIR@,%{buildroot}%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' %{buildroot}%{etcdir}/check/settings.py
 
 # check whether online help is working
 echo "Check whether 'mailman-web' is at least able to display online help"
