@@ -1666,7 +1666,7 @@ fi
 # autoadjust settings.py related to recaptcha 3.0.0 -> 4.0.0
 if grep -q -F "INSTALLED_APPS.append('captcha')" %{etcdir}/settings.py; then
 	echo "NOTICE: autoadjust required for file related to recaptcha 3.0.0 -> 4.0.0: %{etcdir}/settings.py"
-	perl -pi.pre_recaptcha_4.0.0 -e "s/INSTALLED_APPS.append('captcha')/INSTALLED_APPS.append('django_recaptcha')/" %{etcdir}/settings.py
+	sed -i.pre_recaptcha_4.0.0 -e "s/INSTALLED_APPS\.append('captcha')/INSTALLED_APPS\.append('django_recaptcha')/" %{etcdir}/settings.py
 fi
 
 ## Other notifications
