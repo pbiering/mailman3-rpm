@@ -218,6 +218,24 @@ Requires:       python3 >= 3.9
 
 ## Macros
 
+# systemctl/timer/disable-if-active
+%define systemctl_timer_disable_if_active() { \
+if systemctl -q is-active %1; then \
+	echo "Timer enabled (disable now)    : %1"; \
+	systemctl disable --now %1; \
+else \
+	echo "Timer not active (nothing todo): %1"; \
+fi }
+
+# systemctl/timer/enable-if-not-active
+%define systemctl_timer_enable_if_not_active() { \
+if systemctl -q is-active %1; then \
+	echo "Timer already enabled (nothing todo): %1"; \
+else \
+	echo "Timer will be enabled now           : %1"; \
+	systemctl enable --now %1; \
+fi }
+
 # requirement conditional build-only without version
 %define req_cond_b_o_n_v()  \
 %if ! %1 \
@@ -1528,6 +1546,25 @@ for selinuxvariant in %{selinux_variants}; do
     %selinux_relabel_pre -s ${selinuxvariant}
 done
 
+if [ $1 -gt 1 ] ; then
+	%if 0%{?mailman3_cron}
+		## crontab -> nothing todo
+	%else
+		echo "Disable timers during upgrade"
+		# mailman
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE310}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE311}}
+		# mailman-web
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE410}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE411}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE412}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE413}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE414}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE415}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE416}}
+	%endif
+fi
+
 
 %post
 # SELinux
@@ -1578,42 +1615,12 @@ done
 	
 ## substitute all placeholders
 find %{_sysconfdir}/mailman.cfg %{etcdir} -type f | while read file; do
-	sed -i -e "$sed_expression" $file
+	%{__sed} -i -e "$sed_expression" $file
 done
 
 ## systemd/service
 %systemd_post %{pname}.service
 %systemd_post %{pname}-web.service
-
-%if 0%{?mailman3_cron}
-## crontab -> nothing todo
-%else
-## systemd/timers
-## macro #systemd_post will not enable the timers -> enable them here
-## timers will only run if main service is running because of "PartOf" property
-%define systemctl_enable_if_not_active() { \
-if systemctl -q is-active %1; then \
-	echo "Timer already enabled: %1"; \
-else \
-	echo "Timer will be enabled: %1"; \
-	systemctl enable %1; \
-fi }
-
-echo "Enable timers (will only run if main services are active)"
-# mailman
-%systemctl_enable_if_not_active %{basename:%{SOURCE310}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE311}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE310}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE311}}
-# mailman-web
-%systemctl_enable_if_not_active %{basename:%{SOURCE410}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE411}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE412}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE413}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE414}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE415}}
-%systemctl_enable_if_not_active %{basename:%{SOURCE416}}
-%endif
 
 ## check for required postfix extension
 declare -A postfix_check
@@ -1706,6 +1713,27 @@ END
 echo
 
 
+%pretrans
+if [ $1 -gt 1 ] ; then
+	%if 0%{?mailman3_cron}
+		## crontab -> nothing todo
+	%else
+		echo "Disable timers during upgrade"
+		# mailman
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE310}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE311}}
+		# mailman-web
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE410}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE411}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE412}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE413}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE414}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE415}}
+		%systemctl_timer_disable_if_active %{basename:%{SOURCE416}}
+	%endif
+fi
+
+
 %preun
 %if 0%{?mailman3_cron}
 ## crontab -> nothing todo
@@ -1783,10 +1811,35 @@ su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web collectstatic --noinput"
 echo "Run as %{mmuser}: %{bindir}/mailman-web compress"
 su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
 
-## systemd/service condrestart will also autorestart dependent timers
+## systemd/service condrestart will also autorestart dependend timers
+echo "Reload systemd/daemon"
 systemctl daemon-reload
-systemctl condrestart %{pname}-web.service
+
+echo "Conditional restart: %{pname}.service"
 systemctl condrestart %{pname}.service
+
+echo "Conditional restart: %{pname}-web.service"
+systemctl condrestart %{pname}-web.service
+
+%if 0%{?mailman3_cron}
+## crontab -> nothing todo
+%else
+## systemd/timers
+## macro #systemd_post will not enable the timers -> enable them here
+## timers will only run if main service is running because of "PartOf" property
+echo "Enable timers (will only run if main services are active)"
+# mailman
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE310}}
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE311}}
+# mailman-web
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE410}}
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE411}}
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE412}}
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE413}}
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE414}}
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE415}}
+%systemctl_timer_enable_if_not_active %{basename:%{SOURCE416}}
+%endif
 
 
 %files
@@ -1842,6 +1895,9 @@ systemctl condrestart %{pname}.service
 
 %changelog
 * Thu Dec 07 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-25
+- pretrans/pre: disable timers during upgrade
+
+* Thu Dec 07 2023 Peter Bieringer <pb@bieringer.de>
 - postinstall: autoadjust settings.py related to recaptcha 3.0.0 -> 4.0.0
 
 * Wed Dec 06 2023 Peter Bieringer <pb@bieringer.de>
