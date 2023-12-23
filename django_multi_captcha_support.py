@@ -33,7 +33,7 @@ from django_recaptcha.widgets import ReCaptchaV2Checkbox, ReCaptchaV2Invisible, 
 from hcaptcha.fields import hCaptchaField
 
 
-## FriendlyCaptcha
+## Friendly Captcha
 # service   : https://docs.friendlycaptcha.com/
 # django-app: https://pypi.org/project/django-friendly-captcha/
 # settings  : CAPTCHA_SERVICE = 'friendlycaptcha'

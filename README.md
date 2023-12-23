@@ -29,9 +29,9 @@ Package *mailman3-enhanced* by storing all not fulfillable dependencies in USER_
 
 - SELinux policy
 - CAPTCHA support already prepared
-  - Google's reCaptcha
+  - Google's reCAPTCHA
   - hCaptcha
-  - FriendlyCaptcha
+  - Friendly Captcha
   - Cloudflare's Turnstile
 - database: SQLite
 - systemd service & timer files for
@@ -172,7 +172,7 @@ CAPTCHA can be configured by editing options in  file `/etc/mailman3/settings.py
 
  - Google's reCAPTCHA: `RECAPTCHA_PUBLIC_KEY` + `RECAPTCHA_PRIVATE_KEY`
  - hCaptcha: `HCAPTCHA_SITEKEY` + `HCAPTCHA_SECRET`
- - FriendlyCaptcha: `FRC_CAPTCHA_SITE_KEY` + `FRC_CAPTCHA_SECRET`
+ - Friendly Captcha: `FRC_CAPTCHA_SITE_KEY` + `FRC_CAPTCHA_SECRET`
  - Cloudflare's Turnstile: `TURNSTILE_SITEKEY` + `TURNSTILE_SECRET`
 
 Selection of configured service: `CAPTCHA_SERVICE`
@@ -180,10 +180,10 @@ Selection of configured service: `CAPTCHA_SERVICE`
 | CAPTCHA_SERVICE | Description |
 | ----------------|-------------|
 | recaptcha<br/>recaptchaV2C | Google's reCAPTCHA version 2 "Checkbox" |
-| recaptchaV2I | Google's reCaptcha version 2 "Invisible" |
-| recaptchaV3 | Google's reCaptcha version 3 |
+| recaptchaV2I | Google's reCAPTCHA version 2 "Invisible" |
+| recaptchaV3 | Google's reCAPTCHA version 3 |
 | hcaptcha | hCaptcha |
-| friendlycaptcha | FriendlyCaptcha |
+| friendlycaptcha | Friendly Captcha |
 | turnstile | Cloudflare's Turnstile |
 
 ## Notes

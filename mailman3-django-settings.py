@@ -101,7 +101,7 @@ POSTORIUS_TEMPLATE_BASE_URL = 'http://localhost:@WEBPORT@'
 
 ### CAPTCHA support
 
-## Google
+## Google's reCAPTCHA
 # service   : https://developers.google.com/recaptcha
 # django-app: https://pypi.org/project/django-recaptcha/
 INSTALLED_APPS.append('django_recaptcha')
@@ -125,7 +125,7 @@ HCAPTCHA_SITEKEY = '<your sitekey>'
 HCAPTCHA_SECRET  = '<your secret key>'
 # HCAPTCHA_PROXIES = {'http': 'http://127.0.0.1:3128', 'https': 'https://127.0.0.1:3128'} # optional
 
-## FriendlyCaptcha
+## Friendly Captcha
 # service   : https://docs.friendlycaptcha.com/
 # django-app: https://pypi.org/project/django-friendly-captcha/
 INSTALLED_APPS.append('friendly_captcha')
