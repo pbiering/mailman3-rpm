@@ -12,10 +12,12 @@ from django.conf import settings
 ## activated by CAPTCHA_SERVICE
 
 ## Google's reCAPTCHA
-# CAPTCHA_SERVICE = 'recaptcha'    # same as 'recaptchaV2C'
-# CAPTCHA_SERVICE = 'recaptchaV2C' # (v2 "Checkbox")
-# CAPTCHA_SERVICE = 'recaptchaV2I' # (v2 "Invisible")
-# CAPTCHA_SERVICE = 'recaptchaV3'  # (v3)
+# service   : https://developers.google.com/recaptcha
+# django-app: https://pypi.org/project/django-recaptcha/
+# settings  : CAPTCHA_SERVICE = 'recaptcha'    # same as 'recaptchaV2C'
+#             CAPTCHA_SERVICE = 'recaptchaV2C' # (v2 "Checkbox")
+#             CAPTCHA_SERVICE = 'recaptchaV2I' # (v2 "Invisible")
+#             CAPTCHA_SERVICE = 'recaptchaV3'  # (v3)
 # Supported optional dedicated keys per method
 # RECAPTCHA_PUBLIC_KEY_V2C / RECAPTCHA_PRIVATE_KEY_V2C (v2 "Checkbox")
 # RECAPTCHA_PUBLIC_KEY_V2I / RECAPTCHA_PRIVATE_KEY_V2I (v2 "Invisible")
@@ -25,16 +27,22 @@ from django_recaptcha.widgets import ReCaptchaV2Checkbox, ReCaptchaV2Invisible, 
 
 
 ## hCaptcha
-# CAPTCHA_SERVICE = 'hcaptcha'
+# general   : https://docs.hcaptcha.com/
+# django-app: https://pypi.org/project/django-hCaptcha/
+# settings  : CAPTCHA_SERVICE = 'hcaptcha'
 from hcaptcha.fields import hCaptchaField
 
 
 ## FriendlyCaptcha
-# CAPTCHA_SERVICE = 'friendlycaptcha'
+# service   : https://docs.friendlycaptcha.com/
+# django-app: https://pypi.org/project/django-friendly-captcha/
+# settings  : CAPTCHA_SERVICE = 'friendlycaptcha'
 from friendly_captcha.fields import FrcCaptchaField
 
 ## Cloudflare's Turnstile
-# CAPTCHA_SERVICE = 'turnstile'
+# service   : https://developers.cloudflare.com/turnstile
+# django-app: https://pypi.org/project/django-turnstile/
+# settings  :CAPTCHA_SERVICE = 'turnstile'
 from turnstile.fields import TurnstileField
 
 
