@@ -46,7 +46,6 @@ Package *mailman3-enhanced* by storing all not fulfillable dependencies in USER_
 |-----|--------|
 | EL8 | ok     |
 | EL9 | ok     |
-| F37 | ok     |
 | F38 | ok     |
 | F39 | ok     |
 
