@@ -170,14 +170,21 @@ CAPTCHA is injected into
 #### CAPTCHA configuration per service
 CAPTCHA can be configured by editing options in  file `/etc/mailman3/settings.py`
 
- - Google's recaptcha: `RECAPTCHA_PUBLIC_KEY` + `RECAPTCHA_PRIVATE_KEY`
+ - Google's reCAPTCHA: `RECAPTCHA_PUBLIC_KEY` + `RECAPTCHA_PRIVATE_KEY`
  - hCaptcha: `HCAPTCHA_SITEKEY` + `HCAPTCHA_SECRET`
  - FriendlyCaptcha: `FRC_CAPTCHA_SITE_KEY` + `FRC_CAPTCHA_SECRET`
  - Cloudflare's Turnstile: `TURNSTILE_SITEKEY` + `TURNSTILE_SECRET`
 
-Selection of configured service:
+Selection of configured service: `CAPTCHA_SERVICE`
 
-`CAPTCHA_SERVICE=recaptcha|hcaptcha|friendlycaptcha|turnstile`
+| CAPTCHA_SERVICE | Description |
+| ----------------|-------------|
+| recaptcha<br/>recaptchaV2C | Google's reCAPTCHA version 2 "Checkbox" |
+| recaptchaV2I | Google's reCaptcha version 2 "Invisible" |
+| recaptchaV3 | Google's reCaptcha version 3 |
+| hcaptcha | hCaptcha |
+| friendlycaptcha | FriendlyCaptcha |
+| turnstile | Cloudflare's Turnstile |
 
 ## Notes
 
