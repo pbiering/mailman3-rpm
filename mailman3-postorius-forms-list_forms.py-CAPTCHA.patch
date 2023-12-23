@@ -1,0 +1,32 @@
+--- postorius/forms/list_forms.py.orig	2023-04-02 10:59:56.938642619 +0200
++++ postorius/forms/list_forms.py	2023-04-02 11:23:51.923881265 +0200
+@@ -38,6 +38,9 @@
+ from postorius.models import EmailTemplate, _email_template_help_text
+ from postorius.utils import LANGUAGES
+ 
++# CAPTCHA support
++from django_multi_captcha_support import multicaptcha
++
+ 
+ DIGEST_FREQUENCY_CHOICES = (
+     ('daily', _('Daily')),
+@@ -185,6 +202,9 @@
+         label=_('Your name (optional)'), required=False
+     )
+ 
++    # CAPTCHA support
++    captcha = multicaptcha("subscribe")
++
+     delivery_mode = delivery_mode_field(default='regular')
+     delivery_status = delivery_status_field(
+         choices=DELIVERY_STATUS_CHOICES, widget=forms.RadioSelect
+@@ -216,6 +243,9 @@
+         label=_('Your name (optional)'), required=False
+     )
+ 
++    # CAPTCHA support
++    captcha = multicaptcha("subscribeanon")
++
+ 
+ class ListSettingsForm(forms.Form):
+     """

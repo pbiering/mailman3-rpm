@@ -1,0 +1,21 @@
+--- django/contrib/admin/forms.py.orig	2023-12-22 08:20:40.622607168 +0100
++++ django/contrib/admin/forms.py	2023-12-22 08:22:42.322168623 +0100
+@@ -2,12 +2,18 @@
+ from django.core.exceptions import ValidationError
+ from django.utils.translation import gettext_lazy as _
+ 
++# CAPTCHA support
++from django_multi_captcha_support import multicaptcha
++
+ 
+ class AdminAuthenticationForm(AuthenticationForm):
+     """
+     A custom authentication form used in the admin app.
+     """
+ 
++    # CAPTCHA support
++    captcha = multicaptcha("adminlogin")
++
+     error_messages = {
+         **AuthenticationForm.error_messages,
+         "invalid_login": _(

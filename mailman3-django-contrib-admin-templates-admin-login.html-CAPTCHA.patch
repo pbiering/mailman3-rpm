@@ -1,0 +1,13 @@
+--- django/contrib/admin/templates/admin/login.html.orig        2023-04-30 08:00:58.881744778 +0200
++++ django/contrib/admin/templates/admin/login.html     2023-04-30 08:04:13.720790267 +0200
+@@ -53,6 +53,10 @@
+     {{ form.password.label_tag }} {{ form.password }}
+     <input type="hidden" name="next" value="{{ next }}">
+   </div>
++  <div class="form-row">
++    {{ form.captcha.errors }}
++    {{ form.captcha }}
++  </div>
+   {% url 'admin_password_reset' as password_reset_url %}
+   {% if password_reset_url %}
+   <div class="password-reset-link">

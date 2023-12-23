@@ -1,0 +1,44 @@
+--- allauth/account/forms.py.orig	2023-04-02 11:26:39.601273837 +0200
++++ allauth/account/forms.py	2023-04-02 11:27:42.892382377 +0200
+@@ -31,6 +31,9 @@
+     user_username,
+ )
+ 
++# CAPTCHA support
++from django_multi_captcha_support import multicaptcha
++
+ 
+ class EmailAwarePasswordResetTokenGenerator(PasswordResetTokenGenerator):
+     def _make_hash_value(self, user, timestamp):
+@@ -87,8 +103,11 @@
+ class LoginForm(forms.Form):
+ 
+     password = PasswordField(label=_("Password"), autocomplete="current-password")
+     remember = forms.BooleanField(label=_("Remember Me"), required=False)
+ 
++    # CAPTCHA support
++    captcha = multicaptcha("login")
++
+     user = None
+     error_messages = {
+         "account_inactive": _("This account is currently inactive."),
+@@ -282,6 +309,9 @@
+         )
+     )
+ 
++    # CAPTCHA support
++    captcha = multicaptcha("signup")
++
+     def __init__(self, *args, **kwargs):
+         email_required = kwargs.pop("email_required", app_settings.EMAIL_REQUIRED)
+         self.username_required = kwargs.pop(
+@@ -562,6 +609,9 @@
+         ),
+     )
+ 
++    # CAPTCHA support
++    captcha = multicaptcha("passwordreset")
++
+     def clean_email(self):
+         email = self.cleaned_data["email"]
+         email = get_adapter().clean_email(email)

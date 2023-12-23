@@ -1,0 +1,58 @@
+diff --git a/django_recaptcha/templates/django_recaptcha/includes/js_v2_checkbox.html b/django_recaptcha/templates/django_recaptcha/includes/js_v2_checkbox.html
+index ee54578..87cace7 100644
+--- a/django_recaptcha/templates/django_recaptcha/includes/js_v2_checkbox.html
++++ b/django_recaptcha/templates/django_recaptcha/includes/js_v2_checkbox.html
+@@ -1,6 +1,6 @@
+ {# The provided implementation caters for only one reCAPTCHA on a page. Override this template and its logic as needed. #}
+ <script src="https://{{ recaptcha_domain }}/recaptcha/api.js{% if api_params %}?{{ api_params }}{% endif %}"></script>
+-<script type="text/javascript">
++<script>
+     // Submit function to be called, after reCAPTCHA was successful.
+     var onSubmit_{{ widget_uuid }} = function(token) {
+         console.log("reCAPTCHA validated for 'data-widget-uuid=\"{{ widget_uuid }}\"'")
+diff --git a/django_recaptcha/templates/django_recaptcha/includes/js_v2_invisible.html b/django_recaptcha/templates/django_recaptcha/includes/js_v2_invisible.html
+index 5049ecf..e318816 100644
+--- a/django_recaptcha/templates/django_recaptcha/includes/js_v2_invisible.html
++++ b/django_recaptcha/templates/django_recaptcha/includes/js_v2_invisible.html
+@@ -1,6 +1,6 @@
+ {# The provided implementation caters for only one reCAPTCHA on a page. Override this template and its logic as needed. #}
+ <script src="https://{{ recaptcha_domain }}/recaptcha/api.js{% if api_params %}?{{ api_params }}{% endif %}"></script>
+-<script type="text/javascript">
++<script>
+     // Submit function to be called, after reCAPTCHA was successful.
+     var onSubmit_{{ widget_uuid }} = function(token) {
+         console.log("reCAPTCHA validated for 'data-widget-uuid=\"{{ widget_uuid }}\"'. Submitting form...")
+diff --git a/django_recaptcha/templates/django_recaptcha/includes/js_v3.html b/django_recaptcha/templates/django_recaptcha/includes/js_v3.html
+index 07f0fe9..fe4430e 100644
+--- a/django_recaptcha/templates/django_recaptcha/includes/js_v3.html
++++ b/django_recaptcha/templates/django_recaptcha/includes/js_v3.html
+@@ -1,6 +1,6 @@
+ {# The provided implementation caters for only one reCAPTCHA on a page. Override this template and its logic as needed. #}
+ <script src="https://{{ recaptcha_domain }}/recaptcha/api.js?render={{ public_key }}{% if api_params %}&{{ api_params }}{% endif %}"></script>
+-<script type="text/javascript">
++<script>
+     var element
+     grecaptcha.ready(function() {
+         element = document.querySelector('.g-recaptcha[data-widget-uuid="{{ widget_uuid }}"]');
+diff --git a/django_recaptcha/widgets.py b/django_recaptcha/widgets.py
+index 99fa4eb..338fab6 100644
+--- a/django_recaptcha/widgets.py
++++ b/django_recaptcha/widgets.py
+@@ -56,6 +57,7 @@ class ReCaptchaBase(widgets.Widget):
+ 
+ 
+ class ReCaptchaV2Invisible(ReCaptchaBase):
++    input_type = "hidden"
+     template_name = "django_recaptcha/widget_v2_invisible.html"
+ 
+     def build_attrs(self, base_attrs, extra_attrs=None):
+diff -u django_recaptcha/templates/django_recaptcha/widget_v2_checkbox.html.orig django_recaptcha/templates/django_recaptcha/widget_v2_checkbox.html
+--- a/django_recaptcha/templates/django_recaptcha/widget_v2_checkbox.html.orig	2023-12-23 08:47:58.175433447 +0100
++++ b/django_recaptcha/templates/django_recaptcha/widget_v2_checkbox.html	2023-12-23 08:47:50.349425068 +0100
+@@ -1,5 +1,5 @@
+ {% include "django_recaptcha/includes/js_v2_checkbox.html" %}
+-<div
++<div class="g-recaptcha"
+     {% for name, value in widget.attrs.items %}{% if value is not False %} {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}"{% endif %}{% endif %}{% endfor %}
+ >
+ </div>

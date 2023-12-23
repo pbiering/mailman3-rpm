@@ -105,10 +105,17 @@ POSTORIUS_TEMPLATE_BASE_URL = 'http://localhost:@WEBPORT@'
 # service   : https://developers.google.com/recaptcha
 # django-app: https://pypi.org/project/django-recaptcha/
 INSTALLED_APPS.append('django_recaptcha')
-RECAPTCHA_PUBLIC_KEY  = '<your sitekey>'
-RECAPTCHA_PRIVATE_KEY = '<your secret key>'
-RECAPTCHA_DOMAIN      = 'www.recaptcha.net'
-# RECAPTCHA_PROXY       = {'http': 'http://127.0.0.1:3128', 'https': 'https://127.0.0.1:3128'} # optional
+# SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error'] # enable this in case RECAPTCHA_PUBLIC_KEY+RECAPTCHA_PRIVATE_KEY are not used
+RECAPTCHA_PUBLIC_KEY      = '<your sitekey>'
+RECAPTCHA_PRIVATE_KEY     = '<your secret key>'
+RECAPTCHA_PUBLIC_KEY_V2C  = '<your sitekey V2 Checkbox>'
+RECAPTCHA_PRIVATE_KEY_V2C = '<your secret key V2 Checkbox>'
+RECAPTCHA_PUBLIC_KEY_V2I  = '<your sitekey V2 Invisible>'
+RECAPTCHA_PRIVATE_KEY_V2I = '<your secret key V2 Invisible>'
+RECAPTCHA_PUBLIC_KEY_V3   = '<your sitekey V3>'
+RECAPTCHA_PRIVATE_KEY_V3  = '<your secret key V3>'
+RECAPTCHA_DOMAIN          = 'www.recaptcha.net'
+# RECAPTCHA_PROXY         = {'http': 'http://127.0.0.1:3128', 'https': 'https://127.0.0.1:3128'} # optional
 
 ## hCaptcha
 # general   : https://docs.hcaptcha.com/
@@ -135,7 +142,10 @@ TURNSTILE_SECRET = '<your secret key>'
 # TURNSTILE_PROXIES = {'http': 'http://127.0.0.1:3128', 'https': 'https://127.0.0.1:3128'} # optional
 
 ## CAPTCHA selector
-# CAPTCHA_SERVICE = 'recaptcha'
+# CAPTCHA_SERVICE = 'recaptcha' # same as recaptchaV2C
+# CAPTCHA_SERVICE = 'recaptchaV2C'
+# CAPTCHA_SERVICE = 'recaptchaV2I'
+# CAPTCHA_SERVICE = 'recaptchaV3'
 # CAPTCHA_SERVICE = 'hcaptcha'
 # CAPTCHA_SERVICE = 'friendlycaptcha'
 # CAPTCHA_SERVICE = 'turnstile'

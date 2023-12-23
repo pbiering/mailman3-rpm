@@ -23,7 +23,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 25
+%global release_token 26
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.9
@@ -695,10 +695,22 @@ Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{b_v_mailmanclient}.tar.
 Patch3000:	mailman3-haystack-whoosh_backend-PR1870.patch
 Patch3001:	mailman3-whoosh-whoosh3.patch
 
-# CAPTCHA enabling patches
-Patch901:	mailman3-postorius-list_forms.py-CAPTCHA.patch
-Patch902:	mailman3-allauth-forms.py-CAPTCHA.patch
-Patch903:	mailman3-django-admin-forms.py-CAPTCHA.patch
+
+## CAPTCHA enabling patches
+
+# shared library
+Source900:	django_multi_captcha_support.py
+
+# code extensions
+Patch901:	mailman3-postorius-forms-list_forms.py-CAPTCHA.patch
+Patch902:	mailman3-allauth-account-forms.py-CAPTCHA.patch
+Patch903:	mailman3-django-contrib-admin-forms.py-CAPTCHA.patch
+
+# template extensions
+Patch913:	mailman3-django-contrib-admin-templates-admin-login.html-CAPTCHA.patch
+
+# code patches
+Patch929:	django_recaptcha-4.0.0-broken-v2.patch
 
 
 ## Arch adjustments
@@ -1279,10 +1291,16 @@ cat %{PATCH3001} | patch %{buildroot}%{sitelibdir}/whoosh/codec/whoosh3.py
 fi
 %endif
 
-# CAPTCHA extension patches
+## CAPTCHA extension patches
+# shared library
+install -D -m 0644 %{SOURCE900} %{buildroot}%{sitelibdir}
+# extensions
 cat %{PATCH901} | patch -p 0 -d %{buildroot}%{sitelibdir}
 cat %{PATCH902} | patch -p 0 -d %{buildroot}%{sitelibdir}
 cat %{PATCH903} | patch -p 0 -d %{buildroot}%{sitelibdir}
+cat %{PATCH913} | patch -p 0 -d %{buildroot}%{sitelibdir}
+# fixes
+cat %{PATCH929} | patch -p 1 -d %{buildroot}%{sitelibdir}
 
 # enforce "python" to "python3"
 %{__grep} --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitelibdir} | while read file; do
@@ -1894,6 +1912,13 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Sat Dec 23 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-26
+- CAPTCHA support: remove from password change
+- CAPTCHA support: carve-out dedicated extensions in py files into shared function
+- CAPTCHA support: carve-out html extension patch
+- CAPTCHA support: add support for Google's reCAPTCHA v2 "invisible" and v3
+- CAPTCHA support: add fix for broken v2 in django-recaptcha
+
 * Thu Dec 07 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-25
 - pretrans/pre: disable timers during upgrade
 
