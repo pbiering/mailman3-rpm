@@ -23,7 +23,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 26
+%global release_token 27
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.9
@@ -87,6 +87,10 @@ Requires:       python3 >= 3.9
 %define	b_e_django_turnstile		1
 
 %define	b_e_whoosh			1
+
+# networkx has huge amount of Require/Recommends list, therefore always bundle
+%define	b_e_networkx			1
+
 
 %if (0%{?rhel} == 8)
 # not available for EL == 8 -> bundle
@@ -1912,6 +1916,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Tue Jan 09 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-27
+- Unconditional bundle "networkx" to avoid install of huge amount of Require/Recommends
+
 * Sat Dec 23 2023 Peter Bieringer <pb@bieringer.de> 3.3.9-26
 - CAPTCHA support: remove from password change
 - CAPTCHA support: carve-out dedicated extensions in py files into shared function
