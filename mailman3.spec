@@ -23,7 +23,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 27
+%global release_token 28
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.9
@@ -1886,14 +1886,15 @@ echo "Enable timers (will only run if main services are active)"
 %endif
 
 # webinterface
-%config(noreplace) %{_sysconfdir}/%{pname}/gunicorn.conf.py
-%config(noreplace) %{_sysconfdir}/%{pname}/settings.py
-%config(noreplace) %{_sysconfdir}/%{pname}/hyperkitty.cfg
+%dir %attr(750,%{mmuser},%{mmgroup}) %{_sysconfdir}/%{pname}
+%config(noreplace) %attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/%{pname}/gunicorn.conf.py
+%config(noreplace) %attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/%{pname}/settings.py
+%config(noreplace) %attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/%{pname}/hyperkitty.cfg
 %config(noreplace) %{_httpd_confdir}/%{pname}.conf
 
-%{_sysconfdir}/%{pname}/gunicorn.conf.py.dist
-%{_sysconfdir}/%{pname}/settings.py.dist
-%{_sysconfdir}/%{pname}/hyperkitty.cfg.dist
+%attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/%{pname}/gunicorn.conf.py.dist
+%attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/%{pname}/settings.py.dist
+%attr(640,%{mmuser},%{mmgroup}) %{_sysconfdir}/%{pname}/hyperkitty.cfg.dist
 %{_httpd_confdir}/%{pname}.conf.dist
 
 # SELinux
@@ -1916,6 +1917,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Thu Jan 11 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-28
+- Restrict direcory/file permissions in %{_sysconfdir}
+
 * Tue Jan 09 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-27
 - Unconditional bundle "networkx" to avoid install of huge amount of Require/Recommends
 
