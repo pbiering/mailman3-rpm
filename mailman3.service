@@ -6,6 +6,7 @@
 [Unit]
 Description=GNU Mailing List Manager 3
 After=syslog.target network.target postfix.service
+ConditionFileNotEmpty=@ETCDIR@/settings.py
 
 [Service]
 Type=forking

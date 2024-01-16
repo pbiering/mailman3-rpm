@@ -1,6 +1,11 @@
+# It's not recommended to modify this file in-place, because it will be
+# overwritten during package upgrades.  If you want to customize, the
+# best way is to use "override.conf" menthod
+
 [Unit]
 Description=GNU Mailing List Manager 3 Web UI
 After=syslog.target network.target mailman3.service
+ConditionFileNotEmpty=@ETCDIR@/gunicorn.conf.py
 
 [Service]
 PIDFile=@RUNDIR@/gunicorn.pid

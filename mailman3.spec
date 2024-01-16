@@ -23,7 +23,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 28
+%global release_token 29
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.9
@@ -1917,6 +1917,10 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Tue Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
+- mailman3-web.service: add ConditionFileNotEmpty
+- mailman3.service: add ConditionFileNotEmpty
+
 * Thu Jan 11 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-28
 - Restrict direcory/file permissions in %{_sysconfdir}
 
