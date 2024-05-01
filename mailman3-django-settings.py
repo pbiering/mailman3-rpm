@@ -91,6 +91,11 @@ EMAIL_PORT = 25
 # EMAIL_HOST_PASSWORD = <password> # optional
 
 # Mailman Core default API Path
+#  Identical except for quoting with /etc/mailman.cfg -> [webservice]
+#   MAILMAN_REST_API_USER <-> admin_user
+#   MAILMAN_REST_API_PASS <-> admin_pass
+#  Must be aligned with /etc/mailman.cfg -> [webservice]
+#   MAILMAN_REST_API_URL <-> port
 MAILMAN_REST_API_URL = 'http://localhost:@RESTAPIPORT@'
 MAILMAN_REST_API_USER = 'restadmin'
 MAILMAN_REST_API_PASS = '@RESTAPIPASS@'
