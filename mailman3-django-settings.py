@@ -61,7 +61,7 @@ SITE_ID = 1
 SECRET_KEY = '@SECRET_KEY@'
 
 # Set this to match the api_key setting in
-# /opt/mailman/mm/mailman-hyperkitty.cfg (quoted here, not there).
+# /etc/mailman3/hyperkitty.cfg (quoted here, not there).
 MAILMAN_ARCHIVER_KEY = '@MAILMAN_ARCHIVER_KEY@'
 
 # default with custom PATH
