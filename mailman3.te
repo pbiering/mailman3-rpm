@@ -58,7 +58,7 @@ delete_files_pattern(mailman_mail_t, etc_mail_t, etc_mail_t);
 
 # postfix's postmap usage
 list_dirs_pattern(mailman_mail_t, postfix_etc_t, postfix_etc_t);
-read_files_pattern(mailman_mail_t, postfix_etc_t, postfix_etc_t);
+read_lnk_files_pattern(mailman_mail_t, postfix_etc_t, postfix_etc_t);
 list_dirs_pattern(postfix_qmgr_t, mailman_data_t, mailman_data_t);
 list_dirs_pattern(postfix_smtp_t, mailman_data_t, mailman_data_t);
 
