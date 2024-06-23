@@ -574,7 +574,7 @@ Source90:	%{pname}.fc
 Source91:	%{pname}.te
 
 Source100:      %{__pypi_url}m/%{pypi_name}/%{pypi_name}-%{version_mailman}%{?prerelease}.tar.gz
-Source101:	%{__pypi_url}m/%{pypi_name}-web/%{pypi_name}-web-%{version_mailman_web}.tar.gz
+Source101:	%{__pypi_url}m/%{pypi_name}-web/%{pypi_name}_web-%{version_mailman_web}.tar.gz
 Source102:	%{__pypi_url}m/%{pypi_name}-hyperkitty/%{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}.tar.gz
 
 # converted from mailman3.cron
@@ -603,7 +603,7 @@ Source416:	%{pname}-web-yearly.timer
 
 ### COMMON PACKAGING
 Source1000:	%{__pypi_url}p/postorius/postorius-%{b_v_postorius}.tar.gz
-Source1001:	%{__pypi_url}H/HyperKitty/HyperKitty-%{b_v_hyperkitty}.tar.gz
+Source1001:	%{__pypi_url}H/HyperKitty/hyperkitty-%{b_v_hyperkitty}.tar.gz
 
 Source1010:	%{__pypi_url}a/authheaders/authheaders-%{b_v_authheaders}.tar.gz
 Source1011:	%{__pypi_url}l/lazr.config/lazr.config-%{b_v_lazr_config}.tar.gz
@@ -645,7 +645,7 @@ Source1109:	%{__pypi_url}d/django-appconf/django-appconf-%{b_v_django_appconf}.t
 Source1110:	%{__pypi_url}d/django-picklefield/django-picklefield-%{b_v_django_picklefield}.tar.gz
 
 ## django mailman related
-Source1180:	%{__pypi_url}d/django-mailman3/django-mailman3-%{b_v_django_mailman3}.tar.gz
+Source1180:	%{__pypi_url}d/django-mailman3/django_mailman3-%{b_v_django_mailman3}.tar.gz
 
 ## django CAPTCHA related
 Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{b_v_django_recaptcha}.tar.gz
