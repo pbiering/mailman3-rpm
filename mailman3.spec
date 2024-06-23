@@ -34,7 +34,7 @@
 ## BUNDLED VERSIONS
 # base
 %define	b_v_postorius			1.3.10
-%define	b_v_hyperkitty			1.3.9
+%define	b_v_hyperkitty			1.3.8
 %define	b_v_mailmanclient		3.3.5
 
 ## django mailman related
@@ -603,7 +603,7 @@ Source416:	%{pname}-web-yearly.timer
 
 ### COMMON PACKAGING
 Source1000:	%{__pypi_url}p/postorius/postorius-%{b_v_postorius}.tar.gz
-Source1001:	%{__pypi_url}H/HyperKitty/hyperkitty-%{b_v_hyperkitty}.tar.gz
+Source1001:	%{__pypi_url}H/HyperKitty/HyperKitty-%{b_v_hyperkitty}.tar.gz
 
 Source1010:	%{__pypi_url}a/authheaders/authheaders-%{b_v_authheaders}.tar.gz
 Source1011:	%{__pypi_url}l/lazr.config/lazr.config-%{b_v_lazr_config}.tar.gz
@@ -1915,12 +1915,13 @@ echo "Enable timers (will only run if main services are active)"
 %{_mandir}/*
 %endif
 
+## Postponed
+#- update mailman_web 0.0.8 -> 0.0.9 (no setup.py)
+#- update hyperkitty 1.3.8 -> 1.3.9 (no setup.py)
 
 %changelog
 * Sun Jun 23 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-31
 - mailman3.te: add read_lnk_files_pattern for (mailman_mail_t, postfix_etc_t)
-- update mailman_web 0.0.8 -> 0.0.9
-- update hyperkitty 1.3.8 -> 1.3.9
 - update django_mailman3 1.3.11 -> 1.3.12
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
