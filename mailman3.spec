@@ -1920,7 +1920,7 @@ echo "Enable timers (will only run if main services are active)"
 * Sun Jun 23 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-30
 - mailman3.te: add read_lnk_files_pattern for (mailman_mail_t, postfix_etc_t)
 
-* Tue Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
+* Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty
 - mailman3.service: add ConditionFileNotEmpty
 
