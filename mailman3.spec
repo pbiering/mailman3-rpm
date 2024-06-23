@@ -23,7 +23,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 30
+%global release_token 31
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.9
