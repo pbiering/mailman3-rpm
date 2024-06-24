@@ -34,7 +34,7 @@
 ## BUNDLED VERSIONS
 # base
 %define	b_v_postorius			1.3.10
-%define	b_v_hyperkitty			1.3.8
+%define	b_v_hyperkitty			1.3.9
 %define	b_v_mailmanclient		3.3.5
 
 ## django mailman related
@@ -169,7 +169,6 @@ Requires:       python3 >= 3.9
 %define	b_e_openid			1
 %define	b_e_readme_renderer		1
 
-# version downgrade in setup.py (see below) supports fedora >=37
 %define	b_e_flufl_bounce		1
 %define	b_e_flufl_i18n			1
 
@@ -195,6 +194,15 @@ Requires:       python3 >= 3.9
 %if (0%{?fedora} == 39)
 # f39 has 2.1-24.fc39 which is causing: AttributeError: 'RawConfigParser' object has no attribute 'readfp'
 %define	b_e_lazr_config			1
+%endif
+
+%if (0%{?fedora} <= 41)
+%define	b_e_flufl_bounce		1
+
+# unclear why installed 8.0.2 is not recognized
+%define	b_e_flufl_lock			1
+
+%define	b_e_flufl_i18n			1
 %endif
 
 %if (0%{?fedora} >= 39)
@@ -323,16 +331,9 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_django_q}		django-q
 %req_cond_b_i_n_v	0%{?b_e_django_rest_framework}	django-rest-framework
 %req_cond_b_i_w_v	0%{?b_e_falcon}			falcon >= 3.0.0
-
-# f37/f38/f39: 3.0 (requirement downgrade via patch below)
-#req_cond_b_i_w_v	0#{?b_e_flufl_bounce}		flufl-bounce >= 4.0
-%req_cond_b_i_w_v	0%{?b_e_flufl_bounce}		flufl-bounce >= 3.0
-
-# f37/f38/f39: 2.0.2 (requirement downgrade via patch below)
-#req_cond_b_i_w_v	0#{?b_e_flufl_i18n}		flufl-i18n >= 3.2
-%req_cond_b_i_w_v	0%{?b_e_flufl_i18n}		flufl-i18n >= 2.0
-
-%req_cond_b_i_n_v	0%{?b_e_flufl_lock}		flufl-lock
+%req_cond_b_i_w_v	0%{?b_e_flufl_bounce}		flufl-bounce >= 4.0
+%req_cond_b_i_w_v	0%{?b_e_flufl_i18n}		flufl-i18n >= 3.2
+%req_cond_b_i_n_v	0%{?b_e_flufl_lock}		flufl-lock >= 5.1
 %req_cond_b_i_n_v	0%{?b_e_gunicorn}		gunicorn
 %req_cond_b_i_n_v	0%{?b_e_greenlet}		greenlet
 %req_cond_b_i_n_v	0%{?b_e_isort}			isort
@@ -445,8 +446,7 @@ Requires: 	publicsuffix-list
 %define	b_v_dnspython			2.3.0
 %define	b_v_flit_core			3.8.0
 
-#define	b_v_flufl_lock			7.1.1 # >= 7.x has no setup.py
-%define	b_v_flufl_lock			6.0
+%define	b_v_flufl_lock			7.1.1
 
 %define	b_v_greenlet			2.0.2
 %define	b_v_idna			3.4
@@ -528,8 +528,7 @@ Requires: 	publicsuffix-list
 %define	b_v_readme_renderer		37.3
 %define	b_v_cmarkgfm			0.8.0
 
-#define	b_v_flufl_i18n			4.1.1 # 4.x has no setup.py
-%define	b_v_flufl_i18n			3.2
+%define	b_v_flufl_i18n			4.1.1
 
 ## django dependencies
 %define	b_v_django			4.1.13
@@ -603,7 +602,7 @@ Source416:	%{pname}-web-yearly.timer
 
 ### COMMON PACKAGING
 Source1000:	%{__pypi_url}p/postorius/postorius-%{b_v_postorius}.tar.gz
-Source1001:	%{__pypi_url}H/HyperKitty/HyperKitty-%{b_v_hyperkitty}.tar.gz
+Source1001:	%{__pypi_url}H/HyperKitty/hyperkitty-%{b_v_hyperkitty}.tar.gz
 
 Source1010:	%{__pypi_url}a/authheaders/authheaders-%{b_v_authheaders}.tar.gz
 Source1011:	%{__pypi_url}l/lazr.config/lazr.config-%{b_v_lazr_config}.tar.gz
@@ -759,6 +758,9 @@ Requires(post):	policycoreutils-python-utils
 Requires(post):	policycoreutils-python
 %endif
 
+BuildRequires:	pyproject-rpm-macros
+BuildRequires:	python3-pdm-backend python3-pdm-pep517
+
 # SELinux https://fedoraproject.org/wiki/SELinux_Policy_Modules_Packaging_Draft
 BuildRequires:  checkpolicy, selinux-policy-devel
 BuildRequires:  hardlink
@@ -814,18 +816,26 @@ if [ "%1" = "1" ]; then \
 fi)
 
 %define build_cond() (\
-echo "BUILD_COND: %1 %2 %3"; \
+echo "BUILD_COND: %1 %2 %3 %4"; \
 if [ "%1" = "1" ]; then \
 pushd %3-%2 || exit 1 \
+if [ "%4" = "pyproject" ]; then \
+%pyproject_wheel \
+else \
 %py3_build \
+fi \
 popd \
 fi)
 
 %define install_cond() (\
-echo "INSTALL_COND: %1 %2 %3"; \
+echo "INSTALL_COND: %1 %2 %3 %4"; \
 if [ "%1" = "1" ]; then \
 pushd %3-%2 || exit 1 \
+if [ "%4" = "pyproject" ]; then \
+%pyproject_install \
+else \
 %py3_install \
+fi \
 popd \
 fi)
 
@@ -891,11 +901,7 @@ set -x
 ## apply patches to mailman
 pushd mailman-%{version_mailman}
 
-# Downgrade a few dependencies to satisfiable compatible versions (https://src.fedoraproject.org/rpms/mailman3/blob/rawhide/f/mailman3.spec)
-%{__sed} -e "s/flufl.bounce>=4.0/flufl.bounce>=3.0/" \
-    -e "s/flufl.i18n>=3.2/flufl.i18n>=2.0/" \
-    -e "s/flufl.lock>=5.1/flufl.lock>=3.1/" \
-    -i setup.py
+# (currently none)
 
 popd
 
@@ -1047,8 +1053,9 @@ pushd %{pypi_name}-%{version_mailman}%{?prerelease}
 %py3_build
 popd
 
-pushd %{pypi_name}-web-%{version_mailman_web}
-%py3_build
+pushd %{pypi_name}_web-%{version_mailman_web}
+#py3_build
+%pyproject_wheel
 popd
 
 pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
@@ -1057,7 +1064,7 @@ popd
 
 ## bundled packages
 %build_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
-%build_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             HyperKitty
+%build_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             hyperkitty	pyproject
 
 ## dependencies
 %build_cond "%{?b_e_aiosmtpd}"               "%{?b_v_aiosmtpd}"               aiosmtpd
@@ -1076,9 +1083,9 @@ popd
 %build_cond "%{?b_e_dkimpy}"                 "%{?b_v_dkimpy}"                 dkimpy
 %build_cond "%{?b_e_docutils}"               "%{?b_v_docutils}"               docutils
 %build_cond "%{?b_e_falcon}"                 "%{?b_v_falcon}"                 falcon
-%build_cond "%{?b_e_flufl_i18n}"             "%{?b_v_flufl_i18n}"             flufl.i18n
-%build_cond "%{?b_e_flufl_bounce}"           "%{?b_v_flufl_bounce}"           flufl.bounce
-%build_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock
+%build_cond "%{?b_e_flufl_i18n}"             "%{?b_v_flufl_i18n}"             flufl.i18n	pyproject
+%build_cond "%{?b_e_flufl_bounce}"           "%{?b_v_flufl_bounce}"           flufl.bounce	pyproject
+%build_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock	pyproject
 %build_cond "%{?b_e_greenlet}"               "%{?b_v_greenlet}"               greenlet
 %build_cond "%{?b_e_gunicorn}"               "%{?b_v_gunicorn}"               gunicorn
 %build_cond "%{?b_e_jwt}"                    "%{?b_v_jwt}"                    PyJWT
@@ -1133,7 +1140,7 @@ export PYTHONPATH
 %build_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
 ## django mailman related
-%build_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django-mailman3
+%build_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django_mailman3		pyproject
 
 ## django CAPTCHA related
 %build_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
@@ -1150,8 +1157,9 @@ pushd %{pypi_name}-%{version_mailman}%{?prerelease}
 %py3_install
 popd
 
-pushd %{pypi_name}-web-%{version_mailman_web}
-%py3_install
+pushd %{pypi_name}_web-%{version_mailman_web}
+#py3_install
+%pyproject_install
 popd
 
 pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
@@ -1160,7 +1168,7 @@ popd
 
 ## bundled packages
 %install_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
-%install_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             HyperKitty
+%install_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             hyperkitty		pyproject
 
 ## dependencies
 %install_cond "%{?b_e_aiosmtpd}"               "%{?b_v_aiosmtpd}"               aiosmtpd
@@ -1180,9 +1188,9 @@ popd
 %install_cond "%{?b_e_dkimpy}"                 "%{?b_v_dkimpy}"                 dkimpy
 %install_cond "%{?b_e_docutils}"               "%{?b_v_docutils}"               docutils
 %install_cond "%{?b_e_falcon}"                 "%{?b_v_falcon}"                 falcon
-%install_cond "%{?b_e_flufl_bounce}"           "%{?b_v_flufl_bounce}"           flufl.bounce
-%install_cond "%{?b_e_flufl_i18n}"             "%{?b_v_flufl_i18n}"             flufl.i18n
-%install_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock
+%install_cond "%{?b_e_flufl_bounce}"           "%{?b_v_flufl_bounce}"           flufl.bounce		pyproject
+%install_cond "%{?b_e_flufl_i18n}"             "%{?b_v_flufl_i18n}"             flufl.i18n		pyproject
+%install_cond "%{?b_e_flufl_lock}"             "%{?b_v_flufl_lock}"             flufl.lock		pyproject
 %install_cond "%{?b_e_gunicorn}"               "%{?b_v_gunicorn}"               gunicorn
 %install_cond "%{?b_e_greenlet}"               "%{?b_v_greenlet}"               greenlet
 %install_cond "%{?b_e_jwt}"                    "%{?b_v_jwt}"                    PyJWT
@@ -1237,7 +1245,7 @@ export PYTHONPATH
 %install_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
 ## django mailman related
-%install_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django-mailman3
+%install_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django_mailman3		pyproject
 
 ## django CAPTCHA related
 %install_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
@@ -1915,14 +1923,15 @@ echo "Enable timers (will only run if main services are active)"
 %{_mandir}/*
 %endif
 
-## Postponed
-#- update mailman_web 0.0.8 -> 0.0.9 (no setup.py)
-#- update hyperkitty 1.3.8 -> 1.3.9 (no setup.py)
-
 %changelog
-* Sun Jun 23 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-31
+* Mon Jun 24 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-31
 - mailman3.te: add read_lnk_files_pattern for (mailman_mail_t, postfix_etc_t)
 - update django_mailman3 1.3.11 -> 1.3.12
+- update mailman_web 0.0.8 -> 0.0.9
+- update hyperkitty 1.3.8 -> 1.3.9
+- update flufl.lock 6.0 -> 7.1.1
+- update flufl.i18n 3.2 -> 4.1.1
+- f40: bundle flufl.lock flufl.i18n flufl.bounce
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty
