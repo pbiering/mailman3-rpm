@@ -20,7 +20,7 @@ ExecStop=@BINDIR@/mailman stop
 
 # wait until listening ports are up
 ExecStartPost=/usr/bin/sh -c ' \
-i=0; lmtp=0; restapi=0; timeout=60; \
+i=0; lmtp=0; restapi=0; timeout=120; \
 echo "GNU Mailing List Manager 3 daemon started, waiting $timeout sec for port listen: LMTP(tcp/@LMTPPORT@) and RESTAPI(tcp/@RESTAPIPORT@)"; \
 while [ $i -lt $timeout -a $[ $lmtp + $restapi ] -lt 2 ]; do \
   if [ $lmtp -eq 0 ]; then \
