@@ -17,7 +17,7 @@ KillSignal=SIGINT
 
 # wait until listening port is up
 ExecStartPost=/usr/bin/sh -c ' \
-i=0; web=0; timeout=60; \
+i=0; web=0; timeout=120; \
 echo "GNU Mailing List Manager 3 Web UI daemon started, waiting $timeout sec for port listen: WEB(tcp/@WEBPORT@)"; \
 while [ $i -lt $timeout -a $web -eq 0 ]; do \
   if [ $web -eq 0 ]; then \
