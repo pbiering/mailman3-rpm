@@ -6,6 +6,7 @@
 Description=GNU Mailing List Manager 3 Web UI
 After=syslog.target network.target mailman3.service
 ConditionFileNotEmpty=@ETCDIR@/gunicorn.conf.py
+Wants=mailman3.service
 
 [Service]
 PIDFile=@RUNDIR@/gunicorn.pid
