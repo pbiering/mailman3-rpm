@@ -172,6 +172,10 @@ Requires:       python3 >= 3.9
 %define	b_e_flufl_bounce		1
 %define	b_e_flufl_i18n			1
 
+%define	b_e_pdm_backend			1
+%define	b_e_psutil			1
+%define	b_e_pdm_pep517			0
+
 %endif
 # end of rhel>=8
 
@@ -303,6 +307,13 @@ BuildRequires:	gcc
 %endif
 
 
+%if 0%{?b_e_pdm_backend}
+# pdm_backend
+BuildRequires:	python3-importlib-metadata
+%endif
+
+
+
 ### build+install related
 
 %req_cond_b_i_w_v	0%{?b_e_aiosmtpd}		aiosmtpd >= 1.4.3
@@ -346,6 +357,9 @@ BuildRequires:	gcc
 %req_cond_b_i_n_v	0%{?b_e_mistune}		mistune
 %req_cond_b_i_w_v	0%{?b_e_openid}			openid >= 3.0.8
 %req_cond_b_i_n_v	0%{?b_e_passlib}		passlib
+%req_cond_b_i_w_v	0%{?b_e_pdm_backend}		pdm-backend >= 2.0.7
+%req_cond_b_i_w_v	0%{?b_e_pdm_pep517}		pdm-pep517 >= 1.0.4
+%req_cond_b_i_w_v	0%{?b_e_psutil}			psutil >= 5.9.0
 %req_cond_b_i_n_v	0%{?b_e_publicsuffix2}		publicsuffix2
 %req_cond_b_i_n_v	0%{?b_e_pygments}		pygments
 %req_cond_b_i_n_v	0%{?b_e_pytz}			pytz
@@ -454,12 +468,16 @@ Requires: 	publicsuffix-list
 %define	b_v_mako			1.2.4
 %define	b_v_MarkupSafe			2.1.2
 
-# version from EL 9
+# version from EL9
 %define	b_v_networkx			2.6.2
 
 %define	b_v_oauthlib			3.2.2
 %define	b_v_openid			3.2.0
 %define	b_v_passlib			1.7.4
+
+# version from F40 2.1.8 has build issues
+%define	b_v_pdm_backend			2.0.7
+
 %define	b_v_pdm_pep517			1.1.3
 %define	b_v_psutil			5.9.4
 
@@ -662,7 +680,7 @@ Source2046:	%{__pypi_url}w/wcwidth/wcwidth-%{b_v_wcwidth}.tar.gz
 Source2047:	%{__pypi_url}w/webencodings/webencodings-%{b_v_webencodings}.tar.gz
 Source2048:	%{__pypi_url}w/wheel/wheel-%{b_v_wheel}.tar.gz
 
-# EL8
+# EL8+
 Source2000:	%{__pypi_url}a/alembic/alembic-%{b_v_alembic}.tar.gz
 Source2001:	%{__pypi_url}a/atpublic/atpublic-%{b_v_atpublic}.tar.gz
 Source2002:	%{__pypi_url}a/attrs/attrs-%{b_v_attrs}.tar.gz
@@ -679,6 +697,8 @@ Source2017:	%{__pypi_url}M/Mako/Mako-%{b_v_mako}.tar.gz
 Source2020:	%{__pypi_url}o/oauthlib/oauthlib-%{b_v_oauthlib}.tar.gz
 Source2022:	%{__pypi_url}p/passlib/passlib-%{b_v_passlib}.tar.gz
 Source2023:	%{__pypi_url}p/pdm-pep517/pdm-pep517-%{b_v_pdm_pep517}.tar.gz
+Source2024:	%{__pypi_url}p/pdm-backend/pdm_backend-%{b_v_pdm_backend}.tar.gz
+Source2025:	%{__pypi_url}p/psutil/psutil-%{b_v_psutil}.tar.gz
 Source2027:	%{__pypi_url}p/python-dateutil/python-dateutil-%{b_v_dateutil}.tar.gz
 Source2028:	%{__pypi_url}p/python3-openid/python3-openid-%{b_v_openid}.tar.gz
 Source2029:	%{__pypi_url}p/pytz/pytz-%{b_v_pytz}.tar.gz
@@ -759,7 +779,7 @@ Requires(post):	policycoreutils-python
 %endif
 
 BuildRequires:	pyproject-rpm-macros
-BuildRequires:	python3-pdm-backend python3-pdm-pep517
+
 
 # SELinux https://fedoraproject.org/wiki/SELinux_Policy_Modules_Packaging_Draft
 BuildRequires:  checkpolicy, selinux-policy-devel
@@ -818,6 +838,7 @@ fi)
 %define build_cond() (\
 echo "BUILD_COND: %1 %2 %3 %4"; \
 if [ "%1" = "1" ]; then \
+%define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease} \
 pushd %3-%2 || exit 1 \
 if [ "%4" = "pyproject" ]; then \
 %pyproject_wheel \
@@ -829,9 +850,12 @@ fi)
 
 %define install_cond() (\
 echo "INSTALL_COND: %1 %2 %3 %4"; \
+%define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease} \
 if [ "%1" = "1" ]; then \
 pushd %3-%2 || exit 1 \
 if [ "%4" = "pyproject" ]; then \
+%{__mkdir} -p %{buildroot}%{sitearchdir}/dummy.dist-info \
+touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD} \
 %pyproject_install \
 else \
 %py3_install \
@@ -892,7 +916,6 @@ echo "** Scheduled tasks: packaged using systemd.timer"
 %endif
 set -x
 
-
 ## base
 %setup -q -T -D -a 100 -n %{builddir}
 %setup -q -T -D -a 101 -n %{builddir}
@@ -950,8 +973,12 @@ popd
 %prep_cond "%{?b_e_networkx}"               2019
 %prep_cond "%{?b_e_oauthlib}"               2020
 %prep_cond "%{?b_e_passlib}"                2022
+%prep_cond "%{?b_e_pdm_pep517}"             2023
+%prep_cond "%{?b_e_pdm_backend}"            2024
+%prep_cond "%{?b_e_psutil}"                 2025
 %prep_cond "%{?b_e_dateutil}"               2027
 %prep_cond "%{?b_e_openid}"                 2028
+%prep_cond "%{?b_e_psutil}"                 2029
 %prep_cond "%{?b_e_pytz}"                   2029
 %prep_cond "%{?b_e_jwt}"                    2030
 %prep_cond "%{?b_e_rcssmin}"                2031
@@ -1012,6 +1039,9 @@ done
 
 
 %install
+%{__rm} -rf %{buildroot}
+%{__mkdir} %{buildroot}
+
 ## directories
 install -d -p %{buildroot}%{vardir}
 install -d -p %{buildroot}%{spooldir}
@@ -1038,26 +1068,35 @@ install -d -p %{buildroot}%{vardir}/db
 %build_cond   "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
 %install_cond "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
 
+%build_cond   "%{?b_e_pdm_backend}"    "%{?b_v_pdm_backend}"            pdm_backend		pyproject
+%install_cond "%{?b_e_pdm_backend}"    "%{?b_v_pdm_backend}"            pdm_backend		pyproject
+
 %build_cond   "%{?b_e_cffi}"           "%{?b_v_cffi}"           cffi
 %install_cond "%{?b_e_cffi}"           "%{?b_v_cffi}"           cffi
 
 %build_cond   "%{?b_e_isort}"          "%{?b_v_isort}"          isort
 %install_cond "%{?b_e_isort}"          "%{?b_v_isort}"          isort
 
+%build_cond   "%{?b_e_pdm_pep517}"     "%{?b_v_pdm_pep517}"             pdm_pep517
+%install_cond "%{?b_e_pdm_pep517}"     "%{?b_v_pdm_pep517}"             pdm_pep517
+
 PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
 export PYTHONPATH
 echo "PYTHONPATH=$PYTHONPATH"
 
 ## base
+echo "BUILD: %{pypi_name}-%{version_mailman}%{?prerelease}"
 pushd %{pypi_name}-%{version_mailman}%{?prerelease}
 %py3_build
 popd
 
+echo "BUILD: %{pypi_name}_web-%{version_mailman_web}"
 pushd %{pypi_name}_web-%{version_mailman_web}
-#py3_build
+%define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease}
 %pyproject_wheel
 popd
 
+echo "BUILD: %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}"
 pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
 %py3_build
 popd
@@ -1098,6 +1137,7 @@ popd
 %build_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %build_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %build_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
+%build_cond "%{?b_e_psutil}"                 "%{?b_v_psutil}"                 psutil
 %build_cond "%{?b_e_publicsuffix2}"          "%{?b_v_publicsuffix2}"          publicsuffix2
 %build_cond "%{?b_e_pytz}"                   "%{?b_v_pytz}"                   pytz
 %build_cond "%{?b_e_rcssmin}"                "%{?b_v_rcssmin}"                rcssmin
@@ -1153,15 +1193,22 @@ PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
 export PYTHONPATH
 echo "PYTHONPATH=$PYTHONPATH"
 
+# workaround for pyproject_install
+%{__mkdir} -p %{buildroot}%{sitearchdir}/dummy.dist-info
+touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD}
+
+echo "INSTALL: %{pypi_name}-%{version_mailman}%{?prerelease}"
 pushd %{pypi_name}-%{version_mailman}%{?prerelease}
 %py3_install
 popd
 
+echo "INSTALL: %{pypi_name}_web-%{version_mailman_web}"
 pushd %{pypi_name}_web-%{version_mailman_web}
-#py3_install
+%define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease}
 %pyproject_install
 popd
 
+echo "INSTALL: %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}"
 pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
 %py3_install
 popd
@@ -1203,6 +1250,7 @@ popd
 %install_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %install_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %install_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
+%install_cond "%{?b_e_psutil}"                 "%{?b_v_psutil}"                 psutil
 %install_cond "%{?b_e_publicsuffix2}"          "%{?b_v_publicsuffix2}"          publicsuffix2
 %install_cond "%{?b_e_pygments}"               "%{?b_v_pygments}"               Pygments
 %install_cond "%{?b_e_pytz}"                   "%{?b_v_pytz}"                   pytz
