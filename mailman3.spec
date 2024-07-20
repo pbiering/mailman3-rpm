@@ -112,6 +112,7 @@ Requires:       python3 >= 3.9
 %define	b_e_flufl_lock			1
 %define	b_e_greenlet			1
 %define	b_e_gunicorn			1
+%define	b_e_importlib_metadata		1
 %define	b_e_isort			1
 %define	b_e_jwt				1
 %define	b_e_lazr_config			1
@@ -121,6 +122,7 @@ Requires:       python3 >= 3.9
 %define	b_e_mistune			1
 %define	b_e_oauthlib			1
 %define	b_e_passlib			1
+%define	b_e_pdm_pep517			1
 %define	b_e_publicsuffix2		1
 %define	b_e_pygments			1
 %define	b_e_pytz			1
@@ -135,6 +137,7 @@ Requires:       python3 >= 3.9
 %define	b_e_types_cryptography		1
 %define	b_e_wcwidth			1
 %define	b_e_webencodings		1
+%define	b_e_zipp			1
 %define	b_e_zope_configuration		1
 %define	b_e_zope_schema			1
 %define	b_e_zope_i18nmessageid		1
@@ -174,7 +177,6 @@ Requires:       python3 >= 3.9
 
 %define	b_e_pdm_backend			1
 %define	b_e_psutil			1
-%define	b_e_pdm_pep517			0
 
 %endif
 # end of rhel>=8
@@ -347,6 +349,7 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_flufl_lock}		flufl-lock >= 5.1
 %req_cond_b_i_n_v	0%{?b_e_gunicorn}		gunicorn
 %req_cond_b_i_n_v	0%{?b_e_greenlet}		greenlet
+%req_cond_b_i_n_v	0%{?b_e_importlib_metadata}	importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_isort}			isort
 %req_cond_b_i_w_v	0%{?b_e_jwt}			jwt >= 1.7
 %req_cond_b_i_n_v	0%{?b_e_lazr_config}		lazr-config
@@ -374,6 +377,7 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_typing_extensions}	typing-extensions
 %req_cond_b_i_n_v	0%{?b_e_webencodings}		webencodings
 %req_cond_b_i_n_v	0%{?b_e_whoosh}			whoosh
+%req_cond_b_i_w_v	0%{?b_e_zipp}			zipp >= 0.5.1
 %req_cond_b_i_n_v	0%{?b_e_zope_component}		zope-component
 %req_cond_b_i_n_v	0%{?b_e_zope_configuration}	zope-configuration
 %req_cond_b_i_n_v	0%{?b_e_zope_event}		zope-event
@@ -464,6 +468,10 @@ Requires: 	publicsuffix-list
 
 %define	b_v_greenlet			2.0.2
 %define	b_v_idna			3.4
+
+# version from EL9
+%define	b_v_importlib_metadata		4.12.0
+
 %define	b_v_isort			5.12.0
 %define	b_v_mako			1.2.4
 %define	b_v_MarkupSafe			2.1.2
@@ -512,6 +520,9 @@ Requires: 	publicsuffix-list
 # 0.40.0 has issue on EL9 with flit_core
 #define	b_v_wheel			0.40.0
 %define	b_v_wheel			0.38.4
+
+# version from EL9
+%define	b_v_zipp			0.5.1
 
 %define	b_v_zope_component		5.1.0
 %define	b_v_zope_event			4.6
@@ -692,6 +703,7 @@ Source2010:	%{__pypi_url}d/defusedxml/defusedxml-%{b_v_defusedxml}.tar.gz
 Source2012:	%{__pypi_url}f/flit_core/flit_core-%{b_v_flit_core}.tar.gz
 Source2013:	%{__pypi_url}f/flufl.lock/flufl.lock-%{b_v_flufl_lock}.tar.gz
 Source2014:	%{__pypi_url}g/greenlet/greenlet-%{b_v_greenlet}.tar.gz
+Source2015:	%{__pypi_url}i/importlib_metadata/importlib_metadata-%{b_v_importlib_metadata}.tar.gz
 Source2016:	%{__pypi_url}i/isort/isort-%{b_v_isort}.tar.gz
 Source2017:	%{__pypi_url}M/Mako/Mako-%{b_v_mako}.tar.gz
 Source2020:	%{__pypi_url}o/oauthlib/oauthlib-%{b_v_oauthlib}.tar.gz
@@ -707,6 +719,7 @@ Source2034:	%{__pypi_url}r/requests-oauthlib/requests-oauthlib-%{b_v_requests_oa
 Source2035:	%{__pypi_url}r/robot-detection/robot-detection-%{b_v_robot_detection}.tar.gz
 Source2042:	%{__pypi_url}S/SQLAlchemy/SQLAlchemy-%{b_v_sqlalchemy}.tar.gz
 Source2044:	%{__pypi_url}t/tomli/tomli-%{b_v_tomli}.tar.gz
+Source2045:	%{__pypi_url}z/zipp/zipp-%{b_v_zipp}.tar.gz
 Source2049:	%{__pypi_url}z/zope.component/zope.component-%{b_v_zope_component}.tar.gz
 Source2050:	%{__pypi_url}z/zope.event/zope.event-%{b_v_zope_event}.tar.gz
 Source2051:	%{__pypi_url}z/zope.hookable/zope.hookable-%{b_v_zope_hookable}.tar.gz
@@ -968,6 +981,7 @@ popd
 %prep_cond "%{?b_e_defusedxml}"             2010
 %prep_cond "%{?b_e_flufl_lock}"             2013
 %prep_cond "%{?b_e_greenlet}"               2014
+%prep_cond "%{?b_e_importlib_metadata}"     2015
 %prep_cond "%{?b_e_isort}"                  2016
 %prep_cond "%{?b_e_mako}"                   2017
 %prep_cond "%{?b_e_networkx}"               2019
@@ -990,6 +1004,8 @@ popd
 %prep_cond "%{?b_e_tomli}"                  2044
 %prep_cond "%{?b_e_wcwidth}"                2046
 %prep_cond "%{?b_e_webencodings}"           2047
+%prep_cond "%{?b_e_wcwidth}"                2046
+%prep_cond "%{?b_e_zipp}"                   2045
 %prep_cond "%{?b_e_zope_component}"         2049
 %prep_cond "%{?b_e_zope_event}"             2050
 %prep_cond "%{?b_e_zope_hookable}"          2051
@@ -1057,6 +1073,9 @@ install -d -p %{buildroot}%{vardir}/data
 # database directory (sqlite)
 install -d -p %{buildroot}%{vardir}/db
 
+PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
+export PYTHONPATH
+echo "PYTHONPATH=$PYTHONPATH"
 
 ## precondition (build+install)
 %build_cond   "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
@@ -1068,6 +1087,12 @@ install -d -p %{buildroot}%{vardir}/db
 %build_cond   "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
 %install_cond "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
 
+%build_cond   "%{?b_e_zipp}"          "%{?b_v_zipp}"          zipp
+%install_cond "%{?b_e_zipp}"          "%{?b_v_zipp}"          zipp
+
+%build_cond   "%{?b_e_importlib_metadata}"          "%{?b_v_importlib_metadata}"          importlib_metadata	pyproject
+%install_cond "%{?b_e_importlib_metadata}"          "%{?b_v_importlib_metadata}"          importlib_metadata	pyproject
+
 %build_cond   "%{?b_e_pdm_backend}"    "%{?b_v_pdm_backend}"            pdm_backend		pyproject
 %install_cond "%{?b_e_pdm_backend}"    "%{?b_v_pdm_backend}"            pdm_backend		pyproject
 
@@ -1077,12 +1102,8 @@ install -d -p %{buildroot}%{vardir}/db
 %build_cond   "%{?b_e_isort}"          "%{?b_v_isort}"          isort
 %install_cond "%{?b_e_isort}"          "%{?b_v_isort}"          isort
 
-%build_cond   "%{?b_e_pdm_pep517}"     "%{?b_v_pdm_pep517}"             pdm_pep517
-%install_cond "%{?b_e_pdm_pep517}"     "%{?b_v_pdm_pep517}"             pdm_pep517
-
-PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
-export PYTHONPATH
-echo "PYTHONPATH=$PYTHONPATH"
+%build_cond   "%{?b_e_pdm_pep517}"     "%{?b_v_pdm_pep517}"             pdm-pep517	pyproject
+%install_cond "%{?b_e_pdm_pep517}"     "%{?b_v_pdm_pep517}"             pdm-pep517	pyproject
 
 ## base
 echo "BUILD: %{pypi_name}-%{version_mailman}%{?prerelease}"
