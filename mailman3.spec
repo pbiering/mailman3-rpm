@@ -2001,6 +2001,8 @@ echo "Enable timers (will only run if main services are active)"
 - update flufl.lock 6.0 -> 7.1.1
 - update flufl.i18n 3.2 -> 4.1.1
 - f40: bundle flufl.lock flufl.i18n flufl.bounce
+- el8: bundle importlib_metadata zipp pdm_pep517
+- el8+: bundle pdm_backend psutil
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty
