@@ -349,7 +349,7 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_flufl_lock}		flufl-lock >= 5.1
 %req_cond_b_i_n_v	0%{?b_e_gunicorn}		gunicorn
 %req_cond_b_i_n_v	0%{?b_e_greenlet}		greenlet
-%req_cond_b_i_n_v	0%{?b_e_importlib_metadata}	importlib-metadata
+%req_cond_b_i_w_v	0%{?b_e_importlib_metadata}	importlib-metadata >= 4.12.0
 %req_cond_b_i_n_v	0%{?b_e_isort}			isort
 %req_cond_b_i_w_v	0%{?b_e_jwt}			jwt >= 1.7
 %req_cond_b_i_n_v	0%{?b_e_lazr_config}		lazr-config
@@ -2001,8 +2001,8 @@ echo "Enable timers (will only run if main services are active)"
 - update flufl.lock 6.0 -> 7.1.1
 - update flufl.i18n 3.2 -> 4.1.1
 - f40: bundle flufl.lock flufl.i18n flufl.bounce
-- el8: bundle importlib_metadata zipp pdm_pep517
-- el8+: bundle pdm_backend psutil
+- el8: bundle importlib_metadata=4.12.0 zipp=0.5.1 pdm_pep517=1.1.3
+- el8+: bundle pdm_backend=2.0.7 psutil=5.9.0
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty
