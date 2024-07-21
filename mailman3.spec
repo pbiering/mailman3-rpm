@@ -231,6 +231,10 @@ Requires:       python3 >= 3.9
 %define	b_e_django_haystack		1
 %endif
 
+%if (0%{?fedora} >= 41)
+# nntplib dropped from Python 3.13.0+
+%define	b_e_nntplib 			1
+%endif
 
 ### Requirements
 
@@ -479,6 +483,9 @@ Requires: 	publicsuffix-list
 # version from EL9
 %define	b_v_networkx			2.6.2
 
+# dropped from Python 3.13.0+
+%define	b_v_nntplib			0.1.3
+
 %define	b_v_oauthlib			3.2.2
 %define	b_v_openid			3.2.0
 %define	b_v_passlib			1.7.4
@@ -725,6 +732,9 @@ Source2050:	%{__pypi_url}z/zope.event/zope.event-%{b_v_zope_event}.tar.gz
 Source2051:	%{__pypi_url}z/zope.hookable/zope.hookable-%{b_v_zope_hookable}.tar.gz
 Source2052:	%{__pypi_url}z/zope.interface/zope.interface-%{b_v_zope_interface}.tar.gz
 Source2055:	%{__pypi_url}t/types-cryptography/types-cryptography-%{b_v_types_cryptography}.tar.gz
+
+# Python 3.13.0+
+Source2080:	%{__pypi_url}n/nntplib/nntplib-%{b_v_nntplib}.tar.gz
 
 Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{b_v_mailmanclient}.tar.gz
 
@@ -985,6 +995,7 @@ popd
 %prep_cond "%{?b_e_isort}"                  2016
 %prep_cond "%{?b_e_mako}"                   2017
 %prep_cond "%{?b_e_networkx}"               2019
+%prep_cond "%{?b_e_nntplib}"                2080
 %prep_cond "%{?b_e_oauthlib}"               2020
 %prep_cond "%{?b_e_passlib}"                2022
 %prep_cond "%{?b_e_pdm_pep517}"             2023
@@ -1046,6 +1057,8 @@ popd
 
 
 %build
+cd %{builddir}
+
 cd SELinux
 for selinuxvariant in %{selinux_variants}; do
   make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
@@ -1057,6 +1070,8 @@ done
 %install
 %{__rm} -rf %{buildroot}
 %{__mkdir} %{buildroot}
+
+cd %{builddir}
 
 ## directories
 install -d -p %{buildroot}%{vardir}
@@ -1155,6 +1170,7 @@ popd
 %build_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
 %build_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune
 %build_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
+%build_cond "%{?b_e_nntplib}"		     "%{?b_v_nntplib}"                nntplib		pyproject
 %build_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %build_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %build_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
@@ -1268,6 +1284,7 @@ popd
 %install_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
 %install_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune
 %install_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
+%install_cond "%{?b_e_nntplib}"                "%{?b_v_nntplib}"                nntplib			pyproject
 %install_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %install_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %install_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
@@ -2003,6 +2020,7 @@ echo "Enable timers (will only run if main services are active)"
 - f40: bundle flufl.lock flufl.i18n flufl.bounce
 - el8: bundle importlib_metadata=4.12.0 zipp=0.5.1 pdm_pep517=1.1.3
 - el8+: bundle pdm_backend=2.0.7 psutil=5.9.0
+- f41+: bundle nntplib=0.1.3 as dropped from Python 3.13.0+
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty
