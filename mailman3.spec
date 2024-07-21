@@ -843,13 +843,13 @@ Requires:	/usr/bin/timeout
 }
 
 %define prep_cond() (\
-echo "SETUP_COND: %1 %2"; \
+echo "SETUP_COND: '%1' '%2'"; \
 if [ "%1" = "1" ]; then \
 %setup -q -T -a %2 -D -n %{builddir} \
 fi)
 
 %define build_cond() (\
-echo "BUILD_COND: %1 %2 %3 %4"; \
+echo "BUILD_COND: '%1' '%2' '%3' '%4'"; \
 if [ "%1" = "1" ]; then \
 %define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease} \
 pushd %3-%2 || exit 1 \
@@ -862,7 +862,7 @@ popd \
 fi)
 
 %define install_cond() (\
-echo "INSTALL_COND: %1 %2 %3 %4"; \
+echo "INSTALL_COND: '%1' '%2' '%3' '%4'"; \
 %define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease} \
 if [ "%1" = "1" ]; then \
 pushd %3-%2 || exit 1 \
