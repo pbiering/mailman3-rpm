@@ -30,11 +30,30 @@
 %global version_mailman_web		0.0.9
 %global version_mailman_hyperkitty	1.2.1
 
+%if "%{version_mailman_web}" == "0.0.8"
+# <= 0.0.8
+%define name_mailman_web		mailman-web
+%else
+# >= 0.0.9
+%define name_mailman_web		mailman_web
+%endif
+
 
 ## BUNDLED VERSIONS
 # base
 %define	b_v_postorius			1.3.10
-%define	b_v_hyperkitty			1.3.9
+
+%define	b_v_hyperkitty			1.3.8
+#define	b_v_hyperkitty			1.3.9 # requires mistune >= 3.0.0 which has bundling issues
+
+%if "%{b_v_hyperkitty}" == "1.3.8"
+# <= 1.3.8
+%define name_hyperkitty			HyperKitty
+%else
+# >= 1.3.9
+%define name_hyperkitty			hyperkitty
+%endif
+
 %define	b_v_mailmanclient		3.3.5
 
 ## django mailman related
@@ -609,7 +628,7 @@ Source90:	%{pname}.fc
 Source91:	%{pname}.te
 
 Source100:      %{__pypi_url}m/%{pypi_name}/%{pypi_name}-%{version_mailman}%{?prerelease}.tar.gz
-Source101:	%{__pypi_url}m/%{pypi_name}-web/%{pypi_name}_web-%{version_mailman_web}.tar.gz
+Source101:	%{__pypi_url}m/%{pypi_name}-web/%{name_mailman_web}-%{version_mailman_web}.tar.gz
 Source102:	%{__pypi_url}m/%{pypi_name}-hyperkitty/%{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}.tar.gz
 
 # converted from mailman3.cron
@@ -638,7 +657,7 @@ Source416:	%{pname}-web-yearly.timer
 
 ### COMMON PACKAGING
 Source1000:	%{__pypi_url}p/postorius/postorius-%{b_v_postorius}.tar.gz
-Source1001:	%{__pypi_url}H/HyperKitty/hyperkitty-%{b_v_hyperkitty}.tar.gz
+Source1001:	%{__pypi_url}H/HyperKitty/%{name_hyperkitty}-%{b_v_hyperkitty}.tar.gz
 
 Source1010:	%{__pypi_url}a/authheaders/authheaders-%{b_v_authheaders}.tar.gz
 Source1011:	%{__pypi_url}l/lazr.config/lazr.config-%{b_v_lazr_config}.tar.gz
@@ -1126,8 +1145,8 @@ pushd %{pypi_name}-%{version_mailman}%{?prerelease}
 %py3_build
 popd
 
-echo "BUILD: %{pypi_name}_web-%{version_mailman_web}"
-pushd %{pypi_name}_web-%{version_mailman_web}
+echo "BUILD: %{name_mailman_web}-%{version_mailman_web}"
+pushd %{name_mailman_web}-%{version_mailman_web}
 %define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease}
 %pyproject_wheel
 popd
@@ -1139,7 +1158,7 @@ popd
 
 ## bundled packages
 %build_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
-%build_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             hyperkitty	pyproject
+%build_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             %{name_hyperkitty}	pyproject
 
 ## dependencies
 %build_cond "%{?b_e_aiosmtpd}"               "%{?b_v_aiosmtpd}"               aiosmtpd
@@ -1239,8 +1258,8 @@ pushd %{pypi_name}-%{version_mailman}%{?prerelease}
 %py3_install
 popd
 
-echo "INSTALL: %{pypi_name}_web-%{version_mailman_web}"
-pushd %{pypi_name}_web-%{version_mailman_web}
+echo "INSTALL: %{name_mailman_web}-%{version_mailman_web}"
+pushd %{name_mailman_web}-%{version_mailman_web}
 %define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease}
 %pyproject_install
 popd
@@ -1252,7 +1271,7 @@ popd
 
 ## bundled packages
 %install_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
-%install_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             hyperkitty		pyproject
+%install_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             %{name_hyperkitty}		pyproject
 
 ## dependencies
 %install_cond "%{?b_e_aiosmtpd}"               "%{?b_v_aiosmtpd}"               aiosmtpd
@@ -2009,12 +2028,14 @@ echo "Enable timers (will only run if main services are active)"
 %{_mandir}/*
 %endif
 
+#### PENDING
+#- update hyperkitty 1.3.8 -> 1.3.9 # requires mistune >= 3.0.0 which has bundling issues
+
 %changelog
 * Mon Jun 24 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-31
 - mailman3.te: add read_lnk_files_pattern for (mailman_mail_t, postfix_etc_t)
 - update django_mailman3 1.3.11 -> 1.3.12
 - update mailman_web 0.0.8 -> 0.0.9
-- update hyperkitty 1.3.8 -> 1.3.9
 - update flufl.lock 6.0 -> 7.1.1
 - update flufl.i18n 3.2 -> 4.1.1
 - f40: bundle flufl.lock flufl.i18n flufl.bounce
