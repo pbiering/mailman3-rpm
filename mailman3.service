@@ -17,6 +17,7 @@ Environment="PYTHONPATH=@PYTHONPATH@"
 ExecStart=@BINDIR@/mailman start --force
 ExecReload=@BINDIR@/mailman restart
 ExecStop=@BINDIR@/mailman stop
+TimeoutStartSec=150
 
 # wait until listening ports are up
 ExecStartPost=/usr/bin/sh -c ' \

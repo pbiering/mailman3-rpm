@@ -2068,6 +2068,7 @@ echo "Enable timers (will only run if main services are active)"
 - el8+: bundle pdm_backend=2.0.7 psutil=5.9.0
 - f41+: bundle nntplib=0.1.3 as dropped from Python 3.13.0+
 - wrapper scripts: explicit export PYTHONPATH
+- mailman3.service + mailman3-web.service: add TimeoutStartSec=150
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty

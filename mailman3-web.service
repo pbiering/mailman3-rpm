@@ -15,6 +15,7 @@ Group=@MMUSER@
 Environment="PYTHONPATH=@PYTHONPATH@"
 ExecStart=@BINDIR_GUNICORN@/gunicorn -c @ETCDIR@/gunicorn.conf.py mailman_web.wsgi:application
 KillSignal=SIGINT
+TimeoutStartSec=150
 
 # wait until listening port is up
 ExecStartPost=/usr/bin/sh -c ' \
