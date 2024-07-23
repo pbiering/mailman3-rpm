@@ -1378,6 +1378,7 @@ elif [ "$USER" != "%{mmuser}" ]; then
     echo "This command must be run under the mailman 3 user (%{mmuser})."
     exit 1
 else
+    export PYTHONPATH=@PYTHONPATH@
     %{bindir}/mailman $@
 fi
 EOF
@@ -1391,6 +1392,7 @@ elif [ "$USER" != "%{mmuser}" ]; then
     echo "This command must be run under the mailman3 user (%{mmuser})."
     exit 1
 else
+    export PYTHONPATH=@PYTHONPATH@
     %{bindir}/mailman-web $@
 fi
 EOF
@@ -1576,7 +1578,7 @@ install -D -m 0644 %{SOURCE416} %{buildroot}%{_unitdir}/%{basename:%{SOURCE416}}
 %define bindir_gunicorn %{_bindir}
 %endif
 
-find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesdir} -type f | while read file; do
+find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesdir} %{buildroot}%{_bindir} -type f | while read file; do
 	# replace directories
 	%{__sed} -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g;s,@SYSCONFDIR@,%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' $file
 	# replace ports
@@ -1935,16 +1937,16 @@ done
 
 # webinterface setup
 echo "Run as %{mmuser}: %{bindir}/mailman-web check"
-su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web check"
+su - -s /bin/bash %{mmuser} -c "%{_bindir}/mailman3-web check"
 
 echo "Run as %{mmuser}: %{bindir}/mailman-web migrate"
-su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web migrate"
+su - -s /bin/bash %{mmuser} -c "%{_bindir}/mailman3-web migrate"
 
 echo "Run as %{mmuser}: %{bindir}/mailman-web collectstatic --noinput"
-su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web collectstatic --noinput"
+su - -s /bin/bash %{mmuser} -c "%{_bindir}/mailman3-web collectstatic --noinput"
 
 echo "Run as %{mmuser}: %{bindir}/mailman-web compress"
-su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web compress"
+su - -s /bin/bash %{mmuser} -c "%{_bindir}/mailman3-web compress"
 
 ## systemd/service condrestart will also autorestart dependend timers
 echo "Reload systemd/daemon"
@@ -2042,6 +2044,7 @@ echo "Enable timers (will only run if main services are active)"
 - el8: bundle importlib_metadata=4.12.0 zipp=0.5.1 pdm_pep517=1.1.3
 - el8+: bundle pdm_backend=2.0.7 psutil=5.9.0
 - f41+: bundle nntplib=0.1.3 as dropped from Python 3.13.0+
+- wrapper scripts: explicit export PYTHONPATH
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty
