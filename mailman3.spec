@@ -30,7 +30,9 @@
 %global version_mailman_web		0.0.9
 %global version_mailman_hyperkitty	1.2.1
 
-%if "%{version_mailman_web}" == "0.0.8"
+%define version_mailman_web_num		%(echo "%{version_mailman_web}" | awk -F. '{ print (($1 * 100) + $2) * 100 + $3 }')
+
+%if %{version_mailman_web_num} <= 8
 # <= 0.0.8
 %define name_mailman_web		mailman-web
 %else
@@ -46,7 +48,9 @@
 %define	b_v_hyperkitty			1.3.8
 #define	b_v_hyperkitty			1.3.9 # requires mistune >= 3.0.0 which has bundling issues
 
-%if "%{b_v_hyperkitty}" == "1.3.8"
+%define b_v_hyperkitty_num		%(echo "%{b_v_hyperkitty}" | awk -F. '{ print (($1 * 100) + $2) * 100 + $3 }')
+
+%if %{b_v_hyperkitty_num} <= 10308
 # <= 1.3.8
 %define name_hyperkitty			HyperKitty
 %else
@@ -58,6 +62,19 @@
 
 ## django mailman related
 %define	b_v_django_mailman3		1.3.12
+
+%define b_v_django_mailman3_num		%(echo "%{b_v_django_mailman3}" | awk -F. '{ print (($1 * 100) + $2) * 100 + $3 }')
+
+%if %{b_v_django_mailman3_num} <= 10311
+# <= 1.3.11
+%define name_django_mailman3		django-mailman3
+%define django_mailman3_extra		""
+%else
+# >= 1.3.12
+%define name_django_mailman3		django_mailman3
+%define django_mailman3_extra		pyproject
+%endif
+
 
 ## NAMES
 %global pypi_name mailman
@@ -587,7 +604,13 @@ Requires: 	publicsuffix-list
 
 ## django dependencies
 %define	b_v_django			4.1.13
+
+%if %{b_v_django_mailman3_num} <= 10311
 %define	b_v_django_allauth		0.58.2
+%else
+%define	b_v_django_allauth		0.59.0
+%endif
+
 %define	b_v_django_appconf		1.0.6
 %define	b_v_django_compressor		4.4
 %define	b_v_django_extensions		3.2.3
@@ -699,7 +722,7 @@ Source1109:	%{__pypi_url}d/django-appconf/django-appconf-%{b_v_django_appconf}.t
 Source1110:	%{__pypi_url}d/django-picklefield/django-picklefield-%{b_v_django_picklefield}.tar.gz
 
 ## django mailman related
-Source1180:	%{__pypi_url}d/django-mailman3/django_mailman3-%{b_v_django_mailman3}.tar.gz
+Source1180:	%{__pypi_url}d/django-mailman3/%{name_django_mailman3}-%{b_v_django_mailman3}.tar.gz
 
 ## django CAPTCHA related
 Source1190:	%{__pypi_url}d/django-recaptcha/django-recaptcha-%{b_v_django_recaptcha}.tar.gz
@@ -1236,7 +1259,7 @@ export PYTHONPATH
 %build_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
 ## django mailman related
-%build_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django_mailman3		pyproject
+%build_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        %{name_django_mailman3}	%{django_mailman3_extra}
 
 ## django CAPTCHA related
 %build_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
@@ -1350,7 +1373,7 @@ export PYTHONPATH
 %install_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
 ## django mailman related
-%install_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        django_mailman3		pyproject
+%install_cond "%{?b_e_django_mailman3}"        "%{?b_v_django_mailman3}"        %{name_django_mailman3}		%{django_mailman3_extra}
 
 ## django CAPTCHA related
 %install_cond "%{?b_e_django_recaptcha}"       "%{?b_v_django_recaptcha}"       django-recaptcha
@@ -2036,7 +2059,7 @@ echo "Enable timers (will only run if main services are active)"
 %changelog
 * Mon Jun 24 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-31
 - mailman3.te: add read_lnk_files_pattern for (mailman_mail_t, postfix_etc_t)
-- update django_mailman3 1.3.11 -> 1.3.12
+- update django_mailman3 1.3.11 -> 1.3.12 / django-allauth 0.58.2 -> 0.59.0
 - update mailman_web 0.0.8 -> 0.0.9
 - update flufl.lock 6.0 -> 7.1.1
 - update flufl.i18n 3.2 -> 4.1.1
