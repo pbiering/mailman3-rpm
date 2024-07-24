@@ -249,6 +249,7 @@ Requires:       python%{python3_version_num}
 #do not overwrite python3_version from rpm-macros
 BuildRequires:  python3-devel >= 3.9
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
 Requires:       python3 >= 3.9
 %endif
 
