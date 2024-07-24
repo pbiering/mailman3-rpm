@@ -19,6 +19,9 @@
 ### Step 4: rebuild
 ### $ rpmbuild -bb mailman3.spec
 
+# convert version to num
+%define v2n() %(echo "%1" | awk -F. '{ print (($1 * 100) + $2) * 100 + $3 }')
+
 # do not create debug packages
 %define debug_package %{nil}
 
@@ -30,13 +33,9 @@
 %global version_mailman_web		0.0.9
 %global version_mailman_hyperkitty	1.2.1
 
-%define version_mailman_web_num		%(echo "%{version_mailman_web}" | awk -F. '{ print (($1 * 100) + $2) * 100 + $3 }')
-
-%if %{version_mailman_web_num} <= 8
-# <= 0.0.8
+%if %{v2n %{version_mailman_web}} <= %{v2n 0.0.8}
 %define name_mailman_web		mailman-web
 %else
-# >= 0.0.9
 %define name_mailman_web		mailman_web
 %endif
 
@@ -48,13 +47,9 @@
 %define	b_v_hyperkitty			1.3.8
 #define	b_v_hyperkitty			1.3.9 # requires mistune >= 3.0.0 which has bundling issues
 
-%define b_v_hyperkitty_num		%(echo "%{b_v_hyperkitty}" | awk -F. '{ print (($1 * 100) + $2) * 100 + $3 }')
-
-%if %{b_v_hyperkitty_num} <= 10308
-# <= 1.3.8
+%if %{v2n %{b_v_hyperkitty}} <= %{v2n 1.3.8}
 %define name_hyperkitty			HyperKitty
 %else
-# >= 1.3.9
 %define name_hyperkitty			hyperkitty
 %endif
 
@@ -245,6 +240,13 @@ Requires:       python3 >= 3.9
 %define	b_e_flufl_lock			1
 
 %define	b_e_flufl_i18n			1
+%endif
+
+%if (0%{?fedora} <= 41) || 0%{?rhel} <= 9
+%if %{v2n %{b_v_hyperkitty}} >= %{v2n 1.3.9}
+# mistune >= 3.0 not packaged so far in Fedora <=41 and EL <= 9
+%define	b_e_mistune			1
+%endif
 %endif
 
 %if (0%{?fedora} >= 39)
