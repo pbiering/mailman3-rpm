@@ -71,6 +71,156 @@
 %endif
 
 
+## BUNDLED DEPENDENCIES VERSIONS
+
+#define	b_v_alembic			1.10.3 # typing_extensions/TypeGuard problem
+%define	b_v_alembic			1.9.4
+
+#define	b_v_atpublic		3.1.1 # >= 3.x has no setup.py
+%define	b_v_atpublic		2.3
+
+%define	b_v_attrs			22.2.0
+%define	b_v_authres			1.2.0
+%define	b_v_blessed			1.20.0
+%define	b_v_certifi			2022.12.7
+%define	b_v_charset_normalizer		3.1.0
+%define	b_v_click			8.1.3
+%define	b_v_cryptography		40.0.1
+%define	b_v_dateutil			2.8.2
+%define	b_v_defusedxml			0.7.1
+%define	b_v_dnspython			2.3.0
+%define	b_v_flit_core			3.8.0
+
+%define	b_v_flufl_lock			7.1.1
+
+%define	b_v_greenlet			2.0.2
+%define	b_v_idna			3.4
+
+# version from EL9
+%define	b_v_importlib_metadata		4.12.0
+
+%define	b_v_isort			5.12.0
+%define	b_v_mako			1.2.4
+%define	b_v_MarkupSafe			2.1.2
+
+# version from EL9
+%define	b_v_networkx			2.6.2
+
+# dropped from Python 3.13.0+
+%define	b_v_nntplib			0.1.3
+
+%define	b_v_oauthlib			3.2.2
+%define	b_v_openid			3.2.0
+%define	b_v_passlib			1.7.4
+
+# version from F40 2.1.8 has build issues
+%define	b_v_pdm_backend			2.0.7
+
+%define	b_v_pdm_pep517			1.1.3
+%define	b_v_psutil			5.9.4
+
+#define	b_v_jwt				2.6.0 # conflicts on EL with python39-cryptography==3.3.1
+%define	b_v_jwt				2.5.0
+
+%define	b_v_pytz			2023.3
+%define	b_v_rcssmin			1.1.1
+%define	b_v_requests_oauthlib		1.3.1
+%define	b_v_robot_detection		0.4
+%define	b_v_setuptools			67.6.1
+%define	b_v_setuptools_scm		7.1.0
+
+#define	b_v_sqlalchemy			2.0.9 # EL8 problem typing_extensions/Concatenate
+%define	b_v_sqlalchemy			1.4.47
+
+%define	b_v_sqlparse			0.4.3
+
+#define	b_v_tomli			2.0.1 # >= 2.x has no setup.py
+#define	b_v_tomli			1.2.3 # >= 1.2.x has no setup.py
+%define	b_v_tomli			1.1.0
+
+#define	b_v_typing_extensions		4.5.0 # >= 4.x has no setup.py / 3.10.0.2 causes dataclass_transform dependency problems
+#define	b_v_typing_extensions		3.10.0.2  # causes dataclass_transform dependency problems
+%define	b_v_typing_extensions		3.7.4.3
+
+%define	b_v_types_cryptography		3.3.23.2
+
+%define	b_v_wcwidth			0.2.6
+%define	b_v_webencodings		0.5.1
+
+# 0.40.0 has issue on EL9 with flit_core
+#define	b_v_wheel			0.40.0
+%define	b_v_wheel			0.38.4
+
+# version from EL9
+%define	b_v_zipp			0.5.1
+
+%define	b_v_zope_component		5.1.0
+%define	b_v_zope_event			4.6
+%define	b_v_zope_hookable		5.4
+%define	b_v_zope_interface		6.0
+
+## BUNDLED VERSIONS
+# dependencies
+%define	b_v_aiosmtpd			1.4.4.post2
+%define	b_v_arrow			1.2.3
+%define	b_v_asgiref			3.6.0
+%define	b_v_authheaders			0.15.2
+%define	b_v_bleach			6.0.0
+%define	b_v_cffi                	1.15.1
+%define	b_v_dkimpy			1.1.1
+%define	b_v_docutils			0.19
+%define	b_v_falcon			3.1.1
+%define	b_v_flufl_bounce		4.0
+%define	b_v_gunicorn			20.1.0
+%define	b_v_lazr_config			2.2.3
+%define	b_v_lazr_delegates		2.1.0
+
+%if %{v2n %{b_v_hyperkitty}} <= %{v2n 1.3.8}
+%define	b_v_mistune			2.0.4
+%else
+%define	b_v_mistune			3.0.2
+%endif
+
+%define	b_v_publicsuffix2		2.20191221
+%define	b_v_pygments			2.14.0
+%define	b_v_rjsmin			1.2.1
+%define	b_v_whoosh			2.7.4
+
+%define	b_v_zope_configuration		4.4.1
+%define	b_v_zope_schema			7.0.1
+%define	b_v_zope_i18nmessageid		6.0.1
+
+%define	b_v_readme_renderer		37.3
+%define	b_v_cmarkgfm			0.8.0
+
+%define	b_v_flufl_i18n			4.1.1
+
+## django dependencies
+%define	b_v_django			4.1.13
+
+%if %{b_v_django_mailman3_num} <= 10311
+%define	b_v_django_allauth		0.58.2
+%else
+%define	b_v_django_allauth		0.59.0
+%endif
+
+%define	b_v_django_appconf		1.0.6
+%define	b_v_django_compressor		4.4
+%define	b_v_django_extensions		3.2.3
+%define	b_v_django_gravatar2		1.4.4
+%define	b_v_django_haystack		3.2.1
+%define	b_v_django_picklefield		3.1
+%define	b_v_django_rest_framework	3.14.0
+%define	b_v_django_q			1.3.9
+
+## django CAPTCHA related
+%define	b_v_django_recaptcha		4.0.0
+%define	b_v_django_hcaptcha		0.2.0
+%define	b_v_django_friendlycaptcha	0.1.8
+%define	b_v_django_turnstile		0.1.0
+
+
+
 ## NAMES
 %global pypi_name mailman
 %global pname     mailman3
@@ -484,155 +634,6 @@ Requires: 	publicsuffix-list
 %global mmgroup      mailman3
 %global mmgroupid    ""
 %endif
-
-
-## BUNDLED DEPENDENCIES VERSIONS
-
-#define	b_v_alembic			1.10.3 # typing_extensions/TypeGuard problem
-%define	b_v_alembic			1.9.4
-
-#define	b_v_atpublic		3.1.1 # >= 3.x has no setup.py
-%define	b_v_atpublic		2.3
-
-%define	b_v_attrs			22.2.0
-%define	b_v_authres			1.2.0
-%define	b_v_blessed			1.20.0
-%define	b_v_certifi			2022.12.7
-%define	b_v_charset_normalizer		3.1.0
-%define	b_v_click			8.1.3
-%define	b_v_cryptography		40.0.1
-%define	b_v_dateutil			2.8.2
-%define	b_v_defusedxml			0.7.1
-%define	b_v_dnspython			2.3.0
-%define	b_v_flit_core			3.8.0
-
-%define	b_v_flufl_lock			7.1.1
-
-%define	b_v_greenlet			2.0.2
-%define	b_v_idna			3.4
-
-# version from EL9
-%define	b_v_importlib_metadata		4.12.0
-
-%define	b_v_isort			5.12.0
-%define	b_v_mako			1.2.4
-%define	b_v_MarkupSafe			2.1.2
-
-# version from EL9
-%define	b_v_networkx			2.6.2
-
-# dropped from Python 3.13.0+
-%define	b_v_nntplib			0.1.3
-
-%define	b_v_oauthlib			3.2.2
-%define	b_v_openid			3.2.0
-%define	b_v_passlib			1.7.4
-
-# version from F40 2.1.8 has build issues
-%define	b_v_pdm_backend			2.0.7
-
-%define	b_v_pdm_pep517			1.1.3
-%define	b_v_psutil			5.9.4
-
-#define	b_v_jwt				2.6.0 # conflicts on EL with python39-cryptography==3.3.1
-%define	b_v_jwt				2.5.0
-
-%define	b_v_pytz			2023.3
-%define	b_v_rcssmin			1.1.1
-%define	b_v_requests_oauthlib		1.3.1
-%define	b_v_robot_detection		0.4
-%define	b_v_setuptools			67.6.1
-%define	b_v_setuptools_scm		7.1.0
-
-#define	b_v_sqlalchemy			2.0.9 # EL8 problem typing_extensions/Concatenate
-%define	b_v_sqlalchemy			1.4.47
-
-%define	b_v_sqlparse			0.4.3
-
-#define	b_v_tomli			2.0.1 # >= 2.x has no setup.py
-#define	b_v_tomli			1.2.3 # >= 1.2.x has no setup.py
-%define	b_v_tomli			1.1.0
-
-#define	b_v_typing_extensions		4.5.0 # >= 4.x has no setup.py / 3.10.0.2 causes dataclass_transform dependency problems
-#define	b_v_typing_extensions		3.10.0.2  # causes dataclass_transform dependency problems
-%define	b_v_typing_extensions		3.7.4.3
-
-%define	b_v_types_cryptography		3.3.23.2
-
-%define	b_v_wcwidth			0.2.6
-%define	b_v_webencodings		0.5.1
-
-# 0.40.0 has issue on EL9 with flit_core
-#define	b_v_wheel			0.40.0
-%define	b_v_wheel			0.38.4
-
-# version from EL9
-%define	b_v_zipp			0.5.1
-
-%define	b_v_zope_component		5.1.0
-%define	b_v_zope_event			4.6
-%define	b_v_zope_hookable		5.4
-%define	b_v_zope_interface		6.0
-
-## BUNDLED VERSIONS
-# dependencies
-%define	b_v_aiosmtpd			1.4.4.post2
-%define	b_v_arrow			1.2.3
-%define	b_v_asgiref			3.6.0
-%define	b_v_authheaders			0.15.2
-%define	b_v_bleach			6.0.0
-%define	b_v_cffi                	1.15.1
-%define	b_v_dkimpy			1.1.1
-%define	b_v_docutils			0.19
-%define	b_v_falcon			3.1.1
-%define	b_v_flufl_bounce		4.0
-%define	b_v_gunicorn			20.1.0
-%define	b_v_lazr_config			2.2.3
-%define	b_v_lazr_delegates		2.1.0
-
-%if %{v2n %{b_v_hyperkitty}} <= %{v2n 1.3.8}
-%define	b_v_mistune			2.0.4
-%else
-%define	b_v_mistune			3.0.2
-%endif
-
-%define	b_v_publicsuffix2		2.20191221
-%define	b_v_pygments			2.14.0
-%define	b_v_rjsmin			1.2.1
-%define	b_v_whoosh			2.7.4
-
-%define	b_v_zope_configuration		4.4.1
-%define	b_v_zope_schema			7.0.1
-%define	b_v_zope_i18nmessageid		6.0.1
-
-%define	b_v_readme_renderer		37.3
-%define	b_v_cmarkgfm			0.8.0
-
-%define	b_v_flufl_i18n			4.1.1
-
-## django dependencies
-%define	b_v_django			4.1.13
-
-%if %{b_v_django_mailman3_num} <= 10311
-%define	b_v_django_allauth		0.58.2
-%else
-%define	b_v_django_allauth		0.59.0
-%endif
-
-%define	b_v_django_appconf		1.0.6
-%define	b_v_django_compressor		4.4
-%define	b_v_django_extensions		3.2.3
-%define	b_v_django_gravatar2		1.4.4
-%define	b_v_django_haystack		3.2.1
-%define	b_v_django_picklefield		3.1
-%define	b_v_django_rest_framework	3.14.0
-%define	b_v_django_q			1.3.9
-
-## django CAPTCHA related
-%define	b_v_django_recaptcha		4.0.0
-%define	b_v_django_hcaptcha		0.2.0
-%define	b_v_django_friendlycaptcha	0.1.8
-%define	b_v_django_turnstile		0.1.0
 
 
 ### HEADER
