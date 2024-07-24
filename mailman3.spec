@@ -397,7 +397,7 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_mako}			mako
 %req_cond_b_i_n_v	0%{?b_e_mailmanclient}		mailmanclient
 %req_cond_b_i_w_v	0%{?b_e_networkx}		networkx >= 2.0
-%req_cond_b_i_n_v	0%{?b_e_mistune}		mistune
+%req_cond_b_i_w_v	0%{?b_e_mistune}		mistune >= %{b_v_mistune}
 %req_cond_b_i_w_v	0%{?b_e_openid}			openid >= 3.0.8
 %req_cond_b_i_n_v	0%{?b_e_passlib}		passlib
 %req_cond_b_i_w_v	0%{?b_e_pdm_backend}		pdm-backend >= 2.0.7
@@ -587,7 +587,13 @@ Requires: 	publicsuffix-list
 %define	b_v_gunicorn			20.1.0
 %define	b_v_lazr_config			2.2.3
 %define	b_v_lazr_delegates		2.1.0
-%define	b_v_mistune			2.0.5
+
+%if %{v2n %{b_v_hyperkitty}} <= %{v2n 1.3.8}
+%define	b_v_mistune			2.0.4
+%else
+%define	b_v_mistune			3.0.2
+%endif
+
 %define	b_v_publicsuffix2		2.20191221
 %define	b_v_pygments			2.14.0
 %define	b_v_rjsmin			1.2.1
@@ -2069,6 +2075,7 @@ echo "Enable timers (will only run if main services are active)"
 - f41+: bundle nntplib=0.1.3 as dropped from Python 3.13.0+
 - wrapper scripts: explicit export PYTHONPATH
 - mailman3.service + mailman3-web.service: add TimeoutStartSec=150
+- adjust mistune 2.0.5 -> 2.0.4 (alignment with Fedora and EL9)
 
 * Sun Jan 14 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-29
 - mailman3-web.service: add ConditionFileNotEmpty
