@@ -2067,7 +2067,10 @@ echo "Enable timers (will only run if main services are active)"
 #- update hyperkitty 1.3.8 -> 1.3.9 # requires mistune >= 3.0.0 which has bundling issues
 
 %changelog
-* Mon Jun 24 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-32
+* Thu Jul 25 2024 Peter Bieringer <pb@bieringer.de>
+- mailman3.service + mailman3-web.service: add ConditionPathIsDirectory
+
+* Wed Jul 24 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-32
 - mailman3.te: add read_lnk_files_pattern for (mailman_mail_t, postfix_etc_t)
 - update django_mailman3 1.3.11 -> 1.3.12 / django-allauth 0.58.2 -> 0.59.0
 - update mailman_web 0.0.8 -> 0.0.9
