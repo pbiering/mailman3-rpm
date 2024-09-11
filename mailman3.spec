@@ -1406,13 +1406,13 @@ cat <<'EOF' >%{buildroot}%{_bindir}/mailman3
 #!/bin/sh
 if [ "$USER" == "root" ]; then
     echo "This command will run under the mailman3 user (mailman3)."
-    su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman $@"
+    su - -s /bin/bash %{mmuser} -c "$0 $*"
 elif [ "$USER" != "%{mmuser}" ]; then
     echo "This command must be run under the mailman 3 user (%{mmuser})."
     exit 1
 else
     export PYTHONPATH=@PYTHONPATH@
-    %{bindir}/mailman $@
+    %{bindir}/mailman $*
 fi
 EOF
 
@@ -1420,13 +1420,13 @@ cat <<'EOF' >%{buildroot}%{_bindir}/mailman3-web
 #!/bin/sh
 if [ "$USER" == "root" ]; then
     echo "This command will run under the mailman3 user (mailman3)."
-    su - -s /bin/bash %{mmuser} -c "%{bindir}/mailman-web $@"
+    su - -s /bin/bash %{mmuser} -c "$0 $*"
 elif [ "$USER" != "%{mmuser}" ]; then
     echo "This command must be run under the mailman3 user (%{mmuser})."
     exit 1
 else
     export PYTHONPATH=@PYTHONPATH@
-    %{bindir}/mailman-web $@
+    %{bindir}/mailman-web $*
 fi
 EOF
 
