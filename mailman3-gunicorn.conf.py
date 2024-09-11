@@ -7,6 +7,8 @@ pidfile = "@RUNDIR@/gunicorn.pid"
 accesslog = "@LOGDIR@/access.log"
 errorlog = "@LOGDIR@/error.log"
 
+timeout = 60
+
 # Logformat add X-Forwarded-For (useful if running behind reverse proxy)
 # https://docs.gunicorn.org/en/stable/settings.html
 access_log_format = '%(h)s %({X-Forwarded-For}i)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
