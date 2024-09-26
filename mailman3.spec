@@ -432,19 +432,19 @@ Requires:       python3 >= 3.9
 # systemctl/timer/disable-if-active
 %define systemctl_timer_disable_if_active() { \
 if systemctl -q is-active %1; then \
-	echo "Timer enabled (disable now)    : %1"; \
-	systemctl disable --now %1; \
+echo "Timer enabled (disable now)    : %1"; \
+systemctl disable --now %1; \
 else \
-	echo "Timer not active (nothing todo): %1"; \
+echo "Timer not active (nothing todo): %1"; \
 fi }
 
 # systemctl/timer/enable-if-not-active
 %define systemctl_timer_enable_if_not_active() { \
 if systemctl -q is-active %1; then \
-	echo "Timer already enabled (nothing todo): %1"; \
+echo "Timer already enabled (nothing todo): %1"; \
 else \
-	echo "Timer will be enabled now           : %1"; \
-	systemctl enable --now %1; \
+echo "Timer will be enabled now           : %1"; \
+systemctl enable --now %1; \
 fi }
 
 # requirement conditional build-only without version
@@ -896,12 +896,12 @@ Requires:	/usr/bin/timeout
 
 ## MACROS for prepare/build/install
 %define get_source(n:) %{lua:
-	n = tonumber(rpm.expand("%{-n:%{-n*}}"))
-	for i, s in ipairs(source_nums) do
-		if (n == s) then
-			print(sources[i])
-		end
+n = tonumber(rpm.expand("%{-n:%{-n*}}"))
+for i, s in ipairs(source_nums) do
+	if (n == s) then
+		print(sources[i])
 	end
+end
 }
 
 %define prep_cond() (\
@@ -945,7 +945,7 @@ terms of the GNU General Public License (GPL) version 3 or later.  The name of
 this software is spelled 'Mailman' with a leading capital 'M' but with a lower
 case second `m'.  Any other spelling is incorrect.
 * THIS package contains Mailman 3 and all required but by OS not supported modules
- USER_SITE: %{usersitedir}
+USER_SITE: %{usersitedir}
 %if 0%{mailman3_separated}
 * THIS package can coexist with Mailman 2
 %else
@@ -956,17 +956,17 @@ user/group   : %{mmuser}/%{mmgroup}
 directory    : %{vardir}
 
 it contains also
- mailman-web       : %{version_mailman_web} using 'gunicorn'
- mailman-hyperkitty: %{version_mailman_hyperkitty}
+mailman-web       : %{version_mailman_web} using 'gunicorn'
+mailman-hyperkitty: %{version_mailman_hyperkitty}
 
-important forms are extended with CAPTCHA protection
- recaptcha hcaptcha friendlycaptcha turnstile
+important forms are extended with CAPTCHA protection:
+recaptcha hcaptcha friendlycaptcha turnstile
 
-default configuration
- database: sqlite3
- indexer : whoosh
- CAPTCHA : NONE (requires custom secret+site key)
- 
+default configuration:
+database: sqlite3
+indexer : whoosh
+CAPTCHA : NONE (requires custom secret+site key)
+
 preconfigured ports (required for SELinux)
 LMTP         : %{lmtpport}
 REST-API     : %{restapiport}
@@ -1113,9 +1113,9 @@ cd %{builddir}
 
 cd SELinux
 for selinuxvariant in %{selinux_variants}; do
-  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
-  %{__mv} %{pname}.pp %{pname}.pp.${selinuxvariant}
-  make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile clean
+make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile
+%{__mv} %{pname}.pp %{pname}.pp.${selinuxvariant}
+make NAME=${selinuxvariant} -f /usr/share/selinux/devel/Makefile clean
 done
 
 
@@ -1405,28 +1405,28 @@ install -d -p %{buildroot}%{_bindir}
 cat <<'EOF' >%{buildroot}%{_bindir}/mailman3
 #!/bin/sh
 if [ "$USER" == "root" ]; then
-    echo "This command will run under the mailman3 user (mailman3)."
-    su - -s /bin/bash %{mmuser} -c "$0 $*"
+echo "This command will run under the mailman3 user (mailman3)."
+su - -s /bin/bash %{mmuser} -c "$0 $*"
 elif [ "$USER" != "%{mmuser}" ]; then
-    echo "This command must be run under the mailman 3 user (%{mmuser})."
-    exit 1
+echo "This command must be run under the mailman 3 user (%{mmuser})."
+exit 1
 else
-    export PYTHONPATH=@PYTHONPATH@
-    %{bindir}/mailman $*
+export PYTHONPATH=@PYTHONPATH@
+%{bindir}/mailman $*
 fi
 EOF
 
 cat <<'EOF' >%{buildroot}%{_bindir}/mailman3-web
 #!/bin/sh
 if [ "$USER" == "root" ]; then
-    echo "This command will run under the mailman3 user (mailman3)."
-    su - -s /bin/bash %{mmuser} -c "$0 $*"
+echo "This command will run under the mailman3 user (mailman3)."
+su - -s /bin/bash %{mmuser} -c "$0 $*"
 elif [ "$USER" != "%{mmuser}" ]; then
-    echo "This command must be run under the mailman3 user (%{mmuser})."
-    exit 1
+echo "This command must be run under the mailman3 user (%{mmuser})."
+exit 1
 else
-    export PYTHONPATH=@PYTHONPATH@
-    %{bindir}/mailman-web $*
+export PYTHONPATH=@PYTHONPATH@
+%{bindir}/mailman-web $*
 fi
 EOF
 
@@ -1456,7 +1456,7 @@ cat %{PATCH929} | patch -p 1 -d %{buildroot}%{sitelibdir}
 
 # enforce "python" to "python3"
 %{__grep} --include='*.py' --include='*.py-tpl' -l -r "env python$" %{buildroot}%{sitelibdir} | while read file; do
-	%{__sed} -i -e 's,env python$,env python3,g' $file
+%{__sed} -i -e 's,env python$,env python3,g' $file
 done
 
 # compile all python modules
@@ -1468,9 +1468,9 @@ python%{python3_version} -m compileall -q -s %{buildroot} %{buildroot}%{sitelibd
 
 # replace dedicated installed file with softlink to publicsuffix-list (see also python-publicsuffix2.spec)
 find %{buildroot}%{sitelibdir} -type f -name public_suffix_list.dat | while read f; do
-	echo "replace dedicated installed files with softlink: $f"
-	%{__rm} $f
-	%{__ln_s} %{_datarootdir}/publicsuffix/public_suffix_list.dat $f
+echo "replace dedicated installed files with softlink: $f"
+%{__rm} $f
+%{__ln_s} %{_datarootdir}/publicsuffix/public_suffix_list.dat $f
 done
 
 
@@ -1488,39 +1488,39 @@ install -d -p %{buildroot}%{usersitedir}
 # Add readme files
 cat <<END >%{buildroot}%{basedir}/README-USER_SITE.txt
 Bundled Python modules are located in
- %{usersitedir}
+%{usersitedir}
 END
 
 cat <<END >%{buildroot}%{vardir}/README-USER_SITE.txt
 Bundled Python modules are located in
- %{usersitedir}
+%{usersitedir}
 which is softliked to
- %{sharedstatesitedir}
+%{sharedstatesitedir}
 END
 
 # move noarch
 for f in %{buildroot}%{sitelibdir}/*; do
-	%{__mv} $f %{buildroot}%{usersitedir}/
+%{__mv} $f %{buildroot}%{usersitedir}/
 done
 %{__rm} -d %{buildroot}%{sitelibdir}
 
 # move arch dependent
 for f in %{buildroot}%{sitearchdir}/*; do
-	entry=$(basename "$f")
-	if [ ! -d %{buildroot}%{usersitedir}/$entry ]; then
-		# directory not exiting
-		%{__mv} $f %{buildroot}%{usersitedir}/
+entry=$(basename "$f")
+if [ ! -d %{buildroot}%{usersitedir}/$entry ]; then
+	# directory not exiting
+	%{__mv} $f %{buildroot}%{usersitedir}/
+else
+	if [ -d $f ]; then
+		# directory exiting, move subdirectories only
+		for s in $f/*; do
+			%{__mv} $s %{buildroot}%{usersitedir}/$entry/
+		done
+		%{__rm} -d $f
 	else
-		if [ -d $f ]; then
-			# directory exiting, move subdirectories only
-			for s in $f/*; do
-				%{__mv} $s %{buildroot}%{usersitedir}/$entry/
-			done
-			%{__rm} -d $f
-		else
-			echo "Cannot move into %{buildroot}%{usersitedir}: $f"
-		fi
+		echo "Cannot move into %{buildroot}%{usersitedir}: $f"
 	fi
+fi
 done
 
 # remove any header files installed by bundles
@@ -1543,9 +1543,9 @@ install -D -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/logrotate.d/%{pname}
 
 ## SELinux
 for selinuxvariant in %{selinux_variants}; do
-  install -d %{buildroot}%{_datadir}/selinux/${selinuxvariant}
-  install -p -m 644 SELinux/%{pname}.pp.${selinuxvariant} \
-    %{buildroot}%{_datadir}/selinux/${selinuxvariant}/%{pname}.pp
+install -d %{buildroot}%{_datadir}/selinux/${selinuxvariant}
+install -p -m 644 SELinux/%{pname}.pp.${selinuxvariant} \
+%{buildroot}%{_datadir}/selinux/${selinuxvariant}/%{pname}.pp
 done
 hardlink -cv %{buildroot}%{_datadir}/selinux
 
@@ -1612,12 +1612,12 @@ install -D -m 0644 %{SOURCE416} %{buildroot}%{_unitdir}/%{basename:%{SOURCE416}}
 %endif
 
 find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesdir} %{buildroot}%{_bindir} -type f | while read file; do
-	# replace directories
-	%{__sed} -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g;s,@SYSCONFDIR@,%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' $file
-	# replace ports
-	%{__sed} -i -e 's,@WEBPORT@,%{webport},g;s,@LMTPPORT@,%{lmtpport},g;s,@RESTAPIPORT@,%{restapiport},g' $file
+# replace directories
+%{__sed} -i -e 's,@LOGDIR@,%{logdir},g;s,@BINDIR@,%{bindir},g;s,@BASEDIR@,%{basedir},g;s,@RUNDIR@,%{rundir},g;s,@VARDIR@,%{vardir},g;s,@SPOOLDIR@,%{spooldir},g;s,@ETCDIR@,%{etcdir},g;s,@LOCKDIR@,%{lockdir},g;s,@SYSCONFDIR@,%{sysconfdir},g;s,@MMUSER@,%{mmuser},g;s,@MMGROUP@,%{mmgroup},g' $file
+# replace ports
+%{__sed} -i -e 's,@WEBPORT@,%{webport},g;s,@LMTPPORT@,%{lmtpport},g;s,@RESTAPIPORT@,%{restapiport},g' $file
 
-	%{__sed} -i -e 's,@BINDIR_GUNICORN@,%{bindir_gunicorn},g;s,@PYTHONPATH@,%{pythonpath},g' $file
+%{__sed} -i -e 's,@BINDIR_GUNICORN@,%{bindir_gunicorn},g;s,@PYTHONPATH@,%{pythonpath},g' $file
 done
 
 
@@ -1638,9 +1638,9 @@ install -D -m 0640 %{SOURCE1} %{buildroot}%{_sysconfdir}/mailman.cfg.check
 echo "Check whether 'mailman' is at least able to display online help"
 python%{python3_version} %{buildroot}%{bindir}/mailman --config %{buildroot}%{_sysconfdir}/mailman.cfg.check --help >/dev/null
 if [ $? -eq 0 ]; then
-  echo "Check whether 'mailman' is at least able to display online help - SUCCESSFUL"
+echo "Check whether 'mailman' is at least able to display online help - SUCCESSFUL"
 else
-  exit 1
+exit 1
 fi
 
 ## mailman-web
@@ -1656,19 +1656,19 @@ export MAILMAN_WEB_CONFIG
 set +x
 output=$(python%{python3_version} %{buildroot}%{bindir}/mailman-web --help)
 if [ $? -eq 0 ]; then
-  echo "Check whether 'mailman-web' is at least able to display online help - SUCCESSFUL"
+echo "Check whether 'mailman-web' is at least able to display online help - SUCCESSFUL"
 
-  for module in postorius hyperkitty staticfiles sessions rest_framework haystack django_q django_extensions contenttypes compressor auth account; do
-    echo -n "Check for module in 'mailman-web --help': $module"
-    if echo "$output" | %{__grep} -F -q "[$module]"; then
-      echo " OK"
-    else
-      echo " NOT FOUND"
-      exit 1
-    fi
-  done
+for module in postorius hyperkitty staticfiles sessions rest_framework haystack django_q django_extensions contenttypes compressor auth account; do
+echo -n "Check for module in 'mailman-web --help': $module"
+if echo "$output" | %{__grep} -F -q "[$module]"; then
+echo " OK"
 else
-  exit 1
+echo " NOT FOUND"
+exit 1
+fi
+done
+else
+exit 1
 fi
 set -x
 
@@ -1683,63 +1683,63 @@ set -x
 %pre
 # User & Group
 if getent group %{mmgroup} >/dev/null; then
-	echo "System group for %{pname} already exists: %{mmgroup}"
+echo "System group for %{pname} already exists: %{mmgroup}"
 else
-	if [ -n "%{mmgroupid}" ]; then
-		echo "System group for %{pname} needs to be created: %{mmgroup}/%{mmgroupid}"
-		groupadd -r -g %{mmgroupid} %{mmgroup} >/dev/null
-	else
-		echo "System group for %{pname} needs to be created: %{mmgroup}"
-		groupadd -r %{mmgroup} >/dev/null
-	fi
+if [ -n "%{mmgroupid}" ]; then
+	echo "System group for %{pname} needs to be created: %{mmgroup}/%{mmgroupid}"
+	groupadd -r -g %{mmgroupid} %{mmgroup} >/dev/null
+else
+	echo "System group for %{pname} needs to be created: %{mmgroup}"
+	groupadd -r %{mmgroup} >/dev/null
+fi
 fi
 
 if getent passwd %{mmuser} >/dev/null; then
-	echo "System user  for %{pname} already exists: %{mmuser}"
-	homedir=$(getent passwd %{mmuser} | awk -F: '{ print $6 }')
-	if [ "$homedir" != "%{vardir}" ]; then
-		echo "System user  for %{pname} already exists: %{mmuser} but has not required home directory: %{vardir} (current: $homedir)"
-		exit 1
-	fi
+echo "System user  for %{pname} already exists: %{mmuser}"
+homedir=$(getent passwd %{mmuser} | awk -F: '{ print $6 }')
+if [ "$homedir" != "%{vardir}" ]; then
+	echo "System user  for %{pname} already exists: %{mmuser} but has not required home directory: %{vardir} (current: $homedir)"
+	exit 1
+fi
 else
-	if [ -n "%{mmuserid}" ]; then
-		echo "System user  for %{pname} needs to be created: %{mmuser}/%{mmuserid}"
-    		useradd -r -u %{mmuserid} -g %{mmgroup} -d %{vardir} -s /sbin/nologin -c "Mailman3, the mailing-list manager" %{mmuser} >/dev/null
-	else
-		echo "System user  for %{pname} needs to be created: %{mmuser}"
-    		useradd -r -g %{mmgroup} -d %{vardir} -s /sbin/nologin -c "Mailman3, the mailing-list manager" %{mmuser} >/dev/null
-	fi
+if [ -n "%{mmuserid}" ]; then
+	echo "System user  for %{pname} needs to be created: %{mmuser}/%{mmuserid}"
+	useradd -r -u %{mmuserid} -g %{mmgroup} -d %{vardir} -s /sbin/nologin -c "Mailman3, the mailing-list manager" %{mmuser} >/dev/null
+else
+	echo "System user  for %{pname} needs to be created: %{mmuser}"
+	useradd -r -g %{mmgroup} -d %{vardir} -s /sbin/nologin -c "Mailman3, the mailing-list manager" %{mmuser} >/dev/null
+fi
 fi
 
 # SELinux
 for selinuxvariant in %{selinux_variants}; do
-    %selinux_relabel_pre -s ${selinuxvariant}
+%selinux_relabel_pre -s ${selinuxvariant}
 done
 
 if [ $1 -gt 1 ] ; then
-	%if 0%{?mailman3_cron}
-		## crontab -> nothing todo
-	%else
-		echo "Disable timers during upgrade"
-		# mailman
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE310}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE311}}
-		# mailman-web
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE410}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE411}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE412}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE413}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE414}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE415}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE416}}
-	%endif
+%if 0%{?mailman3_cron}
+	## crontab -> nothing todo
+%else
+	echo "Disable timers during upgrade"
+	# mailman
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE310}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE311}}
+	# mailman-web
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE410}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE411}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE412}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE413}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE414}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE415}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE416}}
+%endif
 fi
 
 
 %post
 # SELinux
 for selinuxvariant in %{selinux_variants}; do
-    %selinux_modules_install -s ${selinuxvariant} %{_datadir}/selinux/${selinuxvariant}/%{pname}.pp || :
+%selinux_modules_install -s ${selinuxvariant} %{_datadir}/selinux/${selinuxvariant}/%{pname}.pp || :
 done
 
 declare -A portlabel
@@ -1748,44 +1748,44 @@ portlabel[%{lmtpport}]="mailman_lmtp_port_t"
 portlabel[%{webport}]="mailman_web_port_t"
 
 for port in ${!portlabel[@]}; do
-    if semanage port -l | %{__grep} -q "^${portlabel[$port]}\s*tcp\s*$port$"; then
-        echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]}) already done"
-    else
-        echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]})"
-        semanage port -a -t ${portlabel[$port]} -p tcp $port
-    fi
+if semanage port -l | %{__grep} -q "^${portlabel[$port]}\s*tcp\s*$port$"; then
+echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]}) already done"
+else
+echo "SELinux adjustments for %{pname} port tcp/$port (${portlabel[$port]})"
+semanage port -a -t ${portlabel[$port]} -p tcp $port
+fi
 done
 
 # SELinux
 for dir in %{basedir} %{vardir} %{logdir} %{lockdir} %{rundir} %{etcdir}; do
-    echo "SELinux fixfiles for: %{pname} ($dir)"
-    /usr/sbin/fixfiles -R %{name} restore $dir >/dev/null
+echo "SELinux fixfiles for: %{pname} ($dir)"
+/usr/sbin/fixfiles -R %{name} restore $dir >/dev/null
 done
 
 # Owner
 find %{spooldir} %{vardir} %{logdir} %{lockdir} %{rundir} %{_sysconfdir}/mailman.cfg ! -name README-USER_SITE.txt -a ! -name site-packages -a ! -user %{mmuser} | while read entry; do
-	echo "Adjust user to %{mmuser} of entry: $entry"
-	chown %{mmuser} "$entry"
+echo "Adjust user to %{mmuser} of entry: $entry"
+chown %{mmuser} "$entry"
 done
 
 # Group
 find %{spooldir} %{vardir} %{logdir} %{lockdir} %{rundir} %{_sysconfdir}/mailman.cfg ! -name README-USER_SITE.txt -a ! -name site-packages -a ! -group %{mmgroup} -a ! -group mail | while read entry; do
-	echo "Adjust group to %{mmgroup} of entry: $entry"
-	chgrp %{mmgroup} "$entry"
+echo "Adjust group to %{mmgroup} of entry: $entry"
+chgrp %{mmgroup} "$entry"
 done
 
 # replace password/key placeholders
 ymd=$(date '+%Y%m%d')
 sed_expression=""
 for entry in SECRET_KEY MAILMAN_ARCHIVER_KEY RESTAPIPASS; do
-	pass="date.$ymd.secret.$(uuidgen | md5sum | base64 | cut -c 1-16)"
-	[ -n "$sed_expression" ] && sed_expression="${sed_expression};"
-	sed_expression="${sed_expression}s,@${entry}@,$pass,g"
+pass="date.$ymd.secret.$(uuidgen | md5sum | base64 | cut -c 1-16)"
+[ -n "$sed_expression" ] && sed_expression="${sed_expression};"
+sed_expression="${sed_expression}s,@${entry}@,$pass,g"
 done
-	
+
 ## substitute all placeholders
 find %{_sysconfdir}/mailman.cfg %{etcdir} -type f | while read file; do
-	%{__sed} -i -e "$sed_expression" $file
+%{__sed} -i -e "$sed_expression" $file
 done
 
 ## systemd/service
@@ -1802,64 +1802,64 @@ postfix_check[relay_domains]="hash:/var/lib/mailman3/data/postfix_domains"
 declare -A postfix_result
 
 for check in ${!postfix_check[*]}; do
-	if postconf -h $check | %{__grep} -q "${postfix_check[$check]}"; then
-		postfix_result[$check]=1
-	else
-		postfix_result[$check]=0
-	fi
+if postconf -h $check | %{__grep} -q "${postfix_check[$check]}"; then
+	postfix_result[$check]=1
+else
+	postfix_result[$check]=0
+fi
 done
 
 echo
 echo "## RESULT of postfix configuration CHECK:"
 
 if [ ${postfix_result[transport_maps]} -eq 1 ]; then
-	echo "OK     : found 'transport_maps' extension: ${postfix_check[transport_maps]}"
+echo "OK     : found 'transport_maps' extension: ${postfix_check[transport_maps]}"
 else
-	echo "WARN   : missing 'transport_maps' extension: ${postfix_check[transport_maps]}"
+echo "WARN   : missing 'transport_maps' extension: ${postfix_check[transport_maps]}"
 fi
 
 if [ ${postfix_result[virtual_alias_maps]} -eq 1 -a ${postfix_result[local_recipient_maps]} -eq 0 ]; then
-	echo "OK     : found 'virtual_alias_maps' extension: ${postfix_check[virtual_alias_maps]}"
+echo "OK     : found 'virtual_alias_maps' extension: ${postfix_check[virtual_alias_maps]}"
 elif [ ${postfix_result[virtual_alias_maps]} -eq 0 -a ${postfix_result[local_recipient_maps]} -eq 1 ]; then
-	echo "OK     : found 'local_recipient_maps' extension: ${postfix_check[local_recipient_maps]}"
+echo "OK     : found 'local_recipient_maps' extension: ${postfix_check[local_recipient_maps]}"
 elif [ ${postfix_result[virtual_alias_maps]} -eq 0 -a ${postfix_result[local_recipient_maps]} -eq 0 ]; then
-	echo "WARN   : missing 'virtual_alias_maps' or 'local_recipient_maps extension'"
+echo "WARN   : missing 'virtual_alias_maps' or 'local_recipient_maps extension'"
 elif [ ${postfix_result[virtual_alias_maps]} -eq 1 -a ${postfix_result[local_recipient_maps]} -eq 1 ]; then
-	echo "STRANGE: found 'virtual_alias_maps' AND 'local_recipient_maps' extension"
+echo "STRANGE: found 'virtual_alias_maps' AND 'local_recipient_maps' extension"
 fi
 
 if [ ${postfix_result[relay_domains]} -eq 1 ]; then
-	echo "OK     : found 'relay_domains' extension: ${postfix_check[relay_domains]}"
+echo "OK     : found 'relay_domains' extension: ${postfix_check[relay_domains]}"
 else
-	echo "WARN   : missing 'relay_domains' extension: ${postfix_check[relay_domains]}"
+echo "WARN   : missing 'relay_domains' extension: ${postfix_check[relay_domains]}"
 fi
 
 if postconf -h recipient_delimiter | %{__grep} -q '^+$'; then
-	echo "OK     : found 'recipient_delimiter' containing '+'"
+echo "OK     : found 'recipient_delimiter' containing '+'"
 else
-	echo "WARN   : missing 'recipient_delimiter' extension with '+'"
+echo "WARN   : missing 'recipient_delimiter' extension with '+'"
 fi
 
 # autoadjust settings.py related to recaptcha 3.0.0 -> 4.0.0
 if grep -q -F "INSTALLED_APPS.append('captcha')" %{etcdir}/settings.py; then
-	echo "Autoadjust required for file related to recaptcha 3.0.0 -> 4.0.0: %{etcdir}/settings.py"
-	%{__sed} -i.pre_recaptcha_4.0.0 -e "s/INSTALLED_APPS\.append('captcha')/INSTALLED_APPS\.append('django_recaptcha')/" %{etcdir}/settings.py
+echo "Autoadjust required for file related to recaptcha 3.0.0 -> 4.0.0: %{etcdir}/settings.py"
+%{__sed} -i.pre_recaptcha_4.0.0 -e "s/INSTALLED_APPS\.append('captcha')/INSTALLED_APPS\.append('django_recaptcha')/" %{etcdir}/settings.py
 else
-	echo "Adjust already done for file related to recaptcha 3.0.0 -> 4.0.0: %{etcdir}/settings.py"
+echo "Adjust already done for file related to recaptcha 3.0.0 -> 4.0.0: %{etcdir}/settings.py"
 fi
 
 ## Other notifications
 cat <<END
 
 ## CHECK ALSO: %{etcdir}/settings.py 
- - ALLOWED_HOSTS
- - ADMINS
- - CSRF_TRUSTED_ORIGINS
- - *CAPTCHA* service configuration+activation
+- ALLOWED_HOSTS
+- ADMINS
+- CSRF_TRUSTED_ORIGINS
+- *CAPTCHA* service configuration+activation
 
 ## CHECK ALSO: %{etcdir}/settings.py 
- - DEFAULT_FROM_EMAIL
- - SERVER_EMAIL
+- DEFAULT_FROM_EMAIL
+- SERVER_EMAIL
 Current:
 END
 
@@ -1868,7 +1868,7 @@ END
 cat <<END
 
 ## CHECK ALSO: %{_sysconfdir}/mailman.cfg
- - site_owner
+- site_owner
 Current:
 END
 
@@ -1877,7 +1877,7 @@ END
 cat <<END
 
 ## CHECK ALSO: %{_httpd_confdir}/%{pname}.conf
- - Access Control for django's admin portal
+- Access Control for django's admin portal
 END
 
 echo
@@ -1885,22 +1885,22 @@ echo
 
 %pretrans
 if [ $1 -gt 1 ] ; then
-	%if 0%{?mailman3_cron}
-		## crontab -> nothing todo
-	%else
-		echo "Disable timers during upgrade"
-		# mailman
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE310}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE311}}
-		# mailman-web
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE410}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE411}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE412}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE413}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE414}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE415}}
-		%systemctl_timer_disable_if_active %{basename:%{SOURCE416}}
-	%endif
+%if 0%{?mailman3_cron}
+	## crontab -> nothing todo
+%else
+	echo "Disable timers during upgrade"
+	# mailman
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE310}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE311}}
+	# mailman-web
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE410}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE411}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE412}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE413}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE414}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE415}}
+	%systemctl_timer_disable_if_active %{basename:%{SOURCE416}}
+%endif
 fi
 
 
@@ -1928,14 +1928,14 @@ fi
 
 # SELinux
 if [ $1 -eq 0 ] ; then
-    semanage port -l | %{__grep} "^mailman_.*\s*tcp\s*" | while read label proto port; do
-        echo "SELinux delete for %{pname} port $proto/$port ($label)"
-        semanage port -d -p $proto $port
-    done
+semanage port -l | %{__grep} "^mailman_.*\s*tcp\s*" | while read label proto port; do
+echo "SELinux delete for %{pname} port $proto/$port ($label)"
+semanage port -d -p $proto $port
+done
 fi
 
 for selinuxvariant in %{selinux_variants}; do
-	%selinux_modules_uninstall -s ${selinuxvariant} %{pname} || :
+%selinux_modules_uninstall -s ${selinuxvariant} %{pname} || :
 done
 
 
@@ -1965,7 +1965,7 @@ done
 %posttrans
 # SELinux
 for selinuxvariant in %{selinux_variants}; do
-    %selinux_relabel_post -s ${selinuxvariant}
+%selinux_relabel_post -s ${selinuxvariant}
 done
 
 # webinterface setup
