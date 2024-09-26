@@ -2064,11 +2064,13 @@ echo "Enable timers (will only run if main services are active)"
 %endif
 
 #### PENDING
-#- update hyperkitty 1.3.8 -> 1.3.9 # requires mistune >= 3.0.0 which has bundling issues
 
 %changelog
 * Thu Jul 25 2024 Peter Bieringer <pb@bieringer.de>
 - mailman3.service + mailman3-web.service: add ConditionPathIsDirectory
+- update hyperkitty 1.3.8 -> 1.3.9
+- update mistune 2.0.4 -> 3.0.2 (required by hyperkitty >= 1.3.9)
+- el8+: bundle setuptools 67.6.1 (required for mistune >= 3)
 
 * Wed Jul 24 2024 Peter Bieringer <pb@bieringer.de> 3.3.9-32
 - mailman3.te: add read_lnk_files_pattern for (mailman_mail_t, postfix_etc_t)
