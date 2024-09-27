@@ -106,7 +106,7 @@
 %define	b_v_networkx			2.6.2
 
 # dropped from Python 3.13.0+
-#EOL#define	b_v_nntplib			0.1.3
+%define	b_v_nntplib			3.12.2
 
 %define	b_v_oauthlib			3.2.2
 %define	b_v_openid			3.2.0
@@ -425,10 +425,10 @@ Requires:       python3 >= 3.9
 %define	b_e_django_haystack		1
 %endif
 
-#EOL#if (0#{?fedora} >= 41)
+%if (0%{?fedora} >= 41)
 # nntplib dropped from Python 3.13.0+
-#define	b_e_nntplib 			1
-#endif
+%define	b_e_nntplib 			1
+%endif
 
 ### Requirements
 
@@ -791,7 +791,7 @@ Source2052:	%{__pypi_url}z/zope.interface/zope.interface-%{b_v_zope_interface}.t
 Source2055:	%{__pypi_url}t/types-cryptography/types-cryptography-%{b_v_types_cryptography}.tar.gz
 
 # Python 3.13.0+
-#EOL#Source2080:	#{__pypi_url}n/nntplib/nntplib-#{b_v_nntplib}.tar.gz
+Source2080:	%{__pypi_url}s/standard-nntplib/standard_nntplib-%{b_v_nntplib}.tar.gz
 
 Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{b_v_mailmanclient}.tar.gz
 
@@ -1054,7 +1054,7 @@ popd
 %prep_cond "%{?b_e_isort}"                  2016
 %prep_cond "%{?b_e_mako}"                   2017
 %prep_cond "%{?b_e_networkx}"               2019
-#EOL#prep_cond "%{?b_e_nntplib}"                2080
+%prep_cond "%{?b_e_nntplib}"                2080
 %prep_cond "%{?b_e_oauthlib}"               2020
 %prep_cond "%{?b_e_passlib}"                2022
 %prep_cond "%{?b_e_pdm_pep517}"             2023
@@ -1113,6 +1113,12 @@ popd
 # el8: zope.i18nmessageid
 cat %{PATCH1024} | patch -p 1 -d %{builddir}/zope.i18nmessageid-%{b_v_zope_i18nmessageid}
 %endif
+
+%if (0%{?fedora} >= 41)
+# f41+: deactivate warnings._deprecated
+%{__sed} -i -e 's/^\(warnings._deprecated\)/#\1/g' %{builddir}/standard_nntplib-%{b_v_nntplib}/nntplib/__init__.py
+%endif
+
 
 ## SELinux
 %{__mkdir} SELinux
@@ -1240,7 +1246,7 @@ popd
 %build_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
 %build_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune		pyproject
 %build_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
-#EOL#build_cond "%{?b_e_nntplib}"		     "%{?b_v_nntplib}"                nntplib		pyproject
+%build_cond "%{?b_e_nntplib}"		     "%{?b_v_nntplib}"                standard_nntplib	pyproject
 %build_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %build_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %build_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
@@ -1354,7 +1360,7 @@ popd
 %install_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
 %install_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune			pyproject
 %install_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
-#EOL#install_cond "%{?b_e_nntplib}"                "%{?b_v_nntplib}"                nntplib			pyproject
+%install_cond "%{?b_e_nntplib}"                "%{?b_v_nntplib}"                standard_nntplib	pyproject
 %install_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %install_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %install_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
@@ -2085,7 +2091,7 @@ echo "Enable timers (will only run if main services are active)"
 
 %changelog
 * Tue Sep 24 2024 Peter Bieringer <pb@bieringer.de> - 3.3.9-34
-- debundle obsolete nntplib (no longer available on PyPI)
+- f41+: replace obsolete nntplib by standard-nntplib 3.12.2 (and disable warnings._deprecated)
 - update hyperkitty 1.3.9 -> 1.3.12
 - update postorius 1.3.10 -> 1.3.13
 - update django-mailman3 1.3.12 -> 1.3.15
