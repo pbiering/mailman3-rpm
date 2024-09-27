@@ -26,7 +26,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 32
+%global release_token 34
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.9
@@ -42,10 +42,9 @@
 
 ## BUNDLED VERSIONS
 # base
-%define	b_v_postorius			1.3.10
+%define	b_v_postorius			1.3.13
 
-%define	b_v_hyperkitty			1.3.8
-#define	b_v_hyperkitty			1.3.9 # requires mistune >= 3.0.0 which has bundling issues
+%define	b_v_hyperkitty			1.3.12
 
 %if %{v2n %{b_v_hyperkitty}} <= %{v2n 1.3.8}
 %define name_hyperkitty			HyperKitty
@@ -56,7 +55,7 @@
 %define	b_v_mailmanclient		3.3.5
 
 ## django mailman related
-%define	b_v_django_mailman3		1.3.12
+%define	b_v_django_mailman3		1.3.15
 
 %define b_v_django_mailman3_num		%(echo "%{b_v_django_mailman3}" | awk -F. '{ print (($1 * 100) + $2) * 100 + $3 }')
 
@@ -107,7 +106,7 @@
 %define	b_v_networkx			2.6.2
 
 # dropped from Python 3.13.0+
-%define	b_v_nntplib			0.1.3
+#EOL#define	b_v_nntplib			0.1.3
 
 %define	b_v_oauthlib			3.2.2
 %define	b_v_openid			3.2.0
@@ -196,7 +195,7 @@
 %define	b_v_flufl_i18n			4.1.1
 
 ## django dependencies
-%define	b_v_django			4.1.13
+%define	b_v_django			4.2.16
 
 %if %{b_v_django_mailman3_num} <= 10311
 %define	b_v_django_allauth		0.58.2
@@ -397,6 +396,12 @@ Requires:       python3 >= 3.9
 %if %{v2n %{b_v_hyperkitty}} >= %{v2n 1.3.9}
 # mistune >= 3.0 not packaged so far in Fedora <=41 and EL <= 9
 %define	b_e_mistune			1
+
+%if 0%{?rhel} <= 9
+# EL <= 9 has setuptools <= 53 causing issues when bundling mistune >= 3
+%define b_e_setuptools		 	1
+%endif
+
 %endif
 %endif
 
@@ -420,10 +425,10 @@ Requires:       python3 >= 3.9
 %define	b_e_django_haystack		1
 %endif
 
-%if (0%{?fedora} >= 41)
+#EOL#if (0#{?fedora} >= 41)
 # nntplib dropped from Python 3.13.0+
-%define	b_e_nntplib 			1
-%endif
+#define	b_e_nntplib 			1
+#endif
 
 ### Requirements
 
@@ -786,12 +791,14 @@ Source2052:	%{__pypi_url}z/zope.interface/zope.interface-%{b_v_zope_interface}.t
 Source2055:	%{__pypi_url}t/types-cryptography/types-cryptography-%{b_v_types_cryptography}.tar.gz
 
 # Python 3.13.0+
-Source2080:	%{__pypi_url}n/nntplib/nntplib-%{b_v_nntplib}.tar.gz
+#EOL#Source2080:	#{__pypi_url}n/nntplib/nntplib-#{b_v_nntplib}.tar.gz
 
 Source2090:	%{__pypi_url}m/mailmanclient/mailmanclient-%{b_v_mailmanclient}.tar.gz
 
 Patch3000:	mailman3-haystack-whoosh_backend-PR1870.patch
 Patch3001:	mailman3-whoosh-whoosh3.patch
+
+Patch1024:	zope.i18nmessageid-setuptools.patch
 
 
 ## CAPTCHA enabling patches
@@ -813,7 +820,7 @@ Patch929:	django_recaptcha-4.0.0-broken-v2.patch
 
 ## Arch adjustments
 %define noarch 1
- 
+
 # has binary packages
 %{?b_e_cmarkgfm:%define noarch 0}
 %{?b_e_cffi:%define noarch 0}
@@ -1047,7 +1054,7 @@ popd
 %prep_cond "%{?b_e_isort}"                  2016
 %prep_cond "%{?b_e_mako}"                   2017
 %prep_cond "%{?b_e_networkx}"               2019
-%prep_cond "%{?b_e_nntplib}"                2080
+#EOL#prep_cond "%{?b_e_nntplib}"                2080
 %prep_cond "%{?b_e_oauthlib}"               2020
 %prep_cond "%{?b_e_passlib}"                2022
 %prep_cond "%{?b_e_pdm_pep517}"             2023
@@ -1061,13 +1068,15 @@ popd
 %prep_cond "%{?b_e_rcssmin}"                2031
 %prep_cond "%{?b_e_requests_oauthlib}"      2034
 %prep_cond "%{?b_e_robot_detection}"        2035
+%prep_cond "%{?b_e_setuptools}"		    2036
+%prep_cond "%{?b_e_setuptools_scm}"	    2037
 %prep_cond "%{?b_e_sqlparse}"               2041
 %prep_cond "%{?b_e_sqlalchemy}"             2042
 %prep_cond "%{?b_e_typing_extensions}"      2043
 %prep_cond "%{?b_e_tomli}"                  2044
 %prep_cond "%{?b_e_wcwidth}"                2046
 %prep_cond "%{?b_e_webencodings}"           2047
-%prep_cond "%{?b_e_wcwidth}"                2046
+%prep_cond "%{?b_e_wheel}"                  2048
 %prep_cond "%{?b_e_zipp}"                   2045
 %prep_cond "%{?b_e_zope_component}"         2049
 %prep_cond "%{?b_e_zope_event}"             2050
@@ -1098,6 +1107,12 @@ popd
 %prep_cond "%{?b_e_django_friendlycaptcha}" 1192
 %prep_cond "%{?b_e_django_turnstile}"       1193
 
+## special patches
+
+%if (0%{?rhel} == 8)
+# el8: zope.i18nmessageid
+cat %{PATCH1024} | patch -p 1 -d %{builddir}/zope.i18nmessageid-%{b_v_zope_i18nmessageid}
+%endif
 
 ## SELinux
 %{__mkdir} SELinux
@@ -1148,6 +1163,9 @@ echo "PYTHONPATH=$PYTHONPATH"
 %build_cond   "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
 %install_cond "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
 
+%build_cond   "%{?b_e_setuptools}"     "%{?b_v_setuptools}"     setuptools
+%install_cond "%{?b_e_setuptools}"     "%{?b_v_setuptools}"     setuptools
+
 %build_cond   "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm
 %install_cond "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm
 
@@ -1190,7 +1208,7 @@ pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
 popd
 
 ## bundled packages
-%build_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
+%build_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius			pyproject
 %build_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             %{name_hyperkitty}	pyproject
 
 ## dependencies
@@ -1220,9 +1238,9 @@ popd
 %build_cond "%{?b_e_lazr_delegates}"         "%{?b_v_lazr_delegates}"         lazr.delegates
 %build_cond "%{?b_e_mako}"                   "%{?b_v_mako}"                   Mako
 %build_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
-%build_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune
+%build_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune		pyproject
 %build_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
-%build_cond "%{?b_e_nntplib}"		     "%{?b_v_nntplib}"                nntplib		pyproject
+#EOL#build_cond "%{?b_e_nntplib}"		     "%{?b_v_nntplib}"                nntplib		pyproject
 %build_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %build_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %build_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
@@ -1303,8 +1321,8 @@ pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
 popd
 
 ## bundled packages
-%install_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius
-%install_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             %{name_hyperkitty}		pyproject
+%install_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius		pyproject
+%install_cond "%{?b_e_hyperkitty}"             "%{?b_v_hyperkitty}"             %{name_hyperkitty}	pyproject
 
 ## dependencies
 %install_cond "%{?b_e_aiosmtpd}"               "%{?b_v_aiosmtpd}"               aiosmtpd
@@ -1334,9 +1352,9 @@ popd
 %install_cond "%{?b_e_lazr_delegates}"         "%{?b_v_lazr_delegates}"         lazr.delegates
 %install_cond "%{?b_e_mako}"                   "%{?b_v_mako}"                   Mako
 %install_cond "%{?b_e_mailmanclient}"          "%{?b_v_mailmanclient}"          mailmanclient
-%install_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune
+%install_cond "%{?b_e_mistune}"                "%{?b_v_mistune}"                mistune			pyproject
 %install_cond "%{?b_e_networkx}"               "%{?b_v_networkx}"               networkx
-%install_cond "%{?b_e_nntplib}"                "%{?b_v_nntplib}"                nntplib			pyproject
+#EOL#install_cond "%{?b_e_nntplib}"                "%{?b_v_nntplib}"                nntplib			pyproject
 %install_cond "%{?b_e_oauthlib}"               "%{?b_v_oauthlib}"               oauthlib
 %install_cond "%{?b_e_openid}"                 "%{?b_v_openid}"                 python3-openid
 %install_cond "%{?b_e_passlib}"                "%{?b_v_passlib}"                passlib
@@ -2066,6 +2084,21 @@ echo "Enable timers (will only run if main services are active)"
 #### PENDING
 
 %changelog
+* Tue Sep 24 2024 Peter Bieringer <pb@bieringer.de> - 3.3.9-34
+- debundle obsolete nntplib (no longer available on PyPI)
+- update hyperkitty 1.3.9 -> 1.3.12
+- update postorius 1.3.10 -> 1.3.13
+- update django-mailman3 1.3.12 -> 1.3.15
+- el8: patch zope.i18nmessageid for proper import sequence related to setuptools
+
+* Wed Sep 11 2024 Peter Bieringer <pb@bieringer.de> - 3.3.9-33
+- fix wrapper scripts to use PYTHONPATH
+- mailman3-gunicorn.conf.py: add timeout = 60
+- mailman3-httpd.conf: add ProxyTimeout 60
+
+* Mon Sep 09 2024 Peter Bieringer <pb@bieringer.de>
+- update Django 4.1.13 -> 4.2.16
+
 * Thu Jul 25 2024 Peter Bieringer <pb@bieringer.de>
 - mailman3.service + mailman3-web.service: add ConditionPathIsDirectory
 - update hyperkitty 1.3.8 -> 1.3.9
