@@ -1,0 +1,22 @@
+--- zope.i18nmessageid-6.1.0/setup.py.orig	2024-09-26 21:42:04.261786387 +0200
++++ zope.i18nmessageid-6.1.0/setup.py	2024-09-26 21:42:36.857397705 +0200
+@@ -22,15 +22,15 @@
+ import os
+ import platform
+ import sys
+-from distutils.command.build_ext import build_ext
+-from distutils.errors import CCompilerError
+-from distutils.errors import DistutilsExecError
+-from distutils.errors import DistutilsPlatformError
+ 
+ from setuptools import Extension
+ from setuptools import find_packages
+ from setuptools import setup
+ 
++from distutils.command.build_ext import build_ext
++from distutils.errors import CCompilerError
++from distutils.errors import DistutilsExecError
++from distutils.errors import DistutilsPlatformError
+ 
+ py_impl = getattr(platform, 'python_implementation', lambda: None)
+ is_pypy = py_impl() == 'PyPy'
