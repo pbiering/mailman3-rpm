@@ -388,7 +388,9 @@ Requires:       python3 >= 3.9
 
 # unclear why installed 8.0.2 is not recognized
 %define	b_e_flufl_lock			1
+%endif
 
+%if (0%{?fedora} <= 42)
 %define	b_e_flufl_i18n			1
 %endif
 
@@ -2087,15 +2089,15 @@ echo "Enable timers (will only run if main services are active)"
 %{_mandir}/*
 %endif
 
-#### PENDING
 
 %changelog
-* Tue Sep 24 2024 Peter Bieringer <pb@bieringer.de> - 3.3.9-34
-- f41+: replace obsolete nntplib by standard-nntplib 3.12.2 (and disable warnings._deprecated)
+* Sat Sep 28 2024 Peter Bieringer <pb@bieringer.de> - 3.3.9-34
 - update hyperkitty 1.3.9 -> 1.3.12
 - update postorius 1.3.10 -> 1.3.13
 - update django-mailman3 1.3.12 -> 1.3.15
 - el8: patch zope.i18nmessageid for proper import sequence related to setuptools
+- f41+: replace obsolete nntplib by standard-nntplib 3.12.2 (and disable warnings._deprecated)
+- f42: bundle flufl-i18n
 
 * Wed Sep 11 2024 Peter Bieringer <pb@bieringer.de> - 3.3.9-33
 - fix wrapper scripts to use PYTHONPATH
