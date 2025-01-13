@@ -26,7 +26,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 1
+%global release_token 2
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.10
@@ -569,7 +569,7 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_rcssmin}		rcssmin
 %req_cond_b_i_n_v	0%{?b_e_readme_renderer}	readme-renderer
 %req_cond_b_i_w_v	0%{?b_e_requests_oauthlib}	requests-oauthlib >= 0.3.0
-%req_cond_b_i_w_v	0%{?b_e_rjsmin}			rjsmin = 1.2.1
+%req_cond_b_i_w_v	0%{?b_e_rjsmin}			rjsmin >= 1.2.1
 %req_cond_b_i_n_v	0%{?b_e_robot_detection}	robot-detection
 %req_cond_b_i_n_v	0%{?b_e_sqlalchemy}		sqlalchemy
 %req_cond_b_i_n_v	0%{?b_e_sqlparse}		sqlparse
@@ -2072,6 +2072,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Mon Jan 13 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-2
+- relax python3-rjsmin version to be >= 1.2.1
+
 * Mon Jan 13 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-1
 - el10: start preparation
 - update mailman 3.3.9 -> 3.3.10 incl. required adjustments
