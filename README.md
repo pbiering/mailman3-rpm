@@ -46,9 +46,12 @@ Package *mailman3-enhanced* by storing all not fulfillable dependencies in USER_
 |-----|--------|
 | EL8 | ok     |
 | EL9 | ok     |
-| F39 | ok     |
+| EL10 | pending |
 | F40 | ok     |
 | F41 | ok     |
+| F42 | ok     |
+
+1) availability of python3 modules are still not on same level as of EL9 (2025-01-13)
 
 ## Usage
 
