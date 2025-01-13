@@ -26,10 +26,10 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 34
+%global release_token 1
 
 ## MAIN VERSIONS+RELEASE
-%global version_mailman 		3.3.9
+%global version_mailman 		3.3.10
 %global version_mailman_web		0.0.9
 %global version_mailman_hyperkitty	1.2.1
 
