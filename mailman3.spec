@@ -1201,21 +1201,9 @@ echo "BUILD: **START**"
 %install_cond "%{?b_e_pdm_pep517}"     "%{?b_v_pdm_pep517}"             pdm-pep517	pyproject
 
 ## base
-echo "BUILD: %{pypi_name}-%{version_mailman}%{?prerelease}"
-pushd %{pypi_name}-%{version_mailman}%{?prerelease}
-%py3_build
-popd
-
-echo "BUILD: %{name_mailman_web}-%{version_mailman_web}"
-pushd %{name_mailman_web}-%{version_mailman_web}
-%define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease}
-%pyproject_wheel
-popd
-
-echo "BUILD: %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}"
-pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
-%py3_build
-popd
+%build_cond "1"	"%{version_mailman}"		%{pypi_name}		pyproject
+%build_cond "1"	"%{version_mailman_web}"	%{name_mailman_web}	pyproject
+%build_cond "1"	"%{version_mailman_hyperkitty}"	mailman-hyperkitty
 
 ## bundled packages
 %build_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius			pyproject
@@ -1314,22 +1302,12 @@ echo "PYTHONPATH=$PYTHONPATH"
 # workaround for pyproject_install
 %{__mkdir} -p %{buildroot}%{sitearchdir}/dummy.dist-info
 touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD}
-
-echo "INSTALL: %{pypi_name}-%{version_mailman}%{?prerelease}"
-pushd %{pypi_name}-%{version_mailman}%{?prerelease}
-%py3_install
-popd
-
-echo "INSTALL: %{name_mailman_web}-%{version_mailman_web}"
-pushd %{name_mailman_web}-%{version_mailman_web}
 %define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease}
-%pyproject_install
-popd
 
-echo "INSTALL: %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}"
-pushd %{pypi_name}-hyperkitty-%{version_mailman_hyperkitty}
-%py3_install
-popd
+## base
+%install_cond "1"	"%{version_mailman}"		%{pypi_name}		pyproject
+%install_cond "1"	"%{version_mailman_web}"	%{name_mailman_web}	pyproject
+%install_cond "1"	"%{version_mailman_hyperkitty}"	mailman-hyperkitty
 
 ## bundled packages
 %install_cond "%{?b_e_postorius}"              "%{?b_v_postorius}"              postorius		pyproject
