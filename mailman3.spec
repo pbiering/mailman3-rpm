@@ -1291,8 +1291,8 @@ popd
 %build_cond "%{?b_e_django_rest_framework}"  "%{?b_v_django_rest_framework}"  djangorestframework
 
 # django-picklefield depends on django
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Django-%{?b_v_django}/build/lib
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/asgiref-%{?b_v_asgiref}/build/lib
+PYTHONPATH=$PYTHONPATH:%{builddir}/Django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{builddir}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
 %build_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
@@ -1406,8 +1406,8 @@ popd
 %install_cond "%{?b_e_django_rest_framework}"  "%{?b_v_django_rest_framework}"  djangorestframework
 
 # django-picklefield depends on django
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/Django-%{?b_v_django}/build/lib
-PYTHONPATH=$PYTHONPATH:%{_builddir}/%{pypi_name}-%{version_mailman}%{?prerelease}/asgiref-%{?b_v_asgiref}/build/lib
+PYTHONPATH=$PYTHONPATH:%{builddir}/Django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{builddir}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
 %install_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
 
