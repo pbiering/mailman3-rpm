@@ -2072,6 +2072,11 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Mon Jan 13 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-1
+- el10: start preparation
+- update mailman 3.3.9 -> 3.3.10 incl. required adjustments
+- mailman3.te: fix a warning
+
 * Sat Sep 28 2024 Peter Bieringer <pb@bieringer.de> - 3.3.9-34
 - update hyperkitty 1.3.9 -> 1.3.12
 - update postorius 1.3.10 -> 1.3.13
