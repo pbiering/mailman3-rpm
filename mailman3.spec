@@ -343,12 +343,6 @@ Requires:       python3 >= 3.9
 # not available for EL >= 8 -> bundle
 %define	b_e_arrow			1
 
-# >= 3.5.2 required, 3.4.1-3.el9 is too low
-%define	b_e_asgiref			1
-
-# superseed EL9 appstream
-%define	b_e_cffi			1
-
 %define	b_e_cmarkgfm			1
 %define	b_e_openid			1
 %define	b_e_readme_renderer		1
@@ -356,11 +350,24 @@ Requires:       python3 >= 3.9
 %define	b_e_flufl_bounce		1
 %define	b_e_flufl_i18n			1
 
+%endif
+# end of rhel>=8
+
+%if 0%{?rhel} >= 8 && 0%{?rhel} <= 9
+# not available or too old for EL >= 8 && <=9 but available on EL >= 10-> bundle
+
+# >= 3.5.2 required, 3.4.1-3.el9 is too low
+%define	b_e_asgiref			1
+
+# superseed EL9 appstream
+%define	b_e_cffi			1
+
 %define	b_e_pdm_backend			1
+
 %define	b_e_psutil			1
 
 %endif
-# end of rhel>=8
+
 
 
 # package Django unconditionally to apply CAPTCHA support
@@ -405,13 +412,6 @@ Requires:       python3 >= 3.9
 %endif
 
 %endif
-%endif
-
-%if (0%{?fedora} >= 39)
-# asgiref 3.6.0-4.fc39
-%else
-# >= 3.5.2 required, 3.4.1-7.fc37 / 3.4.1-8.fc38 is too low
-%define	b_e_asgiref			1
 %endif
 
 %if (0%{?fedora} >= 37) || (0%{?rhel} >= 9)
