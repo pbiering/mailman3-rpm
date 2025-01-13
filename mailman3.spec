@@ -1167,6 +1167,8 @@ PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
 export PYTHONPATH
 echo "PYTHONPATH=$PYTHONPATH"
 
+echo "BUILD: **START**"
+
 ## precondition (build+install)
 %build_cond   "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
 %install_cond "%{?b_e_wheel}"          "%{?b_v_wheel}"          wheel
@@ -1303,6 +1305,7 @@ export PYTHONPATH
 %build_cond "%{?b_e_django_friendlycaptcha}" "%{?b_v_django_friendlycaptcha}" django-friendly-captcha
 %build_cond "%{?b_e_django_turnstile}"       "%{?b_v_django_turnstile}"       django-turnstile
 
+echo "INSTALL: **START**"
 
 PYTHONPATH=$PYTHONPATH:%{buildroot}%{sitelibdir}:%{buildroot}%{sitearchdir}
 export PYTHONPATH
