@@ -6,11 +6,16 @@ PartOf=mailman3-web.service
 After=mailman3-web.service
 
 [Timer]
-OnCalendar=minutely
-RandomizedDelaySec=5
-#FixedRandomDelay=true
+OnBootSec=5min
+OnUnitActiveSec=1min
+RandomizedDelaySec=59
+FixedRandomDelay=true
 AccuracySec=1
 Persistent=true
+
+#OnCalendar=minutely
+#RandomizedDelaySec=5
+#FixedRandomDelay=true
 
 [Install]
 WantedBy=timers.target mailman3-web.service

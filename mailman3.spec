@@ -2072,6 +2072,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Wed Mar 12 2025 Peter Bieringer <pb@bieringer.de>
+- mailman3-web-minutely.timer: change to fix delay between 0-59 sec
+
 * Mon Jan 13 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-2
 - relax python3-rjsmin version to be >= 1.2.1
 
