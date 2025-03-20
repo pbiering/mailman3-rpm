@@ -195,7 +195,7 @@
 %define	b_v_flufl_i18n			4.1.1
 
 ## django dependencies
-%define	b_v_django			4.2.16
+%define	b_v_django			4.2.20
 
 %if %{b_v_django_mailman3_num} <= 10311
 %define	b_v_django_allauth		0.58.2
@@ -1686,6 +1686,9 @@ set -x
 # remove created log/db files
 %{__rm} -f %{buildroot}%{logdir}/*.log %{buildroot}%{vardir}/db/*.db
 
+# remove any .orig files
+find %{buildroot} -name '*.orig' | xargs -r %{__rm} -f
+
 
 %pre
 # User & Group
@@ -2072,6 +2075,10 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Thu Mar 20 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-3
+- update python-django 4.2.16 -> 4.2.20
+- remove .orig files before packaging
+
 * Wed Mar 12 2025 Peter Bieringer <pb@bieringer.de>
 - mailman3-web-minutely.timer: change to fix delay between 0-59 sec
 
