@@ -4,7 +4,10 @@ rpmdev-spectool:
 curl:
 	if rpm -q curl; then echo "RPM curl is already installed"; else echo "RPM curl need to be installed first"; dnf install -y curl; fi
 
-download: rpmdev-spectool curl
+jq:
+	if rpm -q jq; then echo "RPM jq is already installed"; else echo "RPM jq need to be installed first"; dnf install -y jq; fi
+
+download: rpmdev-spectool curl jq
 	rpmdev-spectool $(spec) | awk '$$1 ~ /^Source/ && $$2 ~ /^http/ { print $$2 }' | while read url; do \
 		file=$$(basename $$url); \
 		package=$$(echo $$file | sed 's/-[0-9].*//g'); \
