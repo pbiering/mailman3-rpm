@@ -11,9 +11,9 @@ download: rpmdev-spectool curl
 		echo "INFO  : download source  $$file"; \
 		urlIndex="https://pypi.org/simple/$$package/"; \
 		echo "INFO  : download index   $$package: $$urlIndex"; \
-		indexEntry=$$(curl -L -s $$urlIndex | grep ">$$file<"); \
-		checksumEntry=$$(echo "$$indexEntry" | sed 's/.*sha256=\([0-9a-f]*\)".*/\1/g'); \
-		urlEntry=$$(echo "$$indexEntry" | sed 's/.*href="\(.*\)#.*/\1/g'); \
+		indexEntry=$$(curl --header "Accept: application/vnd.pypi.simple.v1+json" -L -s $$urlIndex | jq -r '.files.[] | ( .filename + " " + .hashes.sha256 + " " + .url )' | grep -w "$$file"); \
+		checksumEntry=$$(echo "$$indexEntry" | awk '{ print $$2 }'); \
+		urlEntry=$$(echo "$$indexEntry" | awk '{ print $$3 }'); \
 		if [ -n "$$indexEntry" -a -n "$$checksumEntry" -a -n "$$urlEntry" ]; then \
 			echo "INFO  : download index   $$package: $$urlIndex (SUCCESSFUL)"; \
 		else \
@@ -56,6 +56,7 @@ download: rpmdev-spectool curl
 				fi; \
 			else \
 				echo "ERROR : download source: $$urlEntry (ERROR)"; \
+				echo "ERROR : download index   $$package: indexEntry=$$indexEntry"; \
 				exit 1; \
 			fi; \
 		fi; \
