@@ -1279,7 +1279,7 @@ echo "BUILD: **START**"
 %build_cond "%{?b_e_django_rest_framework}"  "%{?b_v_django_rest_framework}"  djangorestframework
 
 # django-picklefield depends on django
-PYTHONPATH=$PYTHONPATH:%{builddir}/django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{builddir}/django-%{?b_v_django}
 PYTHONPATH=$PYTHONPATH:%{builddir}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
 %build_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
