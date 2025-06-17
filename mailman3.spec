@@ -26,7 +26,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 3
+%global release_token 4
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.10
@@ -195,7 +195,7 @@
 %define	b_v_flufl_i18n			4.1.1
 
 ## django dependencies
-%define	b_v_django			4.2.20
+%define	b_v_django			4.2.22
 
 %if %{b_v_django_mailman3_num} <= 10311
 %define	b_v_django_allauth		0.58.2
@@ -727,7 +727,7 @@ Source1041:	%{__pypi_url}z/zope.schema/zope.schema-%{b_v_zope_schema}.tar.gz
 Source1042:	%{__pypi_url}z/zope.i18nmessageid/zope.i18nmessageid-%{b_v_zope_i18nmessageid}.tar.gz
 
 ## django dependencies
-Source1100:	%{__pypi_url}D/Django/Django-%{b_v_django}.tar.gz
+Source1100:	%{__pypi_url}D/Django/django-%{b_v_django}.tar.gz
 Source1101:	%{__pypi_url}d/django-haystack/django-haystack-%{b_v_django_haystack}.tar.gz
 Source1102:	%{__pypi_url}d/django-allauth/django-allauth-%{b_v_django_allauth}.tar.gz
 Source1104:	%{__pypi_url}d/django-q/django-q-%{b_v_django_q}.tar.gz
@@ -1268,7 +1268,7 @@ echo "BUILD: **START**"
 %build_cond "%{?b_e_zope_interface}"         "%{?b_v_zope_interface}"         zope.interface
 
 ## django dependencies
-%build_cond "%{?b_e_django}"                 "%{?b_v_django}"                 Django
+%build_cond "%{?b_e_django}"                 "%{?b_v_django}"                 django			pyproject
 %build_cond "%{?b_e_django_allauth}"         "%{?b_v_django_allauth}"         django-allauth
 %build_cond "%{?b_e_django_appconf}"         "%{?b_v_django_appconf}"         django-appconf
 %build_cond "%{?b_e_django_compressor}"      "%{?b_v_django_compressor}"      django_compressor
@@ -1279,7 +1279,7 @@ echo "BUILD: **START**"
 %build_cond "%{?b_e_django_rest_framework}"  "%{?b_v_django_rest_framework}"  djangorestframework
 
 # django-picklefield depends on django
-PYTHONPATH=$PYTHONPATH:%{builddir}/Django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{builddir}/django-%{?b_v_django}/build/lib
 PYTHONPATH=$PYTHONPATH:%{builddir}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
 %build_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
@@ -1373,7 +1373,7 @@ touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD}
 %install_cond "%{?b_e_zope_schema}"            "%{?b_v_zope_schema}"            zope.schema
 
 ## django* dependencies
-%install_cond "%{?b_e_django}"                 "%{?b_v_django}"                 Django
+%install_cond "%{?b_e_django}"                 "%{?b_v_django}"                 django			pyproject
 %install_cond "%{?b_e_django_allauth}"         "%{?b_v_django_allauth}"         django-allauth
 %install_cond "%{?b_e_django_appconf}"         "%{?b_v_django_appconf}"         django-appconf
 %install_cond "%{?b_e_django_compressor}"      "%{?b_v_django_compressor}"      django_compressor
@@ -1384,7 +1384,7 @@ touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD}
 %install_cond "%{?b_e_django_rest_framework}"  "%{?b_v_django_rest_framework}"  djangorestframework
 
 # django-picklefield depends on django
-PYTHONPATH=$PYTHONPATH:%{builddir}/Django-%{?b_v_django}/build/lib
+PYTHONPATH=$PYTHONPATH:%{builddir}/django-%{?b_v_django}/build/lib
 PYTHONPATH=$PYTHONPATH:%{builddir}/asgiref-%{?b_v_asgiref}/build/lib
 export PYTHONPATH
 %install_cond "%{?b_e_django_picklefield}"     "%{?b_v_django_picklefield}"     django-picklefield
@@ -2075,6 +2075,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Tue Jun 17 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-4
+- update python-django 4.2.20 -> 4.2.22
+
 * Thu Mar 20 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-3
 - update python-django 4.2.16 -> 4.2.20
 - remove .orig files before packaging
