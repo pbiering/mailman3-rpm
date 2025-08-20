@@ -26,7 +26,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 4
+%global release_token 5
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.10
@@ -802,6 +802,9 @@ Patch3001:	mailman3-whoosh-whoosh3.patch
 
 Patch1024:	zope.i18nmessageid-setuptools.patch
 
+## Upstream fixes
+Patch100:	mailman3-RemoveContextManagerUsageForPosixPath-391816a2.patch
+
 
 ## CAPTCHA enabling patches
 
@@ -1009,6 +1012,7 @@ set -x
 pushd mailman-%{version_mailman}
 
 # (currently none)
+%patch -p1 -P 100
 
 popd
 
@@ -2075,6 +2079,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Wed Aug 20 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-5
+- add: mailman3-RemoveContextManagerUsageForPosixPath-391816a2.patch
+
 * Tue Jun 17 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-4
 - update python-django 4.2.20 -> 4.2.22
 
