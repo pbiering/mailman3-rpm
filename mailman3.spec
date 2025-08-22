@@ -336,6 +336,35 @@ Requires:       python3 >= 3.9
 %endif
 # end of rhel==8
 
+%if (0%{?rhel} == 10)
+# not available for EL == 10 -> bundle
+
+%define	b_e_aiosmtpd			1
+%define	b_e_atpublic			1
+%define	b_e_authheaders			1
+%define	b_e_bleach			1
+%define	b_e_blessed			1
+%define	b_e_lazr_config			1
+%define	b_e_lazr_delegates		1
+%define	b_e_mailmanclient		1
+%define	b_e_passlib			1
+%define	b_e_pdm_pep517			1
+%define	b_e_publicsuffix2		1
+%define	b_e_pygments			1
+%define	b_e_rjsmin			1
+%define	b_e_robot_detection		1
+%define	b_e_sqlparse			1
+%define	b_e_zope_component		1
+%define	b_e_zope_configuration		1
+%define	b_e_zope_hookable		1
+%define	b_e_zope_i18nmessageid		1
+%define	b_e_zope_schema			1
+
+## django dependencies
+%define	b_e_django_gravatar2		1
+%define	b_e_django_haystack		1
+%endif
+# end of rhel==10
 
 %if 0%{?rhel} >= 8
 # not available for EL >= 8 -> bundle
@@ -595,7 +624,9 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0				psutil
 %req_cond_b_i_n_v	0				requests
 %req_cond_b_i_n_v	0				six
+%if (0%{?rhel} < 10)
 %req_cond_b_i_n_v	0				toml
+%endif
 %req_cond_b_i_n_v	0				urllib3
 
 # extra
@@ -2081,6 +2112,7 @@ echo "Enable timers (will only run if main services are active)"
 %changelog
 * Fri Aug 22 2025 Peter Bieringer <pb@bieringer.de>
 - debundle django-compressor/django-extensions/appconf for Fedora >=41
+- bundle required packages for EL10
 
 * Wed Aug 20 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-5
 - add: mailman3-RemoveContextManagerUsageForPosixPath-391816a2.patch
