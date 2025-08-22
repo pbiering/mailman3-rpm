@@ -319,13 +319,11 @@ Requires:       python3 >= 3.9
 %define	b_e_wcwidth			1
 %define	b_e_webencodings		1
 %define	b_e_zipp			1
-%define	b_e_zope_configuration		1
-%define	b_e_zope_schema			1
-%define	b_e_zope_i18nmessageid		1
 %define	b_e_zope_component		1
 %define	b_e_zope_configuration		1
 %define	b_e_zope_event			1
 %define	b_e_zope_hookable		1
+%define	b_e_zope_i18nmessageid		1
 %define	b_e_zope_interface		1
 %define	b_e_zope_schema			1
 
