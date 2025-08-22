@@ -373,11 +373,13 @@ Requires:       python3 >= 3.9
 # package Django unconditionally to apply CAPTCHA support
 %define	b_e_django			1
 
+%if (0%{?fedora} < 41) || (0%{?rhel} >= 8)
 # django-appconf has strong dependency to python-django
 %define	b_e_django_appconf		1
 
 %define	b_e_django_compressor		1
 %define	b_e_django_extensions		1
+%endif
 
 # django-picklefield has strong dependency to python-django
 %define	b_e_django_picklefield		1
@@ -534,8 +536,8 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_w_v	0%{?b_e_dkimpy}			dkimpy >= 0.7.1
 %req_cond_b_i_w_v	0%{?b_e_docutils}		docutils >= 0.13.1
 %req_cond_b_i_w_v	0%{?b_e_django}			django >= 4
-%req_cond_b_i_n_v	0%{?b_e_django_compressor}	django-compressor
-%req_cond_b_i_w_v	0%{?b_e_django_extensions}	django-extensions >= 1.3.7
+%req_cond_b_i_n_v	0%{?b_e_django_compressor}	django-compressor >= %{b_v_django_compressor}
+%req_cond_b_i_w_v	0%{?b_e_django_extensions}	django-extensions >= %{b_v_django_extensions}
 %req_cond_b_i_w_v	0%{?b_e_django_gravatar2}	django-gravatar2 >= 1.0.6
 %req_cond_b_i_n_v	0%{?b_e_django_picklefield}	django-picklefield >= 3.0.1 < 4.0.0
 
@@ -2079,6 +2081,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Fri Aug 22 2025 Peter Bieringer <pb@bieringer.de>
+- debundle django-compressor/django-extensions/appconf for Fedora >=41
+
 * Wed Aug 20 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-5
 - add: mailman3-RemoveContextManagerUsageForPosixPath-391816a2.patch
 
