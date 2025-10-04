@@ -92,7 +92,7 @@
 
 %define	b_v_flufl_lock			7.1.1
 
-%define	b_v_greenlet			2.0.2
+%define	b_v_greenlet			3.1.1
 %define	b_v_idna			3.4
 
 # version from EL9
