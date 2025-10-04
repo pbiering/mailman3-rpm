@@ -489,6 +489,12 @@ fi }
 BuildRequires:	python%{python3_version_num}-%2 \
 %endif
 
+# requirement conditional build-only without version (invert)
+%define req_cond_b_o_n_v_i()  \
+%if %1 \
+BuildRequires:	python%{python3_version_num}-%2 \
+%endif
+
 # requirement conditional build+install without version
 %define req_cond_b_i_n_v()  \
 %if ! %1 \
