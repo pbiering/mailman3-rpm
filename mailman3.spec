@@ -1099,7 +1099,6 @@ popd
 %prep_cond "%{?b_e_psutil}"                 2025
 %prep_cond "%{?b_e_dateutil}"               2027
 %prep_cond "%{?b_e_openid}"                 2028
-%prep_cond "%{?b_e_psutil}"                 2029
 %prep_cond "%{?b_e_pytz}"                   2029
 %prep_cond "%{?b_e_jwt}"                    2030
 %prep_cond "%{?b_e_rcssmin}"                2031
