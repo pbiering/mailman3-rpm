@@ -333,6 +333,11 @@ Requires:       python3 >= 3.9
 # EL8 provides only 1.1
 %define	b_e_networkx			1
 
+# EL8 with Python 3.12
+%define	b_e_click			1
+%define	b_e_psutil			1
+%define	b_e_setuptools_scm		1
+
 %endif
 # end of rhel==8
 
@@ -535,6 +540,7 @@ BuildConflicts:	python%{python3_version_num}-%2 \
 %req_cond_b_o_n_v	0%{?b_e_flit_core}		flit-core
 %req_cond_b_o_n_v	0%{?b_e_setuptools}		setuptools
 %req_cond_b_o_n_v	0%{?b_e_setuptools_scm}		setuptools_scm
+%req_cond_b_o_n_v_i	0%{?b_e_setuptools_scm}		packaging
 %req_cond_b_o_n_v	0%{?b_e_wheel}			wheel
 
 ## Build dependencies
@@ -622,17 +628,13 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_zope_schema}		zope-schema
 
 ## ALL supported OS versions
-%req_cond_b_i_n_v	0				click
+%req_cond_b_i_n_v	0%{?b_e_click}			click
 %req_cond_b_i_n_v	0				cryptography
 %req_cond_b_i_n_v	0				dns
 %req_cond_b_i_n_v	0				idna
 %req_cond_b_i_n_v	0				markupsafe
-%req_cond_b_i_n_v	0				psutil
 %req_cond_b_i_n_v	0				requests
 %req_cond_b_i_n_v	0				six
-%if (0%{?rhel} < 10)
-%req_cond_b_i_n_v	0				toml
-%endif
 %req_cond_b_i_n_v	0				urllib3
 
 # extra
@@ -762,6 +764,8 @@ Source1031:	%{__pypi_url}g/gunicorn/gunicorn-%{b_v_gunicorn}.tar.gz
 Source1040:	%{__pypi_url}z/zope.configuration/zope.configuration-%{b_v_zope_configuration}.tar.gz
 Source1041:	%{__pypi_url}z/zope.schema/zope.schema-%{b_v_zope_schema}.tar.gz
 Source1042:	%{__pypi_url}z/zope.i18nmessageid/zope.i18nmessageid-%{b_v_zope_i18nmessageid}.tar.gz
+
+Source1050:	%{__pypi_url}c/click-%{b_v_click}.tar.gz
 
 ## django dependencies
 Source1100:	%{__pypi_url}D/Django/django-%{b_v_django}.tar.gz
@@ -1112,6 +1116,7 @@ popd
 
 %prep_cond "%{?b_e_cmarkgfm}"               1028
 %prep_cond "%{?b_e_cffi}"                   1029
+%prep_cond "%{?b_e_click}"                  1050
 %prep_cond "%{?b_e_gunicorn}"               1031
 
 %prep_cond "%{?b_e_zope_configuration}"     1040
@@ -1249,11 +1254,14 @@ echo "BUILD: **START**"
 %build_cond   "%{?b_e_setuptools}"     "%{?b_v_setuptools}"     setuptools
 %install_cond "%{?b_e_setuptools}"     "%{?b_v_setuptools}"     setuptools
 
-%build_cond   "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm
-%install_cond "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm
+%build_cond   "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm	pyproject
+%install_cond "%{?b_e_setuptools_scm}" "%{?b_v_setuptools_scm}" setuptools_scm	pyproject
 
 %build_cond   "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
 %install_cond "%{?b_e_tomli}"          "%{?b_v_tomli}"          tomli
+
+%build_cond "%{?b_e_typing_extensions}"      "%{?b_v_typing_extensions}"      typing_extensions
+%install_cond "%{?b_e_typing_extensions}"      "%{?b_v_typing_extensions}"      typing_extensions
 
 %build_cond   "%{?b_e_zipp}"          "%{?b_v_zipp}"          zipp
 %install_cond "%{?b_e_zipp}"          "%{?b_v_zipp}"          zipp
@@ -1296,6 +1304,7 @@ echo "BUILD: **START**"
 %build_cond "%{?b_e_dateutil}"               "%{?b_v_dateutil}"               python-dateutil
 %build_cond "%{?b_e_defusedxml}"             "%{?b_v_defusedxml}"             defusedxml
 %build_cond "%{?b_e_cmarkgfm}"               "%{?b_v_cmarkgfm}"               cmarkgfm
+%build_cond "%{?b_e_click}"                  "%{?b_v_click}"                  click
 %build_cond "%{?b_e_dkimpy}"                 "%{?b_v_dkimpy}"                 dkimpy
 %build_cond "%{?b_e_docutils}"               "%{?b_v_docutils}"               docutils
 %build_cond "%{?b_e_falcon}"                 "%{?b_v_falcon}"                 falcon
@@ -1327,7 +1336,6 @@ echo "BUILD: **START**"
 %build_cond "%{?b_e_sqlparse}"               "%{?b_v_sqlparse}"               sqlparse
 %build_cond "%{?b_e_sqlalchemy}"             "%{?b_v_sqlalchemy}"             SQLAlchemy
 %build_cond "%{?b_e_types_cryptography}"     "%{?b_v_types_cryptography}"     types-cryptography
-%build_cond "%{?b_e_typing_extensions}"      "%{?b_v_typing_extensions}"      typing_extensions
 %build_cond "%{?b_e_wcwidth}"                "%{?b_v_wcwidth}"                wcwidth
 %build_cond "%{?b_e_webencodings}"           "%{?b_v_webencodings}"           webencodings
 %build_cond "%{?b_e_whoosh}"                 "%{?b_v_whoosh}"                 Whoosh
@@ -1398,6 +1406,7 @@ touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD}
 %install_cond "%{?b_e_bleach}"                 "%{?b_v_bleach}"                 bleach
 %install_cond "%{?b_e_blessed}"                "%{?b_v_blessed}"                blessed
 %install_cond "%{?b_e_cffi}"                   "%{?b_v_cffi}"                   cffi
+%install_cond "%{?b_e_click}"                  "%{?b_v_click}"                  click
 %install_cond "%{?b_e_cmarkgfm}"               "%{?b_v_cmarkgfm}"               cmarkgfm
 %install_cond "%{?b_e_dateutil}"               "%{?b_v_dateutil}"               python-dateutil
 %install_cond "%{?b_e_defusedxml}"             "%{?b_v_defusedxml}"             defusedxml
@@ -1432,7 +1441,6 @@ touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD}
 %install_cond "%{?b_e_sqlparse}"               "%{?b_v_sqlparse}"               sqlparse
 %install_cond "%{?b_e_sqlalchemy}"             "%{?b_v_sqlalchemy}"             SQLAlchemy
 %install_cond "%{?b_e_types_cryptography}"     "%{?b_v_types_cryptography}"     types-cryptography
-%install_cond "%{?b_e_typing_extensions}"      "%{?b_v_typing_extensions}"      typing_extensions
 %install_cond "%{?b_e_wcwidth}"                "%{?b_v_wcwidth}"                wcwidth
 %install_cond "%{?b_e_webencodings}"           "%{?b_v_webencodings}"           webencodings
 %install_cond "%{?b_e_whoosh}"                 "%{?b_v_whoosh}"                 Whoosh
