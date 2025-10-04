@@ -236,9 +236,9 @@
 ### base dependencies
 
 %if (0%{?rhel} == 8)
-# hardwire to Python 3.9
-%define 	python3_version_num	39
-%define		python3_version		3.9
+# hardwire to Python 3.12 (LTS)
+%define	python3_version_num	3.12
+%define	python3_version		3.12
 BuildRequires:  python%{python3_version_num}-devel
 BuildRequires:  python%{python3_version_num}-setuptools
 Requires:       python%{python3_version_num}
