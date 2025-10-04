@@ -963,7 +963,7 @@ if [ "%1" = "1" ]; then \
 %setup -q -T -a %2 -D -n %{builddir} \
 fi)
 
-%if (0%{?rhel} == 8 || 0%{?rhel} == 9)
+%if (0%{?rhel} >= 8 && 0%{?rhel} <= 10)
 
 %define build_cond() (\
 echo "BUILD_COND: '%1' '%2' '%3' '%4'"; \
