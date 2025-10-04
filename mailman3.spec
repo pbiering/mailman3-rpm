@@ -597,7 +597,7 @@ BuildRequires:	python3-importlib-metadata
 %req_cond_b_i_n_v	0%{?b_e_passlib}		passlib
 %req_cond_b_i_w_v	0%{?b_e_pdm_backend}		pdm-backend >= 2.0.7
 %req_cond_b_i_w_v	0%{?b_e_pdm_pep517}		pdm-pep517 >= 1.0.4
-%req_cond_b_i_w_v	0%{?b_e_psutil}			psutil >= 5.9.0
+%req_cond_b_i_w_v	0%{?b_e_psutil}			psutil >= %{b_v_psutil}
 %req_cond_b_i_n_v	0%{?b_e_publicsuffix2}		publicsuffix2
 %req_cond_b_i_n_v	0%{?b_e_pygments}		pygments
 %req_cond_b_i_n_v	0%{?b_e_pytz}			pytz
