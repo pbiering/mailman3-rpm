@@ -2152,6 +2152,10 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Sat Oct 04 2025 Peter Bieringer <pb@bieringer.de> - 3.3.10-6
+- bundled greenlet 2.0.2 -> 3.1.1
+- EL8: switch to Python 3.12 (LTS), requires bundling of: click psutil setuptools_scm
+
 * Fri Aug 22 2025 Peter Bieringer <pb@bieringer.de>
 - debundle django-compressor/django-extensions/appconf for Fedora >=41
 - bundle required packages for EL10
