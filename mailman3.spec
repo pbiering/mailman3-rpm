@@ -1501,11 +1501,7 @@ cat %{PATCH929} | patch -p 1 -d %{buildroot}%{sitelibdir}
 done
 
 # compile all python modules
-%if (%{python3_pkgversion} >= 30) && (%{python3_pkgversion} < 39)
-# < 3.9 is not supporting -s)
-%else
 python%{python3_version} -m compileall -q -s %{buildroot} %{buildroot}%{sitelibdir}
-%endif
 
 # replace dedicated installed file with softlink to publicsuffix-list (see also python-publicsuffix2.spec)
 find %{buildroot}%{sitelibdir} -type f -name public_suffix_list.dat | while read f; do
