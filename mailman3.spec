@@ -959,10 +959,42 @@ if [ "%1" = "1" ]; then \
 %setup -q -T -a %2 -D -n %{builddir} \
 fi)
 
+%if (0%{?rhel} == 8)
+
 %define build_cond() (\
 echo "BUILD_COND: '%1' '%2' '%3' '%4'"; \
 if [ "%1" = "1" ]; then \
+pushd %3-%2 || exit 1 \
 %define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease} \
+if [ "%4" = "pyproject" ]; then \
+%pyproject_wheel \
+else \
+%py3_build \
+fi \
+popd \
+fi)
+
+%define install_cond() (\
+echo "INSTALL_COND: '%1' '%2' '%3' '%4'"; \
+if [ "%1" = "1" ]; then \
+pushd %3-%2 || exit 1 \
+%define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease} \
+if [ "%4" = "pyproject" ]; then \
+%{__mkdir} -p %{buildroot}%{sitearchdir}/dummy.dist-info \
+touch %{buildroot}%{sitearchdir}/dummy.dist-info/{INSTALLER,RECORD} \
+%pyproject_install \
+else \
+%py3_install \
+fi \
+popd \
+fi)
+
+
+%else
+
+%define build_cond() (\
+echo "BUILD_COND: '%1' '%2' '%3' '%4'"; \
+if [ "%1" = "1" ]; then \
 pushd %3-%2 || exit 1 \
 if [ "%4" = "pyproject" ]; then \
 %pyproject_wheel \
@@ -974,7 +1006,6 @@ fi)
 
 %define install_cond() (\
 echo "INSTALL_COND: '%1' '%2' '%3' '%4'"; \
-%define buildsubdir	%{pypi_name}-%{version_mailman}%{?prerelease} \
 if [ "%1" = "1" ]; then \
 pushd %3-%2 || exit 1 \
 if [ "%4" = "pyproject" ]; then \
@@ -986,6 +1017,8 @@ else \
 fi \
 popd \
 fi)
+
+%endif
 
 
 %description
