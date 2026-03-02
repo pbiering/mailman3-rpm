@@ -466,6 +466,11 @@ Requires:       python3 >= 3.9
 %define	b_e_nntplib 			1
 %endif
 
+%if (0%{?fedora} >= 44)
+# pdm-pep517 no longer available
+%define	b_e_pdm_pep517			1
+%endif
+
 ### Requirements
 
 ## Macros
@@ -2154,6 +2159,7 @@ echo "Enable timers (will only run if main services are active)"
 %changelog
 * Sun Mar 01 2026 Peter Bieringer <pb@bieringer.de> - 3.3.10-7
 - update python-django 4.2.22 -> 4.2.28
+- bundle pdm-pep517 fror Fedora >= 44
 
 * Wed Nov 19 2025 Peter Bieringer <pb@bieringer.de>
 - mailman3.cfg: add remove_dkim_headers
