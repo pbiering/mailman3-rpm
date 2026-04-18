@@ -1709,8 +1709,8 @@ find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesd
 
 ## OS specific adjustments
 %if (0%{?rhel} == 8)
-	%{__sed} -i -e 's/^\(.*# -EL8\)$/#\1/' $file
-	%{__sed} -i -e 's/^#\(.*# +EL8\)$/\1/' $file
+	%{__sed} -i -e 's/^\(.*\)\S*# -EL8$/#\1/' $file
+	%{__sed} -i -e 's/^#\(.*\)\S*# +EL8$/\1/' $file
 %endif
 done
 
