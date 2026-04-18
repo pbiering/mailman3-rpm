@@ -7,8 +7,9 @@ After=mailman3.service
 
 [Timer]
 OnCalendar=*-*-* 04:00:00
-RandomizedDelaySec=3600
-#FixedRandomDelay=true
+#RandomizedDelaySec=300		# +EL8
+RandomizedDelaySec=3600		# -EL8
+FixedRandomDelay=true		# -EL8
 Persistent=true
 
 [Install]

@@ -26,7 +26,7 @@
 %define debug_package %{nil}
 
 # release
-%global release_token 7
+%global release_token 8
 
 ## MAIN VERSIONS+RELEASE
 %global version_mailman 		3.3.10
@@ -1689,7 +1689,6 @@ install -D -m 0644 %{SOURCE415} %{buildroot}%{_unitdir}/%{basename:%{SOURCE415}}
 install -D -m 0644 %{SOURCE416} %{buildroot}%{_unitdir}/%{basename:%{SOURCE416}}
 %endif
 
-
 ## substitute all placeholders
 %define bindir_gunicorn %{bindir}
 
@@ -1707,6 +1706,12 @@ find %{buildroot}%{_sysconfdir} %{buildroot}%{_unitdir} %{buildroot}%{_tmpfilesd
 %{__sed} -i -e 's,@WEBPORT@,%{webport},g;s,@LMTPPORT@,%{lmtpport},g;s,@RESTAPIPORT@,%{restapiport},g' $file
 
 %{__sed} -i -e 's,@BINDIR_GUNICORN@,%{bindir_gunicorn},g;s,@PYTHONPATH@,%{pythonpath},g' $file
+
+## OS specific adjustments
+%if (0%{?rhel} == 8)
+	%{__sed} -i -e 's/^\(.*# -EL8\)$/#\1/' $file
+	%{__sed} -i -e 's/^#\(.*# +EL8\)$/\1/' $file
+%endif
 done
 
 
@@ -2157,6 +2162,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Sat Apr 18 2026 Peter Bieringer <pb@bieringer.de> - 3.3.10-8
+- review timers and replace on EL8 unsupported FixedRandomDelay by reduced RandomizedDelaySec
+
 * Sun Mar 01 2026 Peter Bieringer <pb@bieringer.de> - 3.3.10-7
 - update python-django 4.2.22 -> 4.2.28
 - bundle pdm-pep517 fror Fedora >= 44

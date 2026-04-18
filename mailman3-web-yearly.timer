@@ -7,8 +7,9 @@ After=mailman3-web.service
 
 [Timer]
 OnCalendar=yearly
-RandomizedDelaySec=28800
-#FixedRandomDelay=true
+#RandomizedDelaySec=2400	# +EL8
+RandomizedDelaySec=28800	# -EL8
+FixedRandomDelay=true		# -EL8
 Persistent=true
 
 [Install]
