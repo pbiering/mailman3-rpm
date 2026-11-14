@@ -1498,10 +1498,10 @@ install -d -p %{buildroot}%{_bindir}
 cat <<'EOF' >%{buildroot}%{_bindir}/mailman3
 #!/bin/sh
 if [ "$USER" == "root" ]; then
-echo "This command will run under the mailman3 user (mailman3)."
+echo "This command will run under the mailman3 user (mailman3)." >&2
 su - -s /bin/bash %{mmuser} -c "$0 $*"
 elif [ "$USER" != "%{mmuser}" ]; then
-echo "This command must be run under the mailman 3 user (%{mmuser})."
+echo "This command must be run under the mailman 3 user (%{mmuser})." >&2
 exit 1
 else
 export PYTHONPATH=@PYTHONPATH@
@@ -1512,10 +1512,10 @@ EOF
 cat <<'EOF' >%{buildroot}%{_bindir}/mailman3-web
 #!/bin/sh
 if [ "$USER" == "root" ]; then
-echo "This command will run under the mailman3 user (mailman3)."
+echo "This command will run under the mailman3 user (mailman3)." >&2
 su - -s /bin/bash %{mmuser} -c "$0 $*"
 elif [ "$USER" != "%{mmuser}" ]; then
-echo "This command must be run under the mailman3 user (%{mmuser})."
+echo "This command must be run under the mailman3 user (%{mmuser})." >&2
 exit 1
 else
 export PYTHONPATH=@PYTHONPATH@
@@ -2162,6 +2162,9 @@ echo "Enable timers (will only run if main services are active)"
 
 
 %changelog
+* Sat Nov 11 2026 Peter Bieringer <pb@bieringer.de>
+- use stderr for extra info of wrapper commands
+
 * Sat Apr 18 2026 Peter Bieringer <pb@bieringer.de> - 3.3.10-8
 - review timers and replace on EL8 unsupported FixedRandomDelay by reduced RandomizedDelaySec
 
